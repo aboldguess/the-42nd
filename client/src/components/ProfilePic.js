@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function ProfilePic({ avatarUrl, onFileSelect }) {
+export default function ProfilePic({ avatarUrl, onFileSelect }) {
   const [preview, setPreview] = useState(avatarUrl || '');
 
   const handleFileChange = (e) => {
@@ -27,5 +27,3 @@ function ProfilePic({ avatarUrl, onFileSelect }) {
     </div>
   );
 }
-
-export default ProfilePic;

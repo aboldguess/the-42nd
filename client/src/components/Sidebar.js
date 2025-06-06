@@ -4,11 +4,8 @@ import { Link, useLocation } from 'react-router-dom';
 export default function Sidebar() {
   const location = useLocation();
   const token = localStorage.getItem('token');
-
-  // Hide the sidebar if the user is not authenticated
   if (!token) return null;
 
-  // Helper to render a link and highlight it when active
   const renderLink = (to, label) => (
     <Link
       to={to}

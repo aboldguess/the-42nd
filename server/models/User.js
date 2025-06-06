@@ -1,12 +1,12 @@
+// server/models/User.js
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    email: { type: String, required: true, unique: true, lowercase: true },
-    password: { type: String, required: true },
-    avatarUrl: { type: String, default: '' },
-    team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' }
+    photoUrl: { type: String, default: '' },            // e.g. "/uploads/uuid.jpg"
+    team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true },
+    isAdmin: { type: Boolean, default: false }          // true if this user created the team
   },
   { timestamps: true }
 );

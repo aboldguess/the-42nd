@@ -1,15 +1,26 @@
+// server/controllers/clueController.js
+
 const Clue = require('../models/Clue');
 const Team = require('../models/Team');
 const Media = require('../models/Media');
-const QRCode = require('qrcode');
+const mongoose = require('mongoose');
 
 exports.getClue = async (req, res) => {
+  const { clueId } = req.params;
+
+  // If clueId is not a valid ObjectId, return 404 immediately.
+  if (!mongoose.Types.ObjectId.isValid(clueId)) {
+    return res.status(404).json({ message: 'Clue not found' });
+  }
+
   try {
-    const clue = await Clue.findById(req.params.clueId);
-    if (!clue) return res.status(404).json({ message: 'Clue not found' });
+    const clue = await Clue.findById(clueId);
+    if (!clue) {
+      return res.status(404).json({ message: 'Clue not found' });
+    }
     res.json(clue);
   } catch (err) {
-    console.error(err);
+    console.error('Error fetching clue:', err);
     res.status(500).json({ message: 'Error fetching clue' });
   }
 };
@@ -19,7 +30,7 @@ exports.getAllClues = async (req, res) => {
     const clues = await Clue.find().sort({ createdAt: 1 });
     res.json(clues);
   } catch (err) {
-    console.error(err);
+    console.error('Error fetching all clues:', err);
     res.status(500).json({ message: 'Error fetching all clues' });
   }
 };
@@ -37,53 +48,59 @@ exports.createClue = async (req, res) => {
     });
   }
   try {
-    let qrCodeData = '';
-    if (req.body.generateQRCode === 'true') {
-      const qrString = `clue-${Date.now()}-${Math.random()}`;
-      qrCodeData = await QRCode.toDataURL(qrString);
-    }
     const newClue = new Clue({
       title,
       text,
       imageUrl,
-      options: options ? options.split(',') : [],
+      options: options ? options.split(',').map((o) => o.trim()) : [],
       correctAnswer,
-      qrCodeData,
       infoPage: infoPage === 'true'
     });
     await newClue.save();
     res.status(201).json(newClue);
   } catch (err) {
-    console.error(err);
+    console.error('Error creating clue:', err);
     res.status(500).json({ message: 'Error creating clue' });
   }
 };
 
 exports.submitAnswer = async (req, res) => {
+  const { clueId } = req.params;
   const { answer } = req.body;
-  try {
-    const clue = await Clue.findById(req.params.clueId);
-    if (!clue) return res.status(404).json({ message: 'Clue not found' });
-    const team = await Team.findById(req.user.team);
-    if (!team) return res.status(404).json({ message: 'Team not found' });
 
-    if (clue.infoPage) {
-      team.completedClues.push(Number(req.params.clueId));
-      team.currentClue += 1;
-      await team.save();
-      return res.json({ correct: true, nextClue: team.currentClue });
+  // Same ID check as above
+  if (!mongoose.Types.ObjectId.isValid(clueId)) {
+    return res.status(404).json({ message: 'Clue not found' });
+  }
+
+  try {
+    const clue = await Clue.findById(clueId);
+    if (!clue) {
+      return res.status(404).json({ message: 'Clue not found' });
+    }
+    const team = await Team.findById(req.user.team);
+    if (!team) {
+      return res.status(404).json({ message: 'Team not found' });
     }
 
-    if (answer.trim().toLowerCase() === clue.correctAnswer.trim().toLowerCase()) {
-      team.completedClues.push(Number(req.params.clueId));
-      team.currentClue += 1;
+    // If this is an infoPage, automatically mark it completed
+    let correct;
+    if (clue.infoPage) {
+      correct = true;
+    } else {
+      correct = clue.correctAnswer.trim().toLowerCase() === answer.trim().toLowerCase();
+    }
+
+    if (correct) {
+      team.completedClues.push(clue._id);
+      team.currentClue = team.currentClue + 1;
       await team.save();
       return res.json({ correct: true, nextClue: team.currentClue });
     } else {
       return res.json({ correct: false });
     }
   } catch (err) {
-    console.error(err);
+    console.error('Error submitting answer:', err);
     res.status(500).json({ message: 'Error submitting answer' });
   }
 };

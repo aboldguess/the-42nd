@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ProfilePic from './ProfilePic';
 
-function TeamMemberForm({ onAdd }) {
+export default function TeamMemberForm({ onAdd }) {
   const [name, setName] = useState('');
   const [avatarFile, setAvatarFile] = useState(null);
 
@@ -29,5 +29,3 @@ function TeamMemberForm({ onAdd }) {
     </div>
   );
 }
-
-export default TeamMemberForm;

@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { ThemeContext } from '../context/ThemeContext';
 
-function ColorSchemePicker() {
+export default function ColorSchemePicker() {
   const { theme, updateTheme } = useContext(ThemeContext);
   const [primary, setPrimary] = useState(theme.primary);
   const [secondary, setSecondary] = useState(theme.secondary);
@@ -21,5 +21,3 @@ function ColorSchemePicker() {
     </div>
   );
 }
-
-export default ColorSchemePicker;

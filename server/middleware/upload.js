@@ -1,27 +1,20 @@
+// server/middleware/upload.js
+
 const multer = require('multer');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
+// Store uploads in the “uploads/” folder with a random UUID filename
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
+  destination: (req, file, cb) => {
+    cb(null, 'uploads');
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = uuidv4();
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+  filename: (req, file, cb) => {
+    const uniqueName = uuidv4() + path.extname(file.originalname);
+    cb(null, uniqueName);
   }
 });
 
-const fileFilter = (req, file, cb) => {
-  const allowed = /jpeg|jpg|png|gif|mp4|mov|avi/;
-  const ext = allowed.test(path.extname(file.originalname).toLowerCase());
-  if (ext) {
-    cb(null, true);
-  } else {
-    cb(new Error('File type not supported'), false);
-  }
-};
-
-const upload = multer({ storage, fileFilter });
+const upload = multer({ storage });
 
 module.exports = upload;

@@ -10,16 +10,15 @@ export const ThemeProvider = ({ children }) => {
   });
 
   useEffect(() => {
+    // Fetch theme from team if logged in
     const fetchTheme = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const teamId = localStorage.getItem('teamId');
-        if (!teamId) return;
-        const res = await axios.get(`/api/teams/${teamId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const cs = res.data.colourScheme;
+        const userRes = await axios.get('/api/users/me');
+        const teamId = userRes.data.team._id;
+        const teamRes = await axios.get(`/api/teams/${teamId}`);
+        const cs = teamRes.data.colourScheme;
         setTheme({ primary: cs.primary, secondary: cs.secondary });
       } catch (err) {
         console.error('Error fetching theme:', err);
@@ -31,8 +30,9 @@ export const ThemeProvider = ({ children }) => {
   const updateTheme = async (primary, secondary) => {
     try {
       const token = localStorage.getItem('token');
-      const teamId = localStorage.getItem('teamId');
-      if (!token || !teamId) return;
+      if (!token) return;
+      const userRes = await axios.get('/api/users/me');
+      const teamId = userRes.data.team._id;
       await axios.put(
         `/api/teams/${teamId}/colour`,
         { primary, secondary },

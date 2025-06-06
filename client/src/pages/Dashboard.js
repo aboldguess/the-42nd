@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { fetchMe, fetchTeam, addTeamMember, fetchClue } from '../services/api';
+import { fetchMe, fetchTeam, addTeamMember } from '../services/api';
 import TeamMemberForm from '../components/TeamMemberForm';
 
-function Dashboard() {
+export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [team, setTeam] = useState(null);
   const [currentClue, setCurrentClue] = useState(null);
@@ -13,12 +13,10 @@ function Dashboard() {
       try {
         const meRes = await fetchMe();
         setUser(meRes.data);
-        localStorage.setItem('teamId', meRes.data.team._id);
         const teamRes = await fetchTeam(meRes.data.team._id);
         setTeam(teamRes.data);
         if (teamRes.data.currentClue) {
-          const clueRes = await fetchClue(teamRes.data.currentClue);
-          setCurrentClue(clueRes.data);
+          setCurrentClue(teamRes.data.currentClue);
         }
         setLoading(false);
       } catch (err) {
@@ -47,16 +45,13 @@ function Dashboard() {
       <div className="card">
         <h3>Team: {team.name}</h3>
         <p>
-          <strong>Colour Scheme:</strong> <span style={{ color: team.colourScheme.primary }}>{team.colourScheme.primary}</span> / <span style={{ color: team.colourScheme.secondary }}>{team.colourScheme.secondary}</span>
+          <strong>Colour Scheme:</strong>{' '}
+          <span style={{ color: team.colourScheme.primary }}>{team.colourScheme.primary}</span> /{' '}
+          <span style={{ color: team.colourScheme.secondary }}>{team.colourScheme.secondary}</span>
         </p>
         <p>
-          <strong>Current Clue:</strong> {team.infoPage || currentClue ? currentClue?.title || 'Info Page' : `Clue ${team.currentClue}`}
+          <strong>Current Clue:</strong> {`Clue ${team.currentClue}`}
         </p>
-        {currentClue && !currentClue.infoPage && (
-          <p>
-            <strong>Clue Snippet:</strong> {currentClue.text.substring(0, 50)}…
-          </p>
-        )}
         <p>
           <strong>Members:</strong>
         </p>
@@ -78,15 +73,13 @@ function Dashboard() {
         </ul>
       </div>
 
-      <TeamMemberForm onAdd={handleAddMember} />
+      {user.isAdmin && <TeamMemberForm onAdd={handleAddMember} />}
 
       <div style={{ marginTop: '1rem' }}>
-        <a href={`/clue/${team.currentClue}`}>
+        <a href={`/clue/${currentClue}`}>
           <button>Go to Current Clue</button>
         </a>
       </div>
     </div>
   );
 }
-
-export default Dashboard;

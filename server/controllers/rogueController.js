@@ -2,13 +2,8 @@ const Media = require('../models/Media');
 
 exports.getAllMedia = async (req, res) => {
   try {
-    const { teamId, sideQuestId, type } = req.query;
-    const filter = {};
-    if (teamId) filter.team = teamId;
-    if (sideQuestId) filter.sideQuest = sideQuestId;
-    if (type) filter.type = type;
-    const allMedia = await Media.find(filter)
-      .populate('uploadedBy', 'name avatarUrl')
+    const allMedia = await Media.find()
+      .populate('uploadedBy', 'name photoUrl')
       .populate('team', 'name')
       .populate('sideQuest', 'title')
       .sort({ createdAt: -1 });

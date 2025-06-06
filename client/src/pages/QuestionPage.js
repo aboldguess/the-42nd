@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchClue, submitAnswer } from '../services/api';
 
-function QuestionPage() {
+export default function QuestionPage() {
   const { clueId } = useParams();
   const navigate = useNavigate();
   const [clue, setClue] = useState(null);
@@ -86,10 +86,17 @@ function QuestionPage() {
           )}
           <button type="submit">{clue.infoPage ? 'Continue' : 'Submit'}</button>
         </form>
-        {feedback && <p style={{ marginTop: '0.75rem', color: feedback.startsWith('Correct') ? 'green' : 'red' }}>{feedback}</p>}
+        {feedback && (
+          <p
+            style={{
+              marginTop: '0.75rem',
+              color: feedback.startsWith('Correct') ? 'green' : 'red'
+            }}
+          >
+            {feedback}
+          </p>
+        )}
       </div>
     </div>
   );
 }
-
-export default QuestionPage;

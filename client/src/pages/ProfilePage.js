@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import ProfilePic from '../components/ProfilePic';
 import { fetchMe, updateMe } from '../services/api';
 
-function ProfilePage() {
+export default function ProfilePage() {
   const [user, setUser] = useState(null);
   const [newName, setNewName] = useState('');
-  const [avatarFile, setAvatarFile] = useState(null);
+  const [selfieFile, setSelfieFile] = useState(null);
 
   useEffect(() => {
     const load = async () => {
@@ -24,7 +24,7 @@ function ProfilePage() {
     e.preventDefault();
     const formData = new FormData();
     if (newName && newName !== user.name) formData.append('name', newName);
-    if (avatarFile) formData.append('avatar', avatarFile);
+    if (selfieFile) formData.append('selfie', selfieFile);
 
     try {
       const res = await updateMe(formData);
@@ -46,7 +46,7 @@ function ProfilePage() {
           <input value={newName} onChange={(e) => setNewName(e.target.value)} required />
 
           <label>Profile Picture:</label>
-          <ProfilePic avatarUrl={user.avatarUrl} onFileSelect={(file) => setAvatarFile(file)} />
+          <ProfilePic avatarUrl={user.photoUrl} onFileSelect={(file) => setSelfieFile(file)} />
 
           <button type="submit">Save Changes</button>
         </form>
@@ -54,5 +54,3 @@ function ProfilePage() {
     </div>
   );
 }
-
-export default ProfilePage;

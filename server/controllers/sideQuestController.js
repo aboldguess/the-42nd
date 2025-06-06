@@ -11,36 +11,12 @@ exports.getAllSideQuests = async (req, res) => {
 };
 
 exports.createSideQuest = async (req, res) => {
-  const { title, description, instructions, timeLimitSeconds, requiredMediaType, qrCodeData } = req.body;
   try {
-    const newSQ = new SideQuest({
-      title,
-      description,
-      instructions,
-      timeLimitSeconds,
-      requiredMediaType,
-      qrCodeData
-    });
+    const newSQ = new SideQuest(req.body);
     await newSQ.save();
     res.status(201).json(newSQ);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error creating side quest' });
-  }
-};
-
-exports.updateSideQuest = async (req, res) => {
-  try {
-    const sq = await SideQuest.findById(req.params.sqId);
-    if (!sq) return res.status(404).json({ message: 'Side quest not found' });
-    const fields = ['title', 'description', 'instructions', 'timeLimitSeconds', 'requiredMediaType', 'qrCodeData', 'active'];
-    fields.forEach((f) => {
-      if (req.body[f] !== undefined) sq[f] = req.body[f];
-    });
-    await sq.save();
-    res.json(sq);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error updating side quest' });
   }
 };

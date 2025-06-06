@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-function Navbar() {
+export default function Navbar() {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate('/login');
+    navigate('/');
   };
 
   return (
@@ -16,19 +16,10 @@ function Navbar() {
         <Link to="/">Treasure Hunt</Link>
       </div>
       <div>
-        {!token ? (
-          <>
-            <Link to="/login">Log In</Link>
-            <Link to="/register">Register</Link>
-          </>
-        ) : (
-          <>
-            <button onClick={handleLogout}>Log Out</button>
-          </>
-        )}
+        {token ? (
+          <button onClick={handleLogout}>Log Out</button>
+        ) : null}
       </div>
     </nav>
   );
 }
-
-export default Navbar;
