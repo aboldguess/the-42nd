@@ -1,0 +1,12 @@
+# Node modules
+/server/node_modules
+/client/node_modules
+
+# Environment files
+/server/.env
+
+# Uploads folder
+/server/uploads
+
+# React build output
+/client/build
