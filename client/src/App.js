@@ -7,13 +7,23 @@ import OnboardingPage from './pages/OnboardingPage';
 import Dashboard from './pages/Dashboard';
 import QuestionPage from './pages/QuestionPage';
 import ProfilePage from './pages/ProfilePage';
-import AdminPage from './pages/AdminPage';
 import SideQuestPage from './pages/SideQuestPage';
 import RoguesGalleryPage from './pages/RoguesGalleryPage';
 import InfoPage from './pages/InfoPage';
 
+import AdminLoginPage from './pages/AdminLoginPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+
+// Guard for regular users
 const AuthRoute = ({ children }) => {
-  return localStorage.getItem('token') ? children : <Navigate to="/" />;
+  const token = localStorage.getItem('token');
+  return token ? children : <Navigate to="/" replace />;
+};
+
+// Guard for admin users
+const AdminRoute = ({ children }) => {
+  const adminToken = localStorage.getItem('adminToken');
+  return adminToken ? children : <Navigate to="/admin/login" replace />;
 };
 
 export default function App() {
@@ -21,11 +31,11 @@ export default function App() {
 
   return (
     <div
+      className="app-container"
       style={{
         '--primary-color': theme.primary,
         '--secondary-color': theme.secondary
       }}
-      className="app-container"
     >
       <BrowserRouter>
         <Navbar />
@@ -33,14 +43,73 @@ export default function App() {
           <Sidebar />
           <div className="content">
             <Routes>
+              {/* Public Onboarding */}
               <Route path="/" element={<OnboardingPage />} />
-              <Route path="/dashboard" element={<AuthRoute><Dashboard /></AuthRoute>} />
-              <Route path="/clue/:clueId" element={<AuthRoute><QuestionPage /></AuthRoute>} />
-              <Route path="/profile" element={<AuthRoute><ProfilePage /></AuthRoute>} />
-              <Route path="/sidequests" element={<AuthRoute><SideQuestPage /></AuthRoute>} />
-              <Route path="/roguery" element={<RoguesGalleryPage />} />
-              <Route path="/info/:infoId" element={<InfoPage />} />
-              <Route path="/admin" element={<AuthRoute><AdminPage /></AuthRoute>} />
+
+              {/* Player routes */}
+              <Route
+                path="/dashboard"
+                element={
+                  <AuthRoute>
+                    <Dashboard />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/clue/:clueId"
+                element={
+                  <AuthRoute>
+                    <QuestionPage />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <AuthRoute>
+                    <ProfilePage />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/sidequests"
+                element={
+                  <AuthRoute>
+                    <SideQuestPage />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/roguery"
+                element={
+                  <AuthRoute>
+                    <RoguesGalleryPage />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/info/:infoId"
+                element={
+                  <AuthRoute>
+                    <InfoPage />
+                  </AuthRoute>
+                }
+              />
+
+              {/* Admin Authentication */}
+              <Route path="/admin/login" element={<AdminLoginPage />} />
+
+              {/* Admin Dashboard */}
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <AdminRoute>
+                    <AdminDashboardPage />
+                  </AdminRoute>
+                }
+              />
+
+              {/* 404 */}
               <Route path="*" element={<h2>404: Page Not Found</h2>} />
             </Routes>
           </div>
