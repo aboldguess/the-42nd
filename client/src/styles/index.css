@@ -6,7 +6,9 @@
   --sidebar-width: 220px;
 }
 
-body, html, #root {
+body,
+html,
+#root {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -21,6 +23,7 @@ body, html, #root {
   height: 100%;
 }
 
+/* ───────────────── NAVBAR ───────────────── */
 .navbar {
   background-color: var(--primary-color);
   padding: 0.5rem 1rem;
@@ -30,7 +33,8 @@ body, html, #root {
   justify-content: space-between;
 }
 
-.navbar a, .navbar button {
+.navbar a,
+.navbar button {
   color: #fff;
   margin-left: 1rem;
   text-decoration: none;
@@ -39,6 +43,20 @@ body, html, #root {
   cursor: pointer;
 }
 
+/* Make the right-side list horizontal & reset bullets */
+.nav-right {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-right li {
+  margin-left: 1rem;
+}
+
+/* ───────────────── LAYOUT ───────────────── */
 .main-layout {
   display: flex;
   flex: 1;
@@ -56,9 +74,9 @@ body, html, #root {
 }
 
 .sidebar a {
-  display: block; 
-  color: #fff; 
-  margin-bottom: 0.75rem; 
+  display: block;
+  color: #fff;
+  margin-bottom: 0.75rem;
   text-decoration: none;
 }
 
@@ -72,6 +90,7 @@ body, html, #root {
   overflow-y: auto;
 }
 
+/* ───────────────── GENERIC UI ───────────────── */
 button {
   background-color: var(--primary-color);
   border: none;
@@ -91,7 +110,9 @@ form {
   flex-direction: column;
 }
 
-form input, form select, form textarea {
+form input,
+form select,
+form textarea {
   margin-bottom: 0.75rem;
   padding: 0.5rem;
   border: 1px solid #bbb;
@@ -112,6 +133,16 @@ form input, form select, form textarea {
   gap: 1rem;
 }
 
+/* ───────────────── RESPONSIVE ───────────────── */
+
+/* 1) Completely hide sidebar on phones */
+@media (max-width: 600px) {
+  .mobile-hide {
+    display: none !important;
+  }
+}
+
+/* 2) Shrink sidebar on small tablets */
 @media (max-width: 768px) {
   :root {
     --sidebar-width: 60px;
@@ -121,5 +152,21 @@ form input, form select, form textarea {
   }
   .sidebar a {
     font-size: 0.85rem;
+  }
+}
+/* Hamburger hidden on big screens, visible <=600 px */
+.hamburger {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  margin-right: 0.75rem;
+  display: none;        /* default: hidden */
+}
+
+@media (max-width: 600px) {
+  .hamburger {
+    display: inline-block;   /* visible on phones */
   }
 }

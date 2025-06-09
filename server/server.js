@@ -9,19 +9,24 @@ const connectDB = require('./config/db');
 const app = express();
 connectDB();
 
+// ————— Seed the default Admin from env (if not present) —————
 const Admin = require('./models/Admin');
 const bcrypt = require('bcryptjs');
 
-(async function seedAdmin(){
-  const username = process.env.ADMIN_USERNAME;
-  const password = process.env.ADMIN_PASSWORD;
-  if (username && password) {
-    const exists = await Admin.findOne({ username });
-    if (!exists) {
-      const hash = await bcrypt.hash(password, 10);
-      await Admin.create({ username, password: hash });
-      console.log(`Seeded default admin: ${username}`);
+(async function seedAdmin() {
+  try {
+    const username = process.env.ADMIN_USERNAME;
+    const password = process.env.ADMIN_PASSWORD;
+    if (username && password) {
+      const exists = await Admin.findOne({ username });
+      if (!exists) {
+        const hash = await bcrypt.hash(password, 10);
+        await Admin.create({ username, password: hash });
+        console.log(`Seeded default admin: ${username}`);
+      }
     }
+  } catch (err) {
+    console.error('Error seeding admin user:', err);
   }
 })();
 
@@ -45,6 +50,7 @@ app.use('/api/admin/auth', require('./routes/adminAuth'));
 
 // ——— ALL ADMIN‐PROTECTED ROUTES ———
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/admin/games',  require('./routes/admin/games'));
 
 // (If serving React in production, keep these lines. For local dev they can remain commented.)
 // app.use(express.static(path.join(__dirname, '../client/build')));

@@ -3,9 +3,11 @@ import { Link, useLocation } from 'react-router-dom';
 
 export default function Sidebar() {
   const location = useLocation();
-  const token = localStorage.getItem('token');
-  if (!token) return null;
 
+  const token = localStorage.getItem('token');        // player token
+  const adminToken = localStorage.getItem('adminToken'); // admin token
+
+  // Helper to render a menu link and bold it when active
   const renderLink = (to, label) => (
     <Link
       to={to}
@@ -22,13 +24,31 @@ export default function Sidebar() {
   );
 
   return (
-    <aside className="sidebar">
-      {renderLink('/dashboard', 'Dashboard')}
-      {renderLink('/clue/1', 'Hunt')}
-      {renderLink('/profile', 'Profile')}
-      {renderLink('/sidequests', 'Side Quests')}
-      {renderLink('/roguery', 'Rogues Gallery')}
-      {renderLink('/admin', 'Admin')}
+    // "mobile-hide" class is hidden under 600 px (see index.css note below)
+    <aside className="sidebar mobile-hide">
+      {/* Always‑visible home */}
+      {renderLink('/', 'Home')}
+
+      {/* Player‑only links */}
+      {token && (
+        <>
+          {renderLink('/dashboard', 'Dashboard')}
+          {renderLink('/clue/1', 'Hunt')}
+          {renderLink('/sidequests', 'Side Quests')}
+          {renderLink('/roguery', 'Gallery')}
+          {renderLink('/profile', 'Profile')}
+        </>
+      )}
+
+      {/* Admin‑only links */}
+      {adminToken && (
+        <>
+          {renderLink('/admin/dashboard', 'Admin Home')}
+          {renderLink('/admin/games', 'Games')}
+          {renderLink('/admin/teams', 'Teams')}
+          {renderLink('/admin/settings', 'Settings')}
+        </>
+      )}
     </aside>
   );
 }
