@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { fetchClue, submitAnswer } from '../services/api';
 
 export default function QuestionPage() {
-  const { clueId } = useParams();
+  const { slug, clueId } = useParams();  // read both slug and clueId
   const navigate = useNavigate();
   const [clue, setClue] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -12,8 +12,9 @@ export default function QuestionPage() {
 
   useEffect(() => {
     const loadClue = async () => {
+      setLoading(true);
       try {
-        const res = await fetchClue(clueId);
+        const res = await fetchClue(slug, clueId);
         setClue(res.data);
       } catch (err) {
         console.error(err);
@@ -21,24 +22,34 @@ export default function QuestionPage() {
         setLoading(false);
       }
     };
-    loadClue();
-  }, [clueId]);
+    if (slug && clueId) {
+      loadClue();
+    }
+  }, [slug, clueId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (clue.infoPage) {
-      const res = await submitAnswer(clueId, '');
-      if (res.data.nextClue) navigate(`/clue/${res.data.nextClue}`);
-    } else {
-      const res = await submitAnswer(clueId, answer);
-      if (res.data.correct) {
-        setFeedback('Correct! Loading next clue…');
-        setTimeout(() => {
-          navigate(`/clue/${res.data.nextClue}`);
-        }, 1000);
+    if (!clue) return;
+    try {
+      if (clue.infoPage) {
+        const res = await submitAnswer(slug, clueId, '');
+        if (res.data.nextClue) {
+          navigate(`/${slug}/clue/${res.data.nextClue}`);
+        }
       } else {
-        setFeedback('Incorrect; try again.');
+        const res = await submitAnswer(slug, clueId, answer);
+        if (res.data.correct) {
+          setFeedback('Correct! Loading next clue…');
+          setTimeout(() => {
+            navigate(`/${slug}/clue/${res.data.nextClue}`);
+          }, 1000);
+        } else {
+          setFeedback('Incorrect; try again.');
+        }
       }
+    } catch (err) {
+      console.error(err);
+      setFeedback('Error submitting answer.');
     }
   };
 
@@ -51,7 +62,11 @@ export default function QuestionPage() {
       <div className="card">
         <p>{clue.text}</p>
         {clue.imageUrl && (
-          <img src={clue.imageUrl} alt="Clue" style={{ maxWidth: '100%', marginTop: '1rem' }} />
+          <img
+            src={clue.imageUrl}
+            alt="Clue"
+            style={{ maxWidth: '100%', marginTop: '1rem' }}
+          />
         )}
         {clue.qrCodeData && (
           <div style={{ marginTop: '1rem' }}>
@@ -63,7 +78,11 @@ export default function QuestionPage() {
           {clue.options && clue.options.length > 0 ? (
             <>
               <label>Select your answer:</label>
-              <select value={answer} onChange={(e) => setAnswer(e.target.value)} required>
+              <select
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                required
+              >
                 <option value="">-- Choose --</option>
                 {clue.options.map((opt, idx) => (
                   <option key={idx} value={opt}>
@@ -84,7 +103,9 @@ export default function QuestionPage() {
               />
             </>
           )}
-          <button type="submit">{clue.infoPage ? 'Continue' : 'Submit'}</button>
+          <button type="submit">
+            {clue.infoPage ? 'Continue' : 'Submit'}
+          </button>
         </form>
         {feedback && (
           <p

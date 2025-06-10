@@ -8,7 +8,7 @@ export default function Navbar() {
   const token = localStorage.getItem('token');
   const adminToken = localStorage.getItem('adminToken');
 
-  // Toggle sidebar on small screens
+  // Toggle the sidebar on small screens
   const toggleSidebar = () => {
     const el = document.querySelector('.sidebar');
     if (el) {
@@ -25,19 +25,20 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="nav-left" style={{ display: 'flex', alignItems: 'center' }}>
-        {/* Hamburger visible ≤600 px */}
+        {/* Hamburger — only shows on <=600 px (CSS handles display) */}
         <button
           className="hamburger"
-          aria-label="Menu"
+          aria-label="Toggle menu"
           onClick={toggleSidebar}
         >
           &#9776;
         </button>
+
         <Link to="/">Treasure Hunt</Link>
       </div>
 
       <ul className="nav-right">
-        {/* Admin link logic */}
+        {/* Admin links */}
         {!adminToken && (
           <li>
             <Link to="/admin/login">Admin</Link>
@@ -49,13 +50,14 @@ export default function Navbar() {
           </li>
         )}
 
-        {/* Player dashboard shortcut */}
+        {/* Player shortcut */}
         {token && (
           <li>
             <Link to="/dashboard">My Dashboard</Link>
           </li>
         )}
 
+        {/* Logout button if logged in as player or admin */}
         {(token || adminToken) && (
           <li>
             <button onClick={handleLogout} className="btn-link">

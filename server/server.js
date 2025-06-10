@@ -36,6 +36,7 @@ app.use(express.json());
 // Serve uploaded files from /uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+app.use('/api', require('./routes/cluesWithSlug'));
 // Onboarding and authentication routes for players
 app.use('/api/onboard', require('./routes/onboard'));
 app.use('/api/auth', require('./routes/auth'));

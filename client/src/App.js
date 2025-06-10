@@ -56,7 +56,7 @@ export default function App() {
                 }
               />
               <Route
-                path="/clue/:clueId"
+                path="/:slug/clue/:clueId"
                 element={
                   <AuthRoute>
                     <QuestionPage />

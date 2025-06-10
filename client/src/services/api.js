@@ -43,9 +43,15 @@ export const addTeamMember = (teamId, formData) =>
     headers: { 'Content-Type': 'multipart/form-data' }
   });
 
-export const fetchClue = (clueId) => axios.get(`/api/clues/${clueId}`);
-export const submitAnswer = (clueId, answer) =>
-  axios.post(`/api/clues/${clueId}/answer`, { answer });
+//export const fetchClue = (clueId) => axios.get(`/api/clues/${clueId}`);
+//export const submitAnswer = (clueId, answer) =>
+//  axios.post(`/api/clues/${clueId}/answer`, { answer });
+
+export const fetchClue = (slug, clueId) =>
+  axios.get(`/api/${slug}/clues/${clueId}`);
+export const submitAnswer = (slug, clueId, answer) =>
+  axios.post(`/api/${slug}/clues/${clueId}/answer`, { answer });
+
 
 // Admin endpoints
 export const adminRegister = (data) =>
