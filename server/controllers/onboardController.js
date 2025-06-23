@@ -104,6 +104,7 @@ exports.onboard = async (req, res) => {
       await Media.create({
         url: selfieUrl,
         uploadedBy: user._id,
+        uploadedByModel: 'User',
         team: team._id,
         type: 'profile',
         tag: 'selfie'
@@ -120,6 +121,7 @@ exports.onboard = async (req, res) => {
         await Media.create({
           url: team.photoUrl,
           uploadedBy: user._id,
+          uploadedByModel: 'User',
           team: team._id,
           type: 'profile',
           tag: 'team_photo'
