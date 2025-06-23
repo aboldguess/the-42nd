@@ -36,8 +36,7 @@ app.use(express.json());
 // Serve uploaded files from /uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Main API routes for clues. Previously these were namespaced by a
-// game slug but the application now assumes a single game.
+// Main API routes for clues. All requests assume a single game instance.
 app.use('/api', require('./routes/clues'));
 // Onboarding and authentication routes for players
 app.use('/api/onboard', require('./routes/onboard'));
