@@ -8,6 +8,8 @@ This project contains a React client and an Express/MongoDB server for running a
 - Side quests and a rogues gallery for uploaded media
 - Admin authentication and dashboard endpoints
 - Team colour schemes and profile management
+- Admin settings include a **master reset** to wipe all game data after typing
+  `definitely` as confirmation
 
 ## Development notes
 - Client source in `client/` built with React
