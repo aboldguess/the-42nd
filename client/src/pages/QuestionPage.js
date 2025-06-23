@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchClue, submitAnswer } from '../services/api';
 
+// Question view for the single active game
 export default function QuestionPage() {
-  const { slug, clueId } = useParams();  // read both slug and clueId
+  // Only clueId remains now that game slugs were removed
+  const { clueId } = useParams();
   const navigate = useNavigate();
   const [clue, setClue] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,7 +16,8 @@ export default function QuestionPage() {
     const loadClue = async () => {
       setLoading(true);
       try {
-        const res = await fetchClue(slug, clueId);
+        // fetchClue now only requires the clue ID
+        const res = await fetchClue(clueId);
         setClue(res.data);
       } catch (err) {
         console.error(err);
@@ -22,26 +25,27 @@ export default function QuestionPage() {
         setLoading(false);
       }
     };
-    if (slug && clueId) {
+    if (clueId) {
       loadClue();
     }
-  }, [slug, clueId]);
+  }, [clueId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!clue) return;
     try {
       if (clue.infoPage) {
-        const res = await submitAnswer(slug, clueId, '');
+        // submitAnswer likewise just takes the clue ID
+        const res = await submitAnswer(clueId, '');
         if (res.data.nextClue) {
-          navigate(`/${slug}/clue/${res.data.nextClue}`);
+          navigate(`/clue/${res.data.nextClue}`);
         }
       } else {
-        const res = await submitAnswer(slug, clueId, answer);
+        const res = await submitAnswer(clueId, answer);
         if (res.data.correct) {
           setFeedback('Correct! Loading next clue…');
           setTimeout(() => {
-            navigate(`/${slug}/clue/${res.data.nextClue}`);
+            navigate(`/clue/${res.data.nextClue}`);
           }, 1000);
         } else {
           setFeedback('Incorrect; try again.');
