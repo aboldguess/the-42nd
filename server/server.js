@@ -37,11 +37,19 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Main API entry for handling clues
-// Historically this server loaded `routes/cluesWithSlug`, which has since been
-// renamed to `routes/clues`. We keep the old path for compatibility so that
-// existing deployments or clones don't break if they still reference it.
-// The file at `routes/cluesWithSlug` simply re-exports the modern router.
-app.use('/api', require('./routes/cluesWithSlug'));
+// Historically the router lived at `routes/cluesWithSlug` but was renamed to
+// `routes/clues`. New installs include a compatibility stub so that requiring
+// `cluesWithSlug` still works. However, older checkouts might lack that file,
+// so we gracefully fall back to the modern path if the old module is missing.
+let cluesRouter;
+try {
+  // Prefer the legacy path to support deployments expecting it
+  cluesRouter = require('./routes/cluesWithSlug');
+} catch (err) {
+  // If the legacy file doesn't exist, use the current router
+  cluesRouter = require('./routes/clues');
+}
+app.use('/api', cluesRouter);
 // Onboarding and authentication routes for players
 app.use('/api/onboard', require('./routes/onboard'));
 app.use('/api/auth', require('./routes/auth'));
