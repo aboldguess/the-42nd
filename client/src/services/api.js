@@ -40,8 +40,6 @@ export const updateMe = (formData) =>
     headers: { 'Content-Type': 'multipart/form-data' }
   });
 export const fetchTeam = (teamId) => axios.get(`/api/teams/${teamId}`);
-export const updateTeamColour = (teamId, colours) =>
-  axios.put(`/api/teams/${teamId}/colour`, colours);
 export const addTeamMember = (teamId, formData) =>
   axios.post(`/api/teams/${teamId}/members`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }

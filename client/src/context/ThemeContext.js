@@ -33,25 +33,9 @@ export const ThemeProvider = ({ children }) => {
     fetchTheme();
   }, []);
 
-  const updateTheme = async (primary, secondary) => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-      const userRes = await axios.get('/api/users/me');
-      const teamId = userRes.data.team._id;
-      await axios.put(
-        `/api/teams/${teamId}/colour`,
-        { primary, secondary },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setTheme({ primary, secondary });
-    } catch (err) {
-      console.error('Error updating theme:', err);
-    }
-  };
-
   return (
-    <ThemeContext.Provider value={{ theme, updateTheme }}>
+    // Expose only the current theme values; modifications are restricted to admin
+    <ThemeContext.Provider value={{ theme }}>
       {children}
     </ThemeContext.Provider>
   );

@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import ProfilePic from '../components/ProfilePic';
-// Component allowing a team to select and save its colour scheme
-import ColorSchemePicker from '../components/ColorSchemePicker';
 import { fetchMe, updateMe } from '../services/api';
 
 export default function ProfilePage() {
@@ -53,12 +51,7 @@ export default function ProfilePage() {
           <button type="submit">Save Changes</button>
         </form>
       </div>
-      {/*
-        The colour picker allows the team to customise its palette.
-        It uses ThemeContext.updateTheme which persists changes via
-        the /api/teams/:id/colour endpoint and updates the app theme.
-      */}
-      <ColorSchemePicker />
+      {/* Colour scheme editing removed; only admins can change theme */}
     </div>
   );
 }
