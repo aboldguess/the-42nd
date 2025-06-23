@@ -19,7 +19,8 @@ exports.getTeamsList = async (req, res) => {
 
 // 2) POST /api/onboard
 //    Expects multipart/form-data with fields:
-//      - name          (string, user’s name)
+//      - firstName     (string)
+//      - lastName      (string)
 //      - isNewTeam     ("true" or "false")
 //      - teamName      (string)
 //      - teamPassword  (string)
@@ -27,10 +28,12 @@ exports.getTeamsList = async (req, res) => {
 //      - teamPhoto     (file upload, maxCount:1) [only if isNewTeam === "true"]
 exports.onboard = async (req, res) => {
   try {
-    const { name, teamName, teamPassword, isNewTeam } = req.body;
+    // The client now provides first and last names separately. Older
+    // implementations sent a single `name` string.
+    const { firstName, lastName, teamName, teamPassword, isNewTeam } = req.body;
 
     // Basic validation
-    if (!name || !teamName || !teamPassword) {
+    if (!firstName || !lastName || !teamName || !teamPassword) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
@@ -80,13 +83,13 @@ exports.onboard = async (req, res) => {
       selfieUrl = '/uploads/' + req.files.selfie[0].filename;
     }
 
-    // 2b) Parse first and last name for storage
-    const [firstName, ...rest] = name.trim().split(' ');
-    const lastName = rest.join(' ');
+    // 2b) Combine provided names into a single `name` field for backwards
+    // compatibility with older parts of the codebase which expect `user.name`.
+    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
 
     // 2c) Create the User document, linking to this team
     const user = await User.create({
-      name,
+      name: fullName,
       firstName,
       lastName,
       photoUrl: selfieUrl,
