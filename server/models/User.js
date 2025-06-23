@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
+    firstName: { type: String, default: '' },
+    lastName: { type: String, default: '' },
     photoUrl: { type: String, default: '' },            // e.g. "/uploads/uuid.jpg"
     team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true },
     isAdmin: { type: Boolean, default: false }          // true if this user created the team

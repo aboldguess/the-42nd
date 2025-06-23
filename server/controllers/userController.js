@@ -14,7 +14,12 @@ exports.getMe = async (req, res) => {
 exports.updateMe = async (req, res) => {
   try {
     const updates = {};
-    if (req.body.name) updates.name = req.body.name;
+    if (req.body.name) {
+      updates.name = req.body.name;
+      const [firstName, ...rest] = req.body.name.trim().split(' ');
+      updates.firstName = firstName;
+      updates.lastName = rest.join(' ');
+    }
     if (req.files && req.files.selfie) {
       const avatarPath = '/uploads/' + req.files.selfie[0].filename;
       updates.photoUrl = avatarPath;
@@ -48,8 +53,12 @@ exports.getAllPlayers = async (req, res) => {
 // Create a new player attached to a team
 exports.createPlayer = async (req, res) => {
   try {
+    const [firstName, ...rest] = (req.body.name || '').trim().split(' ');
+    const lastName = rest.join(' ');
     const player = await User.create({
       name: req.body.name,
+      firstName,
+      lastName,
       team: req.body.team
     });
     res.status(201).json(player);
