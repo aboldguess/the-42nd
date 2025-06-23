@@ -4,8 +4,9 @@ const express = require('express');
 const router = express.Router();
 
 const auth = require('../middleware/auth');
-const gameBySlug = require('../middleware/gameBySlug');
 const upload = require('../middleware/upload');
+// These routes used to be namespaced by a game slug, but the
+// application now supports only a single active game.
 const {
   getClue,
   getAllClues,
@@ -14,49 +15,31 @@ const {
 } = require('../controllers/clueController');
 
 /**
- * PLAYER ROUTES namespaced by game slug:
+ * PLAYER ROUTES (single game):
  *
- * GET    /api/:slug/clues              → list all clues for this game (optional)
- * POST   /api/:slug/clues              → create a new clue for this game
- * GET    /api/:slug/clues/:clueId      → fetch a single clue
- * POST   /api/:slug/clues/:clueId/answer → submit an answer
+ * GET    /api/clues              → list all clues
+ * POST   /api/clues              → create a new clue
+ * GET    /api/clues/:clueId      → fetch a single clue
+ * POST   /api/clues/:clueId/answer → submit an answer
  *
- * All routes require auth and gameBySlug middleware.
- * Note: You may adjust GET /api/:slug/clues and POST /api/:slug/clues
- * depending on whether you want listing/creation here.
+ * All routes require auth middleware.
  */
 
 // List all clues for a game (if desired)
-router.get(
-  '/:slug/clues',
-  auth,
-  gameBySlug,
-  getAllClues
-);
+router.get('/clues', auth, getAllClues);
 
 // Create a new clue for a game (with optional image upload)
 router.post(
-  '/:slug/clues',
+  '/clues',
   auth,
-  gameBySlug,
   upload.fields([{ name: 'questionImage', maxCount: 1 }]),
   createClue
 );
 
 // Fetch one clue by ID within a game
-router.get(
-  '/:slug/clues/:clueId',
-  auth,
-  gameBySlug,
-  getClue
-);
+router.get('/clues/:clueId', auth, getClue);
 
 // Submit an answer to a clue
-router.post(
-  '/:slug/clues/:clueId/answer',
-  auth,
-  gameBySlug,
-  submitAnswer
-);
+router.post('/clues/:clueId/answer', auth, submitAnswer);
 
 module.exports = router;

@@ -45,7 +45,6 @@ export default function Sidebar() {
       {adminToken && (
         <>
           {renderLink('/admin/dashboard', 'Admin Home')}
-          {renderLink('/admin/games', 'Games')}
           {renderLink('/admin/clues', 'Clues')}
           {renderLink('/admin/sidequests', 'Side Quests')}
           {renderLink('/admin/players', 'Players')}

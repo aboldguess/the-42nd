@@ -43,14 +43,9 @@ export const addTeamMember = (teamId, formData) =>
     headers: { 'Content-Type': 'multipart/form-data' }
   });
 
-//export const fetchClue = (clueId) => axios.get(`/api/clues/${clueId}`);
-//export const submitAnswer = (clueId, answer) =>
-//  axios.post(`/api/clues/${clueId}/answer`, { answer });
-
-export const fetchClue = (slug, clueId) =>
-  axios.get(`/api/${slug}/clues/${clueId}`);
-export const submitAnswer = (slug, clueId, answer) =>
-  axios.post(`/api/${slug}/clues/${clueId}/answer`, { answer });
+export const fetchClue = (clueId) => axios.get(`/api/clues/${clueId}`);
+export const submitAnswer = (clueId, answer) =>
+  axios.post(`/api/clues/${clueId}/answer`, { answer });
 
 
 // Admin endpoints
@@ -65,11 +60,6 @@ export const fetchAdminSummary = () =>
 export const fetchScoreboard = () => axios.get('/api/scoreboard');
 export const fetchAdminScoreboard = () => axios.get('/api/admin/scoreboard');
 
-// Admin CRUD for games
-export const fetchGames = () => axios.get('/api/admin/games');
-export const createGame = (data) => axios.post('/api/admin/games', data);
-export const updateGame = (id, data) => axios.put(`/api/admin/games/${id}`, data);
-export const deleteGame = (id) => axios.delete(`/api/admin/games/${id}`);
 
 // Admin CRUD for clues
 export const fetchClues = () => axios.get('/api/admin/clues');

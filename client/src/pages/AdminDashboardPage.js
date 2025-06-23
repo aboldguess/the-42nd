@@ -19,7 +19,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
       <h2>Admin Dashboard</h2>
-      <p>Welcome, Admin! Use the menu to manage games, clues, side quests and players.</p>
+      <p>Welcome, Admin! Use the menu to manage clues, side quests and players.</p>
       <h3>Scoreboard</h3>
       <table>
         <thead>
