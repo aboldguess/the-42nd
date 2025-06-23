@@ -47,6 +47,14 @@ export const fetchClue = (clueId) => axios.get(`/api/clues/${clueId}`);
 export const submitAnswer = (clueId, answer) =>
   axios.post(`/api/clues/${clueId}/answer`, { answer });
 
+// Public/player side quest endpoints
+export const fetchSideQuests = () => axios.get('/api/sidequests/public');
+export const submitSideQuest = (id, data) =>
+  axios.post(`/api/sidequests/${id}/submit`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+export const fetchRoguesGallery = () => axios.get('/api/roguery');
+
 
 // Admin endpoints
 export const adminRegister = (data) =>
