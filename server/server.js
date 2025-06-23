@@ -59,6 +59,8 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/teams', require('./routes/teams'));
 app.use('/api/sidequests', require('./routes/sidequests'));
 app.use('/api/roguery', require('./routes/roguery'));
+// Player wall posts
+app.use('/api/wall', require('./routes/wall'));
 
 // Public settings route
 app.use('/api/settings', require('./routes/settings'));
