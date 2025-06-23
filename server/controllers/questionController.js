@@ -21,7 +21,14 @@ exports.createQuestion = async (req, res) => {
   // If an image was uploaded include it in the record and log it to Media
   if (req.file) {
     imageUrl = '/uploads/' + req.file.filename;
-    await Media.create({ url: imageUrl, type: 'question', tag: 'question_image' });
+    await Media.create({
+      url: imageUrl,
+      uploadedBy: req.admin.id,
+      // Flag this document so the populate step knows to look in the Admin collection
+      uploadedByModel: 'Admin',
+      type: 'question',
+      tag: 'question_image'
+    });
   }
   try {
     // Convert the comma separated list of answers into an array

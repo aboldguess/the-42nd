@@ -3,7 +3,9 @@ const Media = require('../models/Media');
 exports.getAllMedia = async (req, res) => {
   try {
     const allMedia = await Media.find()
-      .populate('uploadedBy', 'name photoUrl')
+      // Populate uploader regardless of whether it's a User or Admin.
+      // We request both possible name fields so the client can display one.
+      .populate('uploadedBy', 'name username photoUrl')
       .populate('team', 'name')
       .populate('sideQuest', 'title')
       .sort({ createdAt: -1 });

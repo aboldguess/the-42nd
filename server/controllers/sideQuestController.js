@@ -37,6 +37,8 @@ exports.createSideQuest = async (req, res) => {
       await Media.create({
         url: imageUrl,
         uploadedBy: req.user?._id || req.admin?.id,
+        // Dynamically indicate which model the uploader came from
+        uploadedByModel: req.user ? 'User' : 'Admin',
         type: 'sideQuest',
         tag: 'sidequest_image'
       });
@@ -73,6 +75,7 @@ exports.updateSideQuest = async (req, res) => {
       await Media.create({
         url: imageUrl,
         uploadedBy: req.user?._id || req.admin?.id,
+        uploadedByModel: req.user ? 'User' : 'Admin',
         type: 'sideQuest',
         tag: 'sidequest_image'
       });
@@ -131,6 +134,7 @@ exports.submitSideQuestProof = async (req, res) => {
       await Media.create({
         url: mediaUrl,
         uploadedBy: req.user._id,
+        uploadedByModel: 'User',
         team: team._id,
         sideQuest: sq._id,
         type: 'sideQuest',

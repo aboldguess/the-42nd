@@ -34,6 +34,7 @@ exports.addMember = async (req, res) => {
       await Media.create({
         url: member.avatarUrl,
         uploadedBy: req.user._id,
+        uploadedByModel: 'User',
         team: team._id,
         type: 'profile',
         tag: 'avatar'

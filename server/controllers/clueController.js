@@ -63,13 +63,14 @@ exports.createClue = async (req, res) => {
   // If an image was uploaded via multipart form, record it
   if (req.files && req.files.questionImage && req.files.questionImage[0]) {
     imageUrl = '/uploads/' + req.files.questionImage[0].filename;
-        await Media.create({
-          url: imageUrl,
-          // Record the uploader from either user or admin context
-          uploadedBy: req.user?._id || req.admin?.id,
-          type: 'question',
-          tag: 'clue_image'
-        });
+      await Media.create({
+        url: imageUrl,
+        // Record the uploader from either user or admin context
+        uploadedBy: req.user?._id || req.admin?.id,
+        uploadedByModel: req.user ? 'User' : 'Admin',
+        type: 'question',
+        tag: 'clue_image'
+      });
   }
   try {
     const newClue = new Clue({
@@ -143,6 +144,7 @@ exports.updateClue = async (req, res) => {
         // Support uploads from either a player or an admin
         // AdminAuth sets req.admin.id while player auth sets req.user._id
         uploadedBy: req.user?._id || req.admin?.id,
+        uploadedByModel: req.user ? 'User' : 'Admin',
         type: 'question',
         tag: 'clue_image'
       });

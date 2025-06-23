@@ -26,6 +26,8 @@ exports.updateMe = async (req, res) => {
       await Media.create({
         url: avatarPath,
         uploadedBy: req.user._id,
+        // Indicate the uploader's model so the gallery can populate correctly
+        uploadedByModel: 'User',
         team: req.user.team,
         type: 'profile',
         tag: 'selfie'

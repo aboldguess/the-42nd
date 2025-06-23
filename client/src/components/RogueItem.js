@@ -15,7 +15,9 @@ function RogueItem({ media }) {
         <img src={url} alt="Media" style={{ width: '100%', borderRadius: '4px' }} />
       )}
       <div style={{ marginTop: '0.5rem' }}>
-        <strong>By:</strong> {uploadedBy?.name || 'Unknown'} <br />
+        {/* uploadedBy can be a User or Admin. Display whichever name field exists */}
+        <strong>By:</strong>{' '}
+        {uploadedBy?.name || uploadedBy?.username || 'Unknown'} <br />
         <strong>Team:</strong> {team?.name || 'N/A'} <br />
         {sideQuest && (
           <>
