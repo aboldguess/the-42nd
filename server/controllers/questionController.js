@@ -2,11 +2,31 @@
 const Question = require('../models/Question');
 // Used to store uploaded images
 const Media = require('../models/Media');
+const QRCode = require('qrcode');
+const Settings = require('../models/Settings');
+
+// Retrieve the base URL used for QR codes
+async function getQrBase() {
+  const settings = await Settings.findOne();
+  return settings?.qrBaseUrl || process.env.QR_BASE_URL || 'http://localhost:3000';
+}
+
+// Ensure a question has a QR code stored
+async function ensureQrCode(question) {
+  const base = await getQrBase();
+  const url = `${base.replace(/\/$/, '')}/question/${question._id}`;
+  if (!question.qrCodeData || question.qrBaseUrl !== base) {
+    question.qrCodeData = await QRCode.toDataURL(url);
+    question.qrBaseUrl = base;
+    await question.save();
+  }
+}
 
 // List all questions for the admin panel
 exports.getAllQuestions = async (req, res) => {
   try {
     const questions = await Question.find().sort({ createdAt: 1 });
+    await Promise.all(questions.map((q) => ensureQrCode(q)));
     res.json(questions);
   } catch (err) {
     console.error('Error fetching questions:', err);
@@ -16,7 +36,7 @@ exports.getAllQuestions = async (req, res) => {
 
 // Create a new question with optional image upload
 exports.createQuestion = async (req, res) => {
-  const { title, text, options, notes } = req.body; // form fields
+  const { title, text, options, correctAnswer, notes } = req.body; // form fields
   let imageUrl = '';
   // If an image was uploaded include it in the record and log it to Media
   if (req.file) {
@@ -37,9 +57,11 @@ exports.createQuestion = async (req, res) => {
       text,
       imageUrl,
       options: options ? options.split(',').map((o) => o.trim()) : [],
+      correctAnswer,
       notes
     });
     await q.save();
+    await ensureQrCode(q);
     res.status(201).json(q);
   } catch (err) {
     console.error('Error creating question:', err);
@@ -50,8 +72,13 @@ exports.createQuestion = async (req, res) => {
 // Update an existing question by ID
 exports.updateQuestion = async (req, res) => {
   try {
-    const q = await Question.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updates = { ...req.body };
+    if (typeof updates.options === 'string') {
+      updates.options = updates.options.split(',').map((o) => o.trim());
+    }
+    const q = await Question.findByIdAndUpdate(req.params.id, updates, { new: true });
     if (!q) return res.status(404).json({ message: 'Question not found' });
+    await ensureQrCode(q);
     res.json(q);
   } catch (err) {
     console.error('Error updating question:', err);
