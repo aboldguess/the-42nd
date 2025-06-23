@@ -4,7 +4,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
 
 export default function OnboardingPage() {
-  const [name, setName] = useState('');
+  // Store first and last names separately. Previously we used a single
+  // `name` field but the API now expects `firstName` and `lastName`.
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [teams, setTeams] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState('');
   const [isNewTeam, setIsNewTeam] = useState(false);
@@ -29,11 +32,13 @@ export default function OnboardingPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name) return alert('Please enter your name');
+    if (!firstName || !lastName) return alert('Please enter your full name');
     if (!selfieFile) return alert('Please upload a selfie');
 
     const formData = new FormData();
-    formData.append('name', name);
+    // Send first and last name as separate fields
+    formData.append('firstName', firstName);
+    formData.append('lastName', lastName);
     formData.append('isNewTeam', isNewTeam ? 'true' : 'false');
 
     if (isNewTeam) {
@@ -70,13 +75,22 @@ export default function OnboardingPage() {
     <div className="card" style={{ maxWidth: '500px', margin: '0 auto' }}>
       <h2>Welcome! Let’s get you set up.</h2>
       <form onSubmit={handleSubmit}>
-        <label>Name:</label>
+        {/* Collect first and last names separately */}
+        <label>First Name:</label>
         <input
           type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
           required
-          placeholder="Your Name"
+          placeholder="First"
+        />
+        <label>Last Name:</label>
+        <input
+          type="text"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          required
+          placeholder="Last"
         />
 
         <div style={{ margin: '1rem 0' }}>
