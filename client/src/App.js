@@ -16,6 +16,7 @@ import AdminCluesPage from './pages/AdminCluesPage';
 import AdminQuestionsPage from './pages/AdminQuestionsPage';
 import AdminSideQuestsPage from './pages/AdminSideQuestsPage';
 import AdminPlayersPage from './pages/AdminPlayersPage';
+import AdminSettingsPage from './pages/AdminSettingsPage';
 
 import AdminLoginPage from './pages/AdminLoginPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
@@ -153,6 +154,14 @@ export default function App() {
                 element={
                   <AdminRoute>
                     <AdminPlayersPage />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/settings"
+                element={
+                  <AdminRoute>
+                    <AdminSettingsPage />
                   </AdminRoute>
                 }
               />

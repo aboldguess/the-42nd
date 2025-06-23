@@ -6,6 +6,7 @@ const clueSchema = new mongoose.Schema({
   options: [String],
   correctAnswer: String,
   qrCodeData: String,
+  qrBaseUrl: String,
   infoPage: { type: Boolean, default: false }
 }, { timestamps: true });
 

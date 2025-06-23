@@ -12,6 +12,7 @@ connectDB();
 // ————— Seed the default Admin from env (if not present) —————
 const Admin = require('./models/Admin');
 const bcrypt = require('bcryptjs');
+const Settings = require('./models/Settings');
 
 (async function seedAdmin() {
   try {
@@ -27,6 +28,19 @@ const bcrypt = require('bcryptjs');
     }
   } catch (err) {
     console.error('Error seeding admin user:', err);
+  }
+})();
+
+// Seed default settings document if none exists
+(async function seedSettings() {
+  try {
+    const count = await Settings.countDocuments();
+    if (count === 0) {
+      await Settings.create({});
+      console.log('Seeded default settings');
+    }
+  } catch (err) {
+    console.error('Error seeding settings:', err);
   }
 })();
 
@@ -46,6 +60,9 @@ app.use('/api/teams', require('./routes/teams'));
 app.use('/api/sidequests', require('./routes/sidequests'));
 app.use('/api/roguery', require('./routes/roguery'));
 
+// Public settings route
+app.use('/api/settings', require('./routes/settings'));
+
 // Public scoreboard route
 app.use('/api/scoreboard', require('./routes/scoreboard'));
 
@@ -60,6 +77,7 @@ app.use('/api/admin/sidequests',  require('./routes/admin/sidequests'));
 app.use('/api/admin/questions',  require('./routes/admin/questions'));
 app.use('/api/admin/players',  require('./routes/admin/players'));
 app.use('/api/admin/scoreboard', require('./routes/admin/scoreboard'));
+app.use('/api/admin/settings', require('./routes/admin/settings'));
 
 // (If serving React in production, keep these lines. For local dev they can remain commented.)
 // app.use(express.static(path.join(__dirname, '../client/build')));

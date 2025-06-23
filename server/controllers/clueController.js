@@ -5,15 +5,21 @@ const Team = require('../models/Team');
 const Media = require('../models/Media');
 const mongoose = require('mongoose');
 const QRCode = require('qrcode');
+const Settings = require('../models/Settings');
 
-// Base URL for generating QR codes. Defaults to localhost if not provided.
-const QR_BASE = process.env.QR_BASE_URL || 'http://localhost:3000';
+// Retrieve the base URL for QR codes from settings or environment
+async function getQrBase() {
+  const settings = await Settings.findOne();
+  return settings?.qrBaseUrl || process.env.QR_BASE_URL || 'http://localhost:3000';
+}
 
-// Ensure the given clue document has a QR code stored.
+// Ensure the given clue has an up-to-date QR code based on current settings.
 async function ensureQrCode(clue) {
-  if (!clue.qrCodeData) {
-    const url = `${QR_BASE}/clue/${clue._id}`;
+  const base = await getQrBase();
+  const url = `${base.replace(/\/$/, '')}/clue/${clue._id}`;
+  if (!clue.qrCodeData || clue.qrBaseUrl !== base) {
     clue.qrCodeData = await QRCode.toDataURL(url);
+    clue.qrBaseUrl = base;
     await clue.save();
   }
 }
