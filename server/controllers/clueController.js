@@ -4,6 +4,19 @@ const Clue = require('../models/Clue');
 const Team = require('../models/Team');
 const Media = require('../models/Media');
 const mongoose = require('mongoose');
+const QRCode = require('qrcode');
+
+// Base URL for generating QR codes. Defaults to localhost if not provided.
+const QR_BASE = process.env.QR_BASE_URL || 'http://localhost:3000';
+
+// Ensure the given clue document has a QR code stored.
+async function ensureQrCode(clue) {
+  if (!clue.qrCodeData) {
+    const url = `${QR_BASE}/clue/${clue._id}`;
+    clue.qrCodeData = await QRCode.toDataURL(url);
+    await clue.save();
+  }
+}
 
 exports.getClue = async (req, res) => {
   const { clueId } = req.params;
@@ -18,6 +31,7 @@ exports.getClue = async (req, res) => {
     if (!clue) {
       return res.status(404).json({ message: 'Clue not found' });
     }
+    await ensureQrCode(clue);
     res.json(clue);
   } catch (err) {
     console.error('Error fetching clue:', err);
@@ -28,6 +42,8 @@ exports.getClue = async (req, res) => {
 exports.getAllClues = async (req, res) => {
   try {
     const clues = await Clue.find().sort({ createdAt: 1 });
+    // Ensure every clue has an associated QR code
+    await Promise.all(clues.map((c) => ensureQrCode(c)));
     res.json(clues);
   } catch (err) {
     console.error('Error fetching all clues:', err);
@@ -58,6 +74,8 @@ exports.createClue = async (req, res) => {
       infoPage: infoPage === 'true'
     });
     await newClue.save();
+    // Generate and store QR code linking to this clue
+    await ensureQrCode(newClue);
     res.status(201).json(newClue);
   } catch (err) {
     console.error('Error creating clue:', err);
@@ -124,6 +142,7 @@ exports.updateClue = async (req, res) => {
       new: true
     });
     if (!clue) return res.status(404).json({ message: 'Clue not found' });
+    await ensureQrCode(clue);
     res.json(clue);
   } catch (err) {
     console.error('Error updating clue:', err);
