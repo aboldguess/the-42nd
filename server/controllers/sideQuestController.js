@@ -1,6 +1,7 @@
 const SideQuest = require('../models/SideQuest');
 const Media = require('../models/Media');
 const QRCode = require('qrcode');
+const Team = require('../models/Team');
 
 const QR_BASE = process.env.QR_BASE_URL || 'http://localhost:3000';
 
@@ -98,6 +99,56 @@ exports.deleteSideQuest = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error deleting side quest' });
+  }
+};
+
+// Record completion of a side quest and save uploaded proof
+exports.submitSideQuestProof = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const sq = await SideQuest.findById(id);
+    if (!sq) return res.status(404).json({ message: 'Side quest not found' });
+
+    const team = await Team.findById(req.user.team);
+    if (!team) return res.status(404).json({ message: 'Team not found' });
+
+    // Prevent double submissions
+    const alreadyDone = team.sideQuestProgress.some((p) =>
+      p.sideQuest.toString() === id
+    );
+    if (alreadyDone) {
+      return res.status(400).json({ message: 'Quest already completed' });
+    }
+
+    let mediaUrl = '';
+    // Store uploaded photo/video if present
+    if (
+      req.files &&
+      req.files.sideQuestMedia &&
+      req.files.sideQuestMedia[0]
+    ) {
+      mediaUrl = '/uploads/' + req.files.sideQuestMedia[0].filename;
+      await Media.create({
+        url: mediaUrl,
+        uploadedBy: req.user._id,
+        team: team._id,
+        sideQuest: sq._id,
+        type: 'sideQuest',
+        tag: 'submission'
+      });
+    }
+
+    // Update the team's progress log
+    team.sideQuestProgress.push({
+      sideQuest: sq._id,
+      completedAt: new Date()
+    });
+    await team.save();
+
+    res.json({ message: 'Side quest completed', mediaUrl });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error submitting side quest' });
   }
 };
 
