@@ -36,9 +36,12 @@ app.use(express.json());
 // Serve uploaded files from /uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Main API entry for handling clues without slug support
-// Using the standard clues router ensures compatibility with existing routes
-app.use('/api', require('./routes/clues'));
+// Main API entry for handling clues
+// Historically this server loaded `routes/cluesWithSlug`, which has since been
+// renamed to `routes/clues`. We keep the old path for compatibility so that
+// existing deployments or clones don't break if they still reference it.
+// The file at `routes/cluesWithSlug` simply re-exports the modern router.
+app.use('/api', require('./routes/cluesWithSlug'));
 // Onboarding and authentication routes for players
 app.use('/api/onboard', require('./routes/onboard'));
 app.use('/api/auth', require('./routes/auth'));
