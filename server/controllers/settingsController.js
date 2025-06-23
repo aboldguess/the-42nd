@@ -1,6 +1,14 @@
 // server/controllers/settingsController.js
 // Controller for fetching and updating global game settings
 const Settings = require('../models/Settings');
+const User = require('../models/User');
+const Team = require('../models/Team');
+const Question = require('../models/Question');
+const Clue = require('../models/Clue');
+const SideQuest = require('../models/SideQuest');
+const Media = require('../models/Media');
+const fs = require('fs');
+const path = require('path');
 
 // Return the singleton settings document
 exports.getSettings = async (req, res) => {
@@ -27,5 +35,41 @@ exports.updateSettings = async (req, res) => {
   } catch (err) {
     console.error('Error updating settings:', err);
     res.status(500).json({ message: 'Error updating settings' });
+  }
+};
+
+// Remove all data across collections and uploaded files. Requires the request
+// body to include { confirm: 'definitely' } as a safety measure.
+exports.masterReset = async (req, res) => {
+  // Simple confirmation check to prevent accidental resets
+  if (req.body.confirm !== 'definitely') {
+    return res.status(400).json({
+      message: "Type 'definitely' to confirm master reset"
+    });
+  }
+
+  try {
+    // Delete documents from all major collections. Admins and settings are
+    // preserved so login remains possible after the reset.
+    await Promise.all([
+      User.deleteMany({}),
+      Team.deleteMany({}),
+      Question.deleteMany({}),
+      Clue.deleteMany({}),
+      SideQuest.deleteMany({}),
+      Media.deleteMany({})
+    ]);
+
+    // Remove any uploaded files stored on disk
+    const uploadDir = path.join(__dirname, '../uploads');
+    if (fs.existsSync(uploadDir)) {
+      fs.rmSync(uploadDir, { recursive: true, force: true });
+      fs.mkdirSync(uploadDir); // create fresh empty directory
+    }
+
+    return res.json({ message: 'All game data has been cleared' });
+  } catch (err) {
+    console.error('Master reset error:', err);
+    return res.status(500).json({ message: 'Error performing master reset' });
   }
 };
