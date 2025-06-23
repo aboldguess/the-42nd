@@ -78,6 +78,8 @@ app.use('/api/admin/questions',  require('./routes/admin/questions'));
 app.use('/api/admin/players',  require('./routes/admin/players'));
 app.use('/api/admin/scoreboard', require('./routes/admin/scoreboard'));
 app.use('/api/admin/settings', require('./routes/admin/settings'));
+// Route allowing admins to download all uploaded media as a zip
+app.use('/api/admin/media', require('./routes/admin/media'));
 
 // (If serving React in production, keep these lines. For local dev they can remain commented.)
 // app.use(express.static(path.join(__dirname, '../client/build')));
