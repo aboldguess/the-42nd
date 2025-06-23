@@ -70,6 +70,8 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/admin/games',  require('./routes/admin/games'));
 app.use('/api/admin/clues',  require('./routes/admin/clues'));
 app.use('/api/admin/sidequests',  require('./routes/admin/sidequests'));
+// CRUD endpoints for question management
+app.use('/api/admin/questions',  require('./routes/admin/questions'));
 app.use('/api/admin/players',  require('./routes/admin/players'));
 app.use('/api/admin/scoreboard', require('./routes/admin/scoreboard'));
 

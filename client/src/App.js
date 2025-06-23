@@ -13,6 +13,7 @@ import InfoPage from './pages/InfoPage';
 import ScoreboardPage from './pages/ScoreboardPage';
 import AdminGamesPage from './pages/AdminGamesPage';
 import AdminCluesPage from './pages/AdminCluesPage';
+import AdminQuestionsPage from './pages/AdminQuestionsPage';
 import AdminSideQuestsPage from './pages/AdminSideQuestsPage';
 import AdminPlayersPage from './pages/AdminPlayersPage';
 
@@ -134,6 +135,15 @@ export default function App() {
                 element={
                   <AdminRoute>
                     <AdminCluesPage />
+                  </AdminRoute>
+                }
+              />
+              {/* Manage trivia questions */}
+              <Route
+                path="/admin/questions"
+                element={
+                  <AdminRoute>
+                    <AdminQuestionsPage />
                   </AdminRoute>
                 }
               />
