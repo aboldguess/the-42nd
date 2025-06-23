@@ -6,12 +6,10 @@ function WelcomePage() {
     <div className="card" style={{ textAlign: 'center' }}>
       <h1>Welcome to the Treasure Hunt!</h1>
       <p>Ready for a day of adventure and fun? Get started now:</p>
+      {/* Onboarding now handles both registration and login */}
       <div style={{ marginTop: '1rem' }}>
-        <Link to="/login">
-          <button>Log In</button>
-        </Link>
-        <Link to="/register" style={{ marginLeft: '1rem' }}>
-          <button>Register</button>
+        <Link to="/">
+          <button>Start</button>
         </Link>
       </div>
       <div style={{ marginTop: '2rem' }}>
