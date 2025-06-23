@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const adminAuth = require('../../middleware/adminAuth');
+const upload = require('../../middleware/upload');
 const {
   getAllClues,
   createClue,
@@ -13,8 +14,8 @@ const {
 router.use(adminAuth);
 
 router.get('/', getAllClues);          // list
-router.post('/', createClue);          // create
-router.put('/:clueId', updateClue);    // update
+router.post('/', upload.fields([{ name: 'questionImage', maxCount: 1 }]), createClue);          // create
+router.put('/:clueId', upload.fields([{ name: 'questionImage', maxCount: 1 }]), updateClue);    // update
 router.delete('/:clueId', deleteClue); // delete
 
 module.exports = router;

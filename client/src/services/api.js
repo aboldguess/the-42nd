@@ -63,14 +63,26 @@ export const fetchAdminScoreboard = () => axios.get('/api/admin/scoreboard');
 
 // Admin CRUD for clues
 export const fetchClues = () => axios.get('/api/admin/clues');
-export const createClueAdmin = (data) => axios.post('/api/admin/clues', data);
-export const updateClueAdmin = (id, data) => axios.put(`/api/admin/clues/${id}`, data);
+export const createClueAdmin = (data) =>
+  axios.post('/api/admin/clues', data, {
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+  });
+export const updateClueAdmin = (id, data) =>
+  axios.put(`/api/admin/clues/${id}`, data, {
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+  });
 export const deleteClueAdmin = (id) => axios.delete(`/api/admin/clues/${id}`);
 
 // Admin CRUD for side quests
 export const fetchSideQuestsAdmin = () => axios.get('/api/admin/sidequests');
-export const createSideQuestAdmin = (data) => axios.post('/api/admin/sidequests', data);
-export const updateSideQuestAdmin = (id, data) => axios.put(`/api/admin/sidequests/${id}`, data);
+export const createSideQuestAdmin = (data) =>
+  axios.post('/api/admin/sidequests', data, {
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+  });
+export const updateSideQuestAdmin = (id, data) =>
+  axios.put(`/api/admin/sidequests/${id}`, data, {
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+  });
 export const deleteSideQuestAdmin = (id) => axios.delete(`/api/admin/sidequests/${id}`);
 
 // Admin CRUD for players

@@ -38,8 +38,9 @@ exports.getAllClues = async (req, res) => {
 exports.createClue = async (req, res) => {
   const { title, text, options, correctAnswer, infoPage } = req.body;
   let imageUrl = '';
-  if (req.file) {
-    imageUrl = '/uploads/' + req.file.filename;
+  // If an image was uploaded via multipart form, record it
+  if (req.files && req.files.questionImage && req.files.questionImage[0]) {
+    imageUrl = '/uploads/' + req.files.questionImage[0].filename;
     await Media.create({
       url: imageUrl,
       uploadedBy: req.user._id,
@@ -108,7 +109,18 @@ exports.submitAnswer = async (req, res) => {
 // Update an existing clue by ID
 exports.updateClue = async (req, res) => {
   try {
-    const clue = await Clue.findByIdAndUpdate(req.params.clueId, req.body, {
+    const updates = { ...req.body };
+    if (req.files && req.files.questionImage && req.files.questionImage[0]) {
+      const imageUrl = '/uploads/' + req.files.questionImage[0].filename;
+      updates.imageUrl = imageUrl;
+      await Media.create({
+        url: imageUrl,
+        uploadedBy: req.user._id,
+        type: 'question',
+        tag: 'clue_image'
+      });
+    }
+    const clue = await Clue.findByIdAndUpdate(req.params.clueId, updates, {
       new: true
     });
     if (!clue) return res.status(404).json({ message: 'Clue not found' });
