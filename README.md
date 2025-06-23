@@ -8,6 +8,7 @@ This project contains a React client and an Express/MongoDB server for running a
 - Side quests and a rogues gallery for uploaded media
 - Admin authentication and dashboard endpoints
 - Team colour schemes and profile management
+- QR-coded links for all clues and side quests
 
 ## Development notes
 - Client source in `client/` built with React
@@ -40,6 +41,7 @@ JWT_SECRET=<random jwt secret>
 ADMIN_USERNAME=<initial admin username>
 ADMIN_PASSWORD=<initial admin password>
 PORT=5000 # optional
+APP_BASE_URL=http://localhost:3000 # base URL used when generating QR codes
 ```
 
 ### Starting the services
@@ -56,3 +58,6 @@ npm start
 The client will automatically proxy requests to the server on port `5000`.
 
 Once both services are running you can visit `http://localhost:3000` to use the app.
+
+### QR codes
+Each clue and side quest automatically includes a QR code that encodes its URL. Scanning a code directs players to that page. Unauthenticated users are routed to onboarding and back. The APP_BASE_URL variable sets the base URL used in these codes.
