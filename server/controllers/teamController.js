@@ -47,3 +47,84 @@ exports.addMember = async (req, res) => {
     res.status(500).json({ message: 'Error adding member' });
   }
 };
+
+// ----------- Admin CRUD handlers for teams -----------
+
+const bcrypt = require('bcryptjs');
+
+// List all teams for the admin panel
+exports.getAllTeams = async (req, res) => {
+  try {
+    // Exclude password hashes before sending to client
+    const teams = await Team.find().select('-password');
+    res.json(teams);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching teams' });
+  }
+};
+
+// Create a new team (optionally with a photo)
+exports.createTeam = async (req, res) => {
+  try {
+    const { name, password } = req.body;
+    if (!name || !password) {
+      return res.status(400).json({ message: 'Name and password required' });
+    }
+    const hashed = await bcrypt.hash(password, 10);
+    let photoUrl = '';
+    if (req.files && req.files.teamPhoto && req.files.teamPhoto[0]) {
+      photoUrl = '/uploads/' + req.files.teamPhoto[0].filename;
+      await Media.create({
+        url: photoUrl,
+        uploadedBy: req.admin.id,
+        type: 'team',
+        tag: 'team_photo'
+      });
+    }
+    const team = await Team.create({ name, password: hashed, photoUrl });
+    res.status(201).json(team);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error creating team' });
+  }
+};
+
+// Update an existing team document
+exports.updateTeam = async (req, res) => {
+  try {
+    const updates = {};
+    if (req.body.name) updates.name = req.body.name;
+    if (req.body.password) {
+      updates.password = await bcrypt.hash(req.body.password, 10);
+    }
+    if (req.files && req.files.teamPhoto && req.files.teamPhoto[0]) {
+      updates.photoUrl = '/uploads/' + req.files.teamPhoto[0].filename;
+      await Media.create({
+        url: updates.photoUrl,
+        uploadedBy: req.admin.id,
+        type: 'team',
+        tag: 'team_photo'
+      });
+    }
+    const team = await Team.findByIdAndUpdate(req.params.id, updates, { new: true });
+    if (!team) return res.status(404).json({ message: 'Team not found' });
+    res.json(team);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error updating team' });
+  }
+};
+
+// Delete a team entirely
+exports.deleteTeam = async (req, res) => {
+  try {
+    const team = await Team.findByIdAndDelete(req.params.id);
+    if (!team) return res.status(404).json({ message: 'Team not found' });
+    res.json({ message: 'Team deleted' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error deleting team' });
+  }
+};
+

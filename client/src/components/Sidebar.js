@@ -48,6 +48,7 @@ export default function Sidebar() {
           {renderLink('/admin/clues', 'Clues')}
           {renderLink('/admin/questions', 'Questions')}
           {renderLink('/admin/sidequests', 'Side Quests')}
+          {renderLink('/admin/teams', 'Teams')}
           {renderLink('/admin/players', 'Players')}
         </>
       )}

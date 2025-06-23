@@ -103,6 +103,18 @@ export const createPlayer = (data) => axios.post('/api/admin/players', data);
 export const updatePlayer = (id, data) => axios.put(`/api/admin/players/${id}`, data);
 export const deletePlayer = (id) => axios.delete(`/api/admin/players/${id}`);
 
+// Admin CRUD for teams
+export const fetchTeamsAdmin = () => axios.get('/api/admin/teams');
+export const createTeamAdmin = (data) =>
+  axios.post('/api/admin/teams', data, {
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+  });
+export const updateTeamAdmin = (id, data) =>
+  axios.put(`/api/admin/teams/${id}`, data, {
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+  });
+export const deleteTeamAdmin = (id) => axios.delete(`/api/admin/teams/${id}`);
+
 // Admin CRUD for questions
 export const fetchQuestions = () => axios.get('/api/admin/questions');
 // Image uploads require multipart/form-data

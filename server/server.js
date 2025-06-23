@@ -59,6 +59,7 @@ app.use('/api/admin/sidequests',  require('./routes/admin/sidequests'));
 // CRUD endpoints for question management
 app.use('/api/admin/questions',  require('./routes/admin/questions'));
 app.use('/api/admin/players',  require('./routes/admin/players'));
+app.use('/api/admin/teams',  require('./routes/admin/teams'));
 app.use('/api/admin/scoreboard', require('./routes/admin/scoreboard'));
 
 // (If serving React in production, keep these lines. For local dev they can remain commented.)
