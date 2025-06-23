@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const adminAuth = require('../../middleware/adminAuth');
+const upload = require('../../middleware/upload');
 const {
   getAllSideQuests,
   createSideQuest,
@@ -12,8 +13,8 @@ const {
 router.use(adminAuth);
 
 router.get('/', getAllSideQuests);
-router.post('/', createSideQuest);
-router.put('/:id', updateSideQuest);
+router.post('/', upload.fields([{ name: 'image', maxCount: 1 }]), createSideQuest);
+router.put('/:id', upload.fields([{ name: 'image', maxCount: 1 }]), updateSideQuest);
 router.delete('/:id', deleteSideQuest);
 
 module.exports = router;

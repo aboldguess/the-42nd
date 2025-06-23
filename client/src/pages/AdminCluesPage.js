@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+
+// Simple CRUD interface for managing clue data. Supports optional image upload.
 import {
   fetchClues,
   createClueAdmin,
@@ -9,6 +11,7 @@ export default function AdminCluesPage() {
   const [clues, setClues] = useState([]);
   const [title, setTitle] = useState('');
   const [text, setText] = useState('');
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
     load();
@@ -21,9 +24,14 @@ export default function AdminCluesPage() {
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    await createClueAdmin({ title, text });
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('text', text);
+    if (image) formData.append('questionImage', image);
+    await createClueAdmin(formData);
     setTitle('');
     setText('');
+    setImage(null);
     load();
   };
 
@@ -36,8 +44,23 @@ export default function AdminCluesPage() {
     <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
       <h2>Clues</h2>
       <form onSubmit={handleCreate} style={{ marginBottom: '1rem' }}>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" required />
-        <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Text" required />
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Title"
+          required
+        />
+        <input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Text"
+          required
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setImage(e.target.files[0])}
+        />
         <button type="submit">Create</button>
       </form>
       <ul>
