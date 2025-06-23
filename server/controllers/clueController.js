@@ -104,3 +104,30 @@ exports.submitAnswer = async (req, res) => {
     res.status(500).json({ message: 'Error submitting answer' });
   }
 };
+
+// Update an existing clue by ID
+exports.updateClue = async (req, res) => {
+  try {
+    const clue = await Clue.findByIdAndUpdate(req.params.clueId, req.body, {
+      new: true
+    });
+    if (!clue) return res.status(404).json({ message: 'Clue not found' });
+    res.json(clue);
+  } catch (err) {
+    console.error('Error updating clue:', err);
+    res.status(500).json({ message: 'Error updating clue' });
+  }
+};
+
+// Delete a clue by ID
+exports.deleteClue = async (req, res) => {
+  try {
+    const clue = await Clue.findByIdAndDelete(req.params.clueId);
+    if (!clue) return res.status(404).json({ message: 'Clue not found' });
+    res.json({ message: 'Clue deleted' });
+  } catch (err) {
+    console.error('Error deleting clue:', err);
+    res.status(500).json({ message: 'Error deleting clue' });
+  }
+};
+

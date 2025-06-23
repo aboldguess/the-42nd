@@ -20,3 +20,30 @@ exports.createSideQuest = async (req, res) => {
     res.status(500).json({ message: 'Error creating side quest' });
   }
 };
+
+// Update an existing side quest
+exports.updateSideQuest = async (req, res) => {
+  try {
+    const sq = await SideQuest.findByIdAndUpdate(req.params.id, req.body, {
+      new: true
+    });
+    if (!sq) return res.status(404).json({ message: 'Side quest not found' });
+    res.json(sq);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error updating side quest' });
+  }
+};
+
+// Delete a side quest
+exports.deleteSideQuest = async (req, res) => {
+  try {
+    const sq = await SideQuest.findByIdAndDelete(req.params.id);
+    if (!sq) return res.status(404).json({ message: 'Side quest not found' });
+    res.json({ message: 'Side quest deleted' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error deleting side quest' });
+  }
+};
+

@@ -59,12 +59,19 @@ app.use('/api/clues', require('./routes/clues'));
 app.use('/api/sidequests', require('./routes/sidequests'));
 app.use('/api/roguery', require('./routes/roguery'));
 
+// Public scoreboard route
+app.use('/api/scoreboard', require('./routes/scoreboard'));
+
 // ——— NEW ADMIN AUTH ROUTE ———
 app.use('/api/admin/auth', require('./routes/adminAuth'));
 
 // ——— ALL ADMIN‐PROTECTED ROUTES ———
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/admin/games',  require('./routes/admin/games'));
+app.use('/api/admin/clues',  require('./routes/admin/clues'));
+app.use('/api/admin/sidequests',  require('./routes/admin/sidequests'));
+app.use('/api/admin/players',  require('./routes/admin/players'));
+app.use('/api/admin/scoreboard', require('./routes/admin/scoreboard'));
 
 // (If serving React in production, keep these lines. For local dev they can remain commented.)
 // app.use(express.static(path.join(__dirname, '../client/build')));

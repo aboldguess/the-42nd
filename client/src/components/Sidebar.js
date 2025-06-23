@@ -36,6 +36,7 @@ export default function Sidebar() {
           {renderLink('/clue/1', 'Hunt')}
           {renderLink('/sidequests', 'Side Quests')}
           {renderLink('/roguery', 'Gallery')}
+          {renderLink('/scoreboard', 'Scoreboard')}
           {renderLink('/profile', 'Profile')}
         </>
       )}
@@ -45,8 +46,9 @@ export default function Sidebar() {
         <>
           {renderLink('/admin/dashboard', 'Admin Home')}
           {renderLink('/admin/games', 'Games')}
-          {renderLink('/admin/teams', 'Teams')}
-          {renderLink('/admin/settings', 'Settings')}
+          {renderLink('/admin/clues', 'Clues')}
+          {renderLink('/admin/sidequests', 'Side Quests')}
+          {renderLink('/admin/players', 'Players')}
         </>
       )}
     </aside>
