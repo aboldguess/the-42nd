@@ -59,6 +59,13 @@ export const submitSideQuest = (id, data) =>
   });
 export const fetchRoguesGallery = () => axios.get('/api/roguery');
 
+// Wall posts
+export const fetchWall = (userId) => axios.get(`/api/wall/${userId}`);
+export const postToWall = (userId, data) =>
+  axios.post(`/api/wall/${userId}`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+
 
 // Admin endpoints
 export const adminRegister = (data) =>
