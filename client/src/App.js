@@ -10,6 +10,11 @@ import ProfilePage from './pages/ProfilePage';
 import SideQuestPage from './pages/SideQuestPage';
 import RoguesGalleryPage from './pages/RoguesGalleryPage';
 import InfoPage from './pages/InfoPage';
+import ScoreboardPage from './pages/ScoreboardPage';
+import AdminGamesPage from './pages/AdminGamesPage';
+import AdminCluesPage from './pages/AdminCluesPage';
+import AdminSideQuestsPage from './pages/AdminSideQuestsPage';
+import AdminPlayersPage from './pages/AdminPlayersPage';
 
 import AdminLoginPage from './pages/AdminLoginPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
@@ -88,6 +93,14 @@ export default function App() {
                 }
               />
               <Route
+                path="/scoreboard"
+                element={
+                  <AuthRoute>
+                    <ScoreboardPage />
+                  </AuthRoute>
+                }
+              />
+              <Route
                 path="/info/:infoId"
                 element={
                   <AuthRoute>
@@ -105,6 +118,38 @@ export default function App() {
                 element={
                   <AdminRoute>
                     <AdminDashboardPage />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/games"
+                element={
+                  <AdminRoute>
+                    <AdminGamesPage />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/clues"
+                element={
+                  <AdminRoute>
+                    <AdminCluesPage />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/sidequests"
+                element={
+                  <AdminRoute>
+                    <AdminSideQuestsPage />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/players"
+                element={
+                  <AdminRoute>
+                    <AdminPlayersPage />
                   </AdminRoute>
                 }
               />

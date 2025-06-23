@@ -33,3 +33,53 @@ exports.updateMe = async (req, res) => {
     res.status(500).json({ message: 'Error updating profile' });
   }
 };
+
+// List all players (admin use)
+exports.getAllPlayers = async (req, res) => {
+  try {
+    const players = await User.find().populate('team', 'name');
+    res.json(players);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching players' });
+  }
+};
+
+// Create a new player attached to a team
+exports.createPlayer = async (req, res) => {
+  try {
+    const player = await User.create({
+      name: req.body.name,
+      team: req.body.team
+    });
+    res.status(201).json(player);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error creating player' });
+  }
+};
+
+// Update a player's info
+exports.updatePlayer = async (req, res) => {
+  try {
+    const player = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!player) return res.status(404).json({ message: 'Player not found' });
+    res.json(player);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error updating player' });
+  }
+};
+
+// Delete a player
+exports.deletePlayer = async (req, res) => {
+  try {
+    const player = await User.findByIdAndDelete(req.params.id);
+    if (!player) return res.status(404).json({ message: 'Player not found' });
+    res.json({ message: 'Player deleted' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error deleting player' });
+  }
+};
+

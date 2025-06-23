@@ -1,26 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { fetchAdminScoreboard } from '../services/api';
+import { fetchScoreboard } from '../services/api';
 
-export default function AdminDashboardPage() {
+export default function ScoreboardPage() {
   const [scores, setScores] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const { data } = await fetchAdminScoreboard();
+        const { data } = await fetchScoreboard();
         setScores(data);
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
     load();
   }, []);
 
+  if (loading) return <p>Loading…</p>;
+
   return (
     <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
-      <h2>Admin Dashboard</h2>
-      <p>Welcome, Admin! Use the menu to manage games, clues, side quests and players.</p>
-      <h3>Scoreboard</h3>
+      <h2>Scoreboard</h2>
       <table>
         <thead>
           <tr>
@@ -44,3 +47,4 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
+
