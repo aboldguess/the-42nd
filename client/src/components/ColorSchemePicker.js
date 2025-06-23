@@ -1,10 +1,16 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { ThemeContext } from '../context/ThemeContext';
 
 export default function ColorSchemePicker() {
   const { theme, updateTheme } = useContext(ThemeContext);
   const [primary, setPrimary] = useState(theme.primary);
   const [secondary, setSecondary] = useState(theme.secondary);
+
+  // Keep local picker values in sync when the theme from context changes
+  useEffect(() => {
+    setPrimary(theme.primary);
+    setSecondary(theme.secondary);
+  }, [theme]);
 
   const handleSave = () => {
     updateTheme(primary, secondary);
