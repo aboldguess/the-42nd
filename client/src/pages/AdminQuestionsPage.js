@@ -9,11 +9,17 @@ import {
 // Admin table for trivia questions with CRUD actions
 export default function AdminQuestionsPage() {
   const [questions, setQuestions] = useState([]);
-  const [newQ, setNewQ] = useState({ title: '', text: '', options: '', notes: '' });
+  // Store form fields for creating a question
+  const [newQ, setNewQ] = useState({
+    title: '',
+    text: '',
+    options: '',
+    notes: ''
+  });
   const [editId, setEditId] = useState(null);
   const [editData, setEditData] = useState({});
-  const [newImage, setNewImage] = useState(null);
-  const [editImage, setEditImage] = useState(null);
+  const [newImage, setNewImage] = useState(null); // file selected for new question
+  const [editImage, setEditImage] = useState(null); // unused placeholder for future updates
 
   useEffect(() => {
     load();
@@ -63,6 +69,7 @@ export default function AdminQuestionsPage() {
             <th>Title</th>
             <th>Question</th>
             <th>Notes</th>
+            <th>Image</th>
             <th>QR</th>
             <th>Actions</th>
           </tr>
@@ -74,7 +81,22 @@ export default function AdminQuestionsPage() {
                 <>
                   <td><input value={editData.title} onChange={(e) => setEditData({ ...editData, title: e.target.value })} /></td>
                   <td><input value={editData.text} onChange={(e) => setEditData({ ...editData, text: e.target.value })} /></td>
-                  <td><input value={editData.notes} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} /></td>
+                  <td>
+                    <input
+                      value={editData.notes}
+                      onChange={(e) =>
+                        setEditData({ ...editData, notes: e.target.value })
+                      }
+                    />
+                  </td>
+                  <td>
+                    {/* small preview of the attached image */}
+                    {q.imageUrl ? (
+                      <img src={q.imageUrl} alt={q.title} width={50} />
+                    ) : (
+                      '-'
+                    )}
+                  </td>
                   <td>-</td>
                   <td>
                     <button onClick={() => handleSave(q._id)}>Save</button>
@@ -86,6 +108,14 @@ export default function AdminQuestionsPage() {
                   <td>{q.title}</td>
                   <td>{q.text}</td>
                   <td>{q.notes}</td>
+                  <td>
+                    {/* preview image if one exists */}
+                    {q.imageUrl ? (
+                      <img src={q.imageUrl} alt={q.title} width={50} />
+                    ) : (
+                      '-'
+                    )}
+                  </td>
                   <td>-</td>
                   <td>
                     <button onClick={() => { setEditId(q._id); setEditData({ title: q.title, text: q.text, notes: q.notes, options: q.options?.join(', ') }); }}>Edit</button>
@@ -96,11 +126,39 @@ export default function AdminQuestionsPage() {
             </tr>
           ))}
           <tr>
-            <td><input value={newQ.title} onChange={(e) => setNewQ({ ...newQ, title: e.target.value })} placeholder="Title" /></td>
-            <td><input value={newQ.text} onChange={(e) => setNewQ({ ...newQ, text: e.target.value })} placeholder="Question" /></td>
-            <td><input value={newQ.notes} onChange={(e) => setNewQ({ ...newQ, notes: e.target.value })} placeholder="Notes" /></td>
+            <td>
+              <input
+                value={newQ.title}
+                onChange={(e) => setNewQ({ ...newQ, title: e.target.value })}
+                placeholder="Title"
+              />
+            </td>
+            <td>
+              <input
+                value={newQ.text}
+                onChange={(e) => setNewQ({ ...newQ, text: e.target.value })}
+                placeholder="Question"
+              />
+            </td>
+            <td>
+              <input
+                value={newQ.notes}
+                onChange={(e) => setNewQ({ ...newQ, notes: e.target.value })}
+                placeholder="Notes"
+              />
+            </td>
+            <td>
+              {/* optional question image */}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setNewImage(e.target.files[0])}
+              />
+            </td>
             <td>-</td>
-            <td><button onClick={handleCreate}>Add</button></td>
+            <td>
+              <button onClick={handleCreate}>Add</button>
+            </td>
           </tr>
         </tbody>
       </table>

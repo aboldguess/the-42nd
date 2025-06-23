@@ -15,7 +15,7 @@ export default function AdminCluesPage() {
     options: '',
     correctAnswer: '',
     infoPage: false,
-    image: null
+    image: null // file object for the clue's picture
   });
   const [editId, setEditId] = useState(null); // currently edited clue id
   const [editData, setEditData] = useState({}); // form state for edit row
@@ -72,6 +72,7 @@ export default function AdminCluesPage() {
           <tr>
             <th>Title</th>
             <th>Text</th>
+            <th>Image</th>
             <th>Answer</th>
             <th>QR</th>
             <th>Actions</th>
@@ -86,12 +87,41 @@ export default function AdminCluesPage() {
                     <input value={editData.title} onChange={(e) => setEditData({ ...editData, title: e.target.value })} />
                   </td>
                   <td>
-                    <input value={editData.text} onChange={(e) => setEditData({ ...editData, text: e.target.value })} />
+                    <input
+                      value={editData.text}
+                      onChange={(e) =>
+                        setEditData({ ...editData, text: e.target.value })
+                      }
+                    />
                   </td>
                   <td>
-                    <input value={editData.correctAnswer} onChange={(e) => setEditData({ ...editData, correctAnswer: e.target.value })} />
+                    {/* allow uploading a replacement image when editing */}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) =>
+                        setEditData({ ...editData, image: e.target.files[0] })
+                      }
+                    />
                   </td>
-                  <td>{c.qrCodeData ? <img src={c.qrCodeData} alt="QR" width={50} /> : '-'}</td>
+                  <td>
+                    <input
+                      value={editData.correctAnswer}
+                      onChange={(e) =>
+                        setEditData({
+                          ...editData,
+                          correctAnswer: e.target.value
+                        })
+                      }
+                    />
+                  </td>
+                  <td>
+                    {c.qrCodeData ? (
+                      <img src={c.qrCodeData} alt="QR" width={50} />
+                    ) : (
+                      '-'
+                    )}
+                  </td>
                   <td>
                     <button onClick={() => handleSave(c._id)}>Save</button>
                     <button onClick={() => setEditId(null)}>Cancel</button>
@@ -101,8 +131,21 @@ export default function AdminCluesPage() {
                 <>
                   <td>{c.title}</td>
                   <td>{c.text}</td>
+                  <td>
+                    {c.imageUrl ? (
+                      <img src={c.imageUrl} alt={c.title} width={50} />
+                    ) : (
+                      '-'
+                    )}
+                  </td>
                   <td>{c.correctAnswer}</td>
-                  <td>{c.qrCodeData ? <img src={c.qrCodeData} alt="QR" width={50} /> : '-'}</td>
+                  <td>
+                    {c.qrCodeData ? (
+                      <img src={c.qrCodeData} alt="QR" width={50} />
+                    ) : (
+                      '-'
+                    )}
+                  </td>
                   <td>
                     <button onClick={() => { setEditId(c._id); setEditData({ title: c.title, text: c.text, options: c.options?.join(', '), correctAnswer: c.correctAnswer, infoPage: c.infoPage }); }}>Edit</button>
                     <button onClick={() => handleDelete(c._id)}>Delete</button>
@@ -114,13 +157,41 @@ export default function AdminCluesPage() {
           {/* Bottom row for creating a new clue */}
           <tr>
             <td>
-              <input value={newClue.title} onChange={(e) => setNewClue({ ...newClue, title: e.target.value })} placeholder="Title" />
+              <input
+                value={newClue.title}
+                onChange={(e) =>
+                  setNewClue({ ...newClue, title: e.target.value })
+                }
+                placeholder="Title"
+              />
             </td>
             <td>
-              <input value={newClue.text} onChange={(e) => setNewClue({ ...newClue, text: e.target.value })} placeholder="Text" />
+              <input
+                value={newClue.text}
+                onChange={(e) =>
+                  setNewClue({ ...newClue, text: e.target.value })
+                }
+                placeholder="Text"
+              />
             </td>
             <td>
-              <input value={newClue.correctAnswer} onChange={(e) => setNewClue({ ...newClue, correctAnswer: e.target.value })} placeholder="Answer" />
+              {/* file input for the clue image */}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) =>
+                  setNewClue({ ...newClue, image: e.target.files[0] })
+                }
+              />
+            </td>
+            <td>
+              <input
+                value={newClue.correctAnswer}
+                onChange={(e) =>
+                  setNewClue({ ...newClue, correctAnswer: e.target.value })
+                }
+                placeholder="Answer"
+              />
             </td>
             <td>-</td>
             <td>

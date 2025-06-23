@@ -9,7 +9,14 @@ import {
 // Admin table for side quests with CRUD
 export default function AdminSideQuestsPage() {
   const [quests, setQuests] = useState([]);
-  const [newQuest, setNewQuest] = useState({ title: '', text: '', timeLimitSeconds: '', useStopwatch: false });
+  // Store form fields for creating a side quest
+  const [newQuest, setNewQuest] = useState({
+    title: '',
+    text: '',
+    timeLimitSeconds: '',
+    useStopwatch: false,
+    image: null // holds the uploaded quest picture
+  });
   const [editId, setEditId] = useState(null);
   const [editData, setEditData] = useState({});
 
@@ -26,16 +33,29 @@ export default function AdminSideQuestsPage() {
     const formData = new FormData();
     formData.append('title', newQuest.title);
     formData.append('text', newQuest.text);
+    if (newQuest.image) formData.append('image', newQuest.image);
     if (newQuest.timeLimitSeconds)
       formData.append('timeLimitSeconds', newQuest.timeLimitSeconds);
     formData.append('useStopwatch', newQuest.useStopwatch ? 'true' : 'false');
     await createSideQuestAdmin(formData);
-    setNewQuest({ title: '', text: '', timeLimitSeconds: '', useStopwatch: false });
+    setNewQuest({ title: '', text: '', timeLimitSeconds: '', useStopwatch: false, image: null });
     load();
   };
 
   const handleSave = async (id) => {
-    await updateSideQuestAdmin(id, editData);
+    // If a new image was selected send multipart data, otherwise plain JSON
+    let payload = editData;
+    if (editData.image) {
+      // build multipart form data when a new image file is present
+      const formData = new FormData();
+      formData.append('title', editData.title);
+      formData.append('text', editData.text);
+      formData.append('image', editData.image);
+      formData.append('timeLimitSeconds', editData.timeLimitSeconds);
+      formData.append('useStopwatch', editData.useStopwatch ? 'true' : 'false');
+      payload = formData;
+    }
+    await updateSideQuestAdmin(id, payload);
     setEditId(null);
     setEditData({});
     load();
@@ -54,6 +74,7 @@ export default function AdminSideQuestsPage() {
           <tr>
             <th>Title</th>
             <th>Text</th>
+            <th>Image</th>
             <th>Time Limit</th>
             <th>QR</th>
             <th>Actions</th>
@@ -64,10 +85,50 @@ export default function AdminSideQuestsPage() {
             <tr key={q._id}>
               {editId === q._id ? (
                 <>
-                  <td><input value={editData.title} onChange={(e) => setEditData({ ...editData, title: e.target.value })} /></td>
-                  <td><input value={editData.text} onChange={(e) => setEditData({ ...editData, text: e.target.value })} /></td>
-                  <td><input value={editData.timeLimitSeconds} onChange={(e) => setEditData({ ...editData, timeLimitSeconds: e.target.value })} /></td>
-                  <td>{q.qrCodeData ? <img src={q.qrCodeData} alt="QR" width={50} /> : '-'}</td>
+                  <td>
+                    <input
+                      value={editData.title}
+                      onChange={(e) =>
+                        setEditData({ ...editData, title: e.target.value })
+                      }
+                    />
+                  </td>
+                  <td>
+                    <input
+                      value={editData.text}
+                      onChange={(e) =>
+                        setEditData({ ...editData, text: e.target.value })
+                      }
+                    />
+                  </td>
+                  <td>
+                    {/* upload a new picture for the quest */}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) =>
+                        setEditData({ ...editData, image: e.target.files[0] })
+                      }
+                    />
+                  </td>
+                  <td>
+                    <input
+                      value={editData.timeLimitSeconds}
+                      onChange={(e) =>
+                        setEditData({
+                          ...editData,
+                          timeLimitSeconds: e.target.value
+                        })
+                      }
+                    />
+                  </td>
+                  <td>
+                    {q.qrCodeData ? (
+                      <img src={q.qrCodeData} alt="QR" width={50} />
+                    ) : (
+                      '-'
+                    )}
+                  </td>
                   <td>
                     <button onClick={() => handleSave(q._id)}>Save</button>
                     <button onClick={() => setEditId(null)}>Cancel</button>
@@ -77,8 +138,22 @@ export default function AdminSideQuestsPage() {
                 <>
                   <td>{q.title}</td>
                   <td>{q.text}</td>
+                  <td>
+                    {/* show thumbnail if quest has an image */}
+                    {q.imageUrl ? (
+                      <img src={q.imageUrl} alt={q.title} width={50} />
+                    ) : (
+                      '-'
+                    )}
+                  </td>
                   <td>{q.timeLimitSeconds || '-'}</td>
-                  <td>{q.qrCodeData ? <img src={q.qrCodeData} alt="QR" width={50} /> : '-'}</td>
+                  <td>
+                    {q.qrCodeData ? (
+                      <img src={q.qrCodeData} alt="QR" width={50} />
+                    ) : (
+                      '-'
+                    )}
+                  </td>
                   <td>
                     <button onClick={() => { setEditId(q._id); setEditData({ title: q.title, text: q.text, timeLimitSeconds: q.timeLimitSeconds, useStopwatch: q.useStopwatch }); }}>Edit</button>
                     <button onClick={() => handleDelete(q._id)}>Delete</button>
@@ -88,11 +163,50 @@ export default function AdminSideQuestsPage() {
             </tr>
           ))}
           <tr>
-            <td><input value={newQuest.title} onChange={(e) => setNewQuest({ ...newQuest, title: e.target.value })} placeholder="Title" /></td>
-            <td><input value={newQuest.text} onChange={(e) => setNewQuest({ ...newQuest, text: e.target.value })} placeholder="Text" /></td>
-            <td><input value={newQuest.timeLimitSeconds} onChange={(e) => setNewQuest({ ...newQuest, timeLimitSeconds: e.target.value })} placeholder="Seconds" /></td>
+            <td>
+              <input
+                value={newQuest.title}
+                onChange={(e) =>
+                  setNewQuest({ ...newQuest, title: e.target.value })
+                }
+                placeholder="Title"
+              />
+            </td>
+            <td>
+              <input
+                value={newQuest.text}
+                onChange={(e) =>
+                  setNewQuest({ ...newQuest, text: e.target.value })
+                }
+                placeholder="Text"
+              />
+            </td>
+            <td>
+              {/* optional quest illustration */}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) =>
+                  setNewQuest({ ...newQuest, image: e.target.files[0] })
+                }
+              />
+            </td>
+            <td>
+              <input
+                value={newQuest.timeLimitSeconds}
+                onChange={(e) =>
+                  setNewQuest({
+                    ...newQuest,
+                    timeLimitSeconds: e.target.value
+                  })
+                }
+                placeholder="Seconds"
+              />
+            </td>
             <td>-</td>
-            <td><button onClick={handleCreate}>Add</button></td>
+            <td>
+              <button onClick={handleCreate}>Add</button>
+            </td>
           </tr>
         </tbody>
       </table>
