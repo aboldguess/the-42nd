@@ -5,13 +5,8 @@ const Team = require('../models/Team');
 const Media = require('../models/Media');
 const mongoose = require('mongoose');
 const QRCode = require('qrcode');
-const Settings = require('../models/Settings');
+const { getQrBase } = require('../utils/qr');
 
-// Retrieve the base URL for QR codes from settings or environment
-async function getQrBase() {
-  const settings = await Settings.findOne();
-  return settings?.qrBaseUrl || process.env.QR_BASE_URL || 'http://localhost:3000';
-}
 
 // Ensure the given clue has an up-to-date QR code based on current settings.
 async function ensureQrCode(clue) {

@@ -9,6 +9,8 @@ const sideQuestSchema = new mongoose.Schema(
     // URL of an image illustrating the quest
     imageUrl: String,
     qrCodeData: String,
+    // Store the base URL used to generate qrCodeData so we know when to refresh
+    qrBaseUrl: String,
     // Seconds for countdown timer if enabled
     timeLimitSeconds: Number,
     // Enable stopwatch tracking when true

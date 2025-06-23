@@ -2,14 +2,16 @@ const SideQuest = require('../models/SideQuest');
 const Media = require('../models/Media');
 const QRCode = require('qrcode');
 const Team = require('../models/Team');
-
-const QR_BASE = process.env.QR_BASE_URL || 'http://localhost:3000';
+const { getQrBase } = require('../utils/qr');
 
 // Ensure a side quest has a QR code stored
+// Ensure the QR code for a side quest reflects the current base URL
 async function ensureQrCode(sq) {
-  if (!sq.qrCodeData) {
-    const url = `${QR_BASE}/sidequest/${sq._id}`;
+  const base = await getQrBase();
+  const url = `${base.replace(/\/$/, '')}/sidequest/${sq._id}`;
+  if (!sq.qrCodeData || sq.qrBaseUrl !== base) {
     sq.qrCodeData = await QRCode.toDataURL(url);
+    sq.qrBaseUrl = base;
     await sq.save();
   }
 }
