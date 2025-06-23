@@ -11,6 +11,7 @@ import SideQuestPage from './pages/SideQuestPage';
 import RoguesGalleryPage from './pages/RoguesGalleryPage';
 import InfoPage from './pages/InfoPage';
 import ScoreboardPage from './pages/ScoreboardPage';
+import LoginPage from './pages/LoginPage';
 import AdminCluesPage from './pages/AdminCluesPage';
 import AdminQuestionsPage from './pages/AdminQuestionsPage';
 import AdminSideQuestsPage from './pages/AdminSideQuestsPage';
@@ -48,8 +49,9 @@ export default function App() {
           <Sidebar />
           <div className="content">
             <Routes>
-              {/* Public Onboarding */}
+              {/* Public routes */}
               <Route path="/" element={<OnboardingPage />} />
+              <Route path="/login" element={<LoginPage />} />
 
               {/* Player routes */}
               <Route
