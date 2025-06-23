@@ -170,3 +170,42 @@ form textarea {
     display: inline-block;   /* visible on phones */
   }
 }
+
+/* ───────────────── TABLES ───────────────── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.5rem;
+  text-align: left;
+}
+
+@media (max-width: 600px) {
+  /* Stack table rows vertically on very narrow screens */
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+  thead tr {
+    display: none; /* Hide header labels */
+  }
+  td {
+    position: relative;
+    padding-left: 50%;
+  }
+  td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    width: 50%;
+    padding-left: 0.5rem;
+    font-weight: bold;
+  }
+}

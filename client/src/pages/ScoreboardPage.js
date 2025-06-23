@@ -36,10 +36,11 @@ export default function ScoreboardPage() {
         <tbody>
           {scores.map((s) => (
             <tr key={s.teamId}>
-              <td>{s.name}</td>
-              <td>{s.completedClues}</td>
-              <td>{s.completedSideQuests}</td>
-              <td>{s.score}</td>
+              {/* data-label attributes used by responsive CSS */}
+              <td data-label="Team">{s.name}</td>
+              <td data-label="Clues">{s.completedClues}</td>
+              <td data-label="Side Quests">{s.completedSideQuests}</td>
+              <td data-label="Score">{s.score}</td>
             </tr>
           ))}
         </tbody>
