@@ -4,6 +4,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Team = require('../models/Team');
 const User = require('../models/User');
+// Model used to record all uploaded media files for the rogues gallery
+const Media = require('../models/Media');
 
 // 1) GET /api/onboard/teams
 //    Return an array of { _id, name } for each existing team.
@@ -97,10 +99,32 @@ exports.onboard = async (req, res) => {
       isAdmin: isNewTeam === 'true'  // mark as admin if they created the team
     });
 
-    // 2d) If we just created a new team, put this user in team.members
+    // 2d) Record any uploaded media so it appears in the rogues gallery
+    if (selfieUrl) {
+      await Media.create({
+        url: selfieUrl,
+        uploadedBy: user._id,
+        team: team._id,
+        type: 'profile',
+        tag: 'selfie'
+      });
+    }
+
+    // 2e) If we just created a new team, add the creator as a member
+    // and log the team photo if one was provided
     if (isNewTeam === 'true') {
       team.members.push({ name: user.name, avatarUrl: selfieUrl });
       await team.save();
+
+      if (team.photoUrl) {
+        await Media.create({
+          url: team.photoUrl,
+          uploadedBy: user._id,
+          team: team._id,
+          type: 'profile',
+          tag: 'team_photo'
+        });
+      }
     }
 
     // 3) Issue a JWT that the client will store in localStorage
