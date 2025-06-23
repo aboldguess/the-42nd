@@ -2,7 +2,6 @@
 
 const Clue = require('../models/Clue');
 const Team = require('../models/Team');
-const QRCode = require("qrcode");
 const Media = require('../models/Media');
 const mongoose = require('mongoose');
 
@@ -59,10 +58,6 @@ exports.createClue = async (req, res) => {
       correctAnswer,
       infoPage: infoPage === 'true'
     });
-    await newClue.save();
-    const base = process.env.APP_BASE_URL || "http://localhost:3000";
-    const qr = await QRCode.toDataURL(`${base}/clue/${newClue._id}`);
-    newClue.qrCodeData = qr;
     await newClue.save();
     res.status(201).json(newClue);
   } catch (err) {
@@ -132,10 +127,6 @@ exports.updateClue = async (req, res) => {
       new: true
     });
     if (!clue) return res.status(404).json({ message: 'Clue not found' });
-    const base = process.env.APP_BASE_URL || "http://localhost:3000";
-    const qrUpdate = await QRCode.toDataURL(`${base}/clue/${clue._id}`);
-    clue.qrCodeData = qrUpdate;
-    await clue.save();
     res.json(clue);
   } catch (err) {
     console.error('Error updating clue:', err);
