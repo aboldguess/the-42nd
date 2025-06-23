@@ -3,6 +3,7 @@ import ProfilePic from '../components/ProfilePic';
 // Component allowing a team to select and save its colour scheme
 import ColorSchemePicker from '../components/ColorSchemePicker';
 import { fetchMe, updateMe } from '../services/api';
+import Wall from '../components/Wall';
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
@@ -59,6 +60,8 @@ export default function ProfilePage() {
         the /api/teams/:id/colour endpoint and updates the app theme.
       */}
       <ColorSchemePicker />
+      {/* Display wall posts on the player's own page */}
+      <Wall userId={user._id} allowPost={true} />
     </div>
   );
 }

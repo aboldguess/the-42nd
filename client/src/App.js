@@ -12,6 +12,7 @@ import RoguesGalleryPage from './pages/RoguesGalleryPage';
 import InfoPage from './pages/InfoPage';
 import ScoreboardPage from './pages/ScoreboardPage';
 import LoginPage from './pages/LoginPage';
+import PlayerWallPage from './pages/PlayerWallPage';
 import AdminCluesPage from './pages/AdminCluesPage';
 import AdminQuestionsPage from './pages/AdminQuestionsPage';
 import AdminSideQuestsPage from './pages/AdminSideQuestsPage';
@@ -92,6 +93,14 @@ export default function App() {
                 element={
                   <AuthRoute>
                     <RoguesGalleryPage />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/player/:id"
+                element={
+                  <AuthRoute>
+                    <PlayerWallPage />
                   </AuthRoute>
                 }
               />
