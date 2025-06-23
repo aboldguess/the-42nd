@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { DEFAULT_GAME_SLUG } from '../config';
 
 export default function Sidebar() {
   const location = useLocation();
@@ -33,7 +34,7 @@ export default function Sidebar() {
       {token && (
         <>
           {renderLink('/dashboard', 'Dashboard')}
-          {renderLink('/clue/1', 'Hunt')}
+          {renderLink(`/${DEFAULT_GAME_SLUG}/clue/1`, 'Hunt')}
           {renderLink('/sidequests', 'Side Quests')}
           {renderLink('/roguery', 'Gallery')}
           {renderLink('/scoreboard', 'Scoreboard')}
