@@ -2,49 +2,53 @@ import React, { useEffect, useState } from 'react';
 import {
   fetchQuestions,
   createQuestion,
+  updateQuestion,
   deleteQuestion
 } from '../services/api';
 
-// Simple CRUD interface for Questions
+// Admin table for trivia questions with CRUD actions
 export default function AdminQuestionsPage() {
-  // List of existing questions
   const [questions, setQuestions] = useState([]);
-  const [title, setTitle] = useState('');
-  const [text, setText] = useState('');
-  const [options, setOptions] = useState('');
-  const [notes, setNotes] = useState('');
-  // Image file selected for upload
-  const [image, setImage] = useState(null);
+  const [newQ, setNewQ] = useState({ title: '', text: '', options: '', notes: '' });
+  const [editId, setEditId] = useState(null);
+  const [editData, setEditData] = useState({});
+  const [newImage, setNewImage] = useState(null);
+  const [editImage, setEditImage] = useState(null);
 
   useEffect(() => {
     load();
   }, []);
 
-  // Fetch questions from API
   const load = async () => {
     const { data } = await fetchQuestions();
     setQuestions(data);
   };
 
-  // Submit a new question to the server
-  const handleCreate = async (e) => {
-    e.preventDefault();
+  const handleCreate = async () => {
     const formData = new FormData();
-    formData.append('title', title);
-    formData.append('text', text);
-    formData.append('options', options);
-    formData.append('notes', notes);
-    if (image) formData.append('image', image);
+    formData.append('title', newQ.title);
+    formData.append('text', newQ.text);
+    formData.append('options', newQ.options);
+    formData.append('notes', newQ.notes);
+    if (newImage) formData.append('image', newImage);
     await createQuestion(formData);
-    setTitle('');
-    setText('');
-    setOptions('');
-    setNotes('');
-    setImage(null);
+    setNewQ({ title: '', text: '', options: '', notes: '' });
+    setNewImage(null);
     load();
   };
 
-  // Delete a question by ID
+  const handleSave = async (id) => {
+    const payload = { ...editData };
+    await updateQuestion(id, payload);
+    if (editImage) {
+      // image update not supported in API yet
+    }
+    setEditId(null);
+    setEditData({});
+    setEditImage(null);
+    load();
+  };
+
   const handleDelete = async (id) => {
     await deleteQuestion(id);
     load();
@@ -53,40 +57,53 @@ export default function AdminQuestionsPage() {
   return (
     <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
       <h2>Questions</h2>
-      <form onSubmit={handleCreate} style={{ marginBottom: '1rem' }}>
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Title"
-          required
-        />
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Question"
-          required
-        />
-        <input
-          value={options}
-          onChange={(e) => setOptions(e.target.value)}
-          placeholder="Options comma separated"
-          // Admins enter answers as a comma separated list
-        />
-        <input
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Notes"
-        />
-        <input type="file" onChange={(e) => setImage(e.target.files[0])} />
-        <button type="submit">Create</button>
-      </form>
-      <ul>
-        {questions.map((q) => (
-          <li key={q._id}>
-            {q.title} <button onClick={() => handleDelete(q._id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Question</th>
+            <th>Notes</th>
+            <th>QR</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {questions.map((q) => (
+            <tr key={q._id}>
+              {editId === q._id ? (
+                <>
+                  <td><input value={editData.title} onChange={(e) => setEditData({ ...editData, title: e.target.value })} /></td>
+                  <td><input value={editData.text} onChange={(e) => setEditData({ ...editData, text: e.target.value })} /></td>
+                  <td><input value={editData.notes} onChange={(e) => setEditData({ ...editData, notes: e.target.value })} /></td>
+                  <td>-</td>
+                  <td>
+                    <button onClick={() => handleSave(q._id)}>Save</button>
+                    <button onClick={() => setEditId(null)}>Cancel</button>
+                  </td>
+                </>
+              ) : (
+                <>
+                  <td>{q.title}</td>
+                  <td>{q.text}</td>
+                  <td>{q.notes}</td>
+                  <td>-</td>
+                  <td>
+                    <button onClick={() => { setEditId(q._id); setEditData({ title: q.title, text: q.text, notes: q.notes, options: q.options?.join(', ') }); }}>Edit</button>
+                    <button onClick={() => handleDelete(q._id)}>Delete</button>
+                  </td>
+                </>
+              )}
+            </tr>
+          ))}
+          <tr>
+            <td><input value={newQ.title} onChange={(e) => setNewQ({ ...newQ, title: e.target.value })} placeholder="Title" /></td>
+            <td><input value={newQ.text} onChange={(e) => setNewQ({ ...newQ, text: e.target.value })} placeholder="Question" /></td>
+            <td><input value={newQ.notes} onChange={(e) => setNewQ({ ...newQ, notes: e.target.value })} placeholder="Notes" /></td>
+            <td>-</td>
+            <td><button onClick={handleCreate}>Add</button></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }

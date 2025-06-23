@@ -1,18 +1,26 @@
 import React, { useEffect, useState } from 'react';
-
-// Simple CRUD interface for managing clue data. Supports optional image upload.
 import {
   fetchClues,
   createClueAdmin,
+  updateClueAdmin,
   deleteClueAdmin
 } from '../services/api';
 
+// Admin table for managing clues with inline editing
 export default function AdminCluesPage() {
-  const [clues, setClues] = useState([]);
-  const [title, setTitle] = useState('');
-  const [text, setText] = useState('');
-  const [image, setImage] = useState(null);
+  const [clues, setClues] = useState([]); // list of clue objects
+  const [newClue, setNewClue] = useState({
+    title: '',
+    text: '',
+    options: '',
+    correctAnswer: '',
+    infoPage: false,
+    image: null
+  });
+  const [editId, setEditId] = useState(null); // currently edited clue id
+  const [editData, setEditData] = useState({}); // form state for edit row
 
+  // Fetch clues on mount
   useEffect(() => {
     load();
   }, []);
@@ -22,16 +30,32 @@ export default function AdminCluesPage() {
     setClues(data);
   };
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
+  // Create a new clue using the bottom row inputs
+  const handleCreate = async () => {
     const formData = new FormData();
-    formData.append('title', title);
-    formData.append('text', text);
-    if (image) formData.append('questionImage', image);
+    formData.append('title', newClue.title);
+    formData.append('text', newClue.text);
+    formData.append('options', newClue.options);
+    formData.append('correctAnswer', newClue.correctAnswer);
+    formData.append('infoPage', newClue.infoPage ? 'true' : 'false');
+    if (newClue.image) formData.append('questionImage', newClue.image);
     await createClueAdmin(formData);
-    setTitle('');
-    setText('');
-    setImage(null);
+    setNewClue({ title: '', text: '', options: '', correctAnswer: '', infoPage: false, image: null });
+    load();
+  };
+
+  // Save edits for an existing clue
+  const handleSave = async (id) => {
+    const formData = new FormData();
+    formData.append('title', editData.title);
+    formData.append('text', editData.text);
+    formData.append('options', editData.options);
+    formData.append('correctAnswer', editData.correctAnswer);
+    formData.append('infoPage', editData.infoPage ? 'true' : 'false');
+    if (editData.image) formData.append('questionImage', editData.image);
+    await updateClueAdmin(id, formData);
+    setEditId(null);
+    setEditData({});
     load();
   };
 
@@ -43,34 +67,68 @@ export default function AdminCluesPage() {
   return (
     <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
       <h2>Clues</h2>
-      <form onSubmit={handleCreate} style={{ marginBottom: '1rem' }}>
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Title"
-          required
-        />
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Text"
-          required
-        />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImage(e.target.files[0])}
-        />
-        <button type="submit">Create</button>
-      </form>
-      <ul>
-        {clues.map((c) => (
-          <li key={c._id}>
-            {c.title} <button onClick={() => handleDelete(c._id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Text</th>
+            <th>Answer</th>
+            <th>QR</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {clues.map((c) => (
+            <tr key={c._id}>
+              {editId === c._id ? (
+                <>
+                  <td>
+                    <input value={editData.title} onChange={(e) => setEditData({ ...editData, title: e.target.value })} />
+                  </td>
+                  <td>
+                    <input value={editData.text} onChange={(e) => setEditData({ ...editData, text: e.target.value })} />
+                  </td>
+                  <td>
+                    <input value={editData.correctAnswer} onChange={(e) => setEditData({ ...editData, correctAnswer: e.target.value })} />
+                  </td>
+                  <td>{c.qrCodeData ? <img src={c.qrCodeData} alt="QR" width={50} /> : '-'}</td>
+                  <td>
+                    <button onClick={() => handleSave(c._id)}>Save</button>
+                    <button onClick={() => setEditId(null)}>Cancel</button>
+                  </td>
+                </>
+              ) : (
+                <>
+                  <td>{c.title}</td>
+                  <td>{c.text}</td>
+                  <td>{c.correctAnswer}</td>
+                  <td>{c.qrCodeData ? <img src={c.qrCodeData} alt="QR" width={50} /> : '-'}</td>
+                  <td>
+                    <button onClick={() => { setEditId(c._id); setEditData({ title: c.title, text: c.text, options: c.options?.join(', '), correctAnswer: c.correctAnswer, infoPage: c.infoPage }); }}>Edit</button>
+                    <button onClick={() => handleDelete(c._id)}>Delete</button>
+                  </td>
+                </>
+              )}
+            </tr>
+          ))}
+          {/* Bottom row for creating a new clue */}
+          <tr>
+            <td>
+              <input value={newClue.title} onChange={(e) => setNewClue({ ...newClue, title: e.target.value })} placeholder="Title" />
+            </td>
+            <td>
+              <input value={newClue.text} onChange={(e) => setNewClue({ ...newClue, text: e.target.value })} placeholder="Text" />
+            </td>
+            <td>
+              <input value={newClue.correctAnswer} onChange={(e) => setNewClue({ ...newClue, correctAnswer: e.target.value })} placeholder="Answer" />
+            </td>
+            <td>-</td>
+            <td>
+              <button onClick={handleCreate}>Add</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }
-

@@ -1,5 +1,17 @@
 const SideQuest = require('../models/SideQuest');
 const Media = require('../models/Media');
+const QRCode = require('qrcode');
+
+const QR_BASE = process.env.QR_BASE_URL || 'http://localhost:3000';
+
+// Ensure a side quest has a QR code stored
+async function ensureQrCode(sq) {
+  if (!sq.qrCodeData) {
+    const url = `${QR_BASE}/sidequest/${sq._id}`;
+    sq.qrCodeData = await QRCode.toDataURL(url);
+    await sq.save();
+  }
+}
 
 // CRUD handlers for SideQuest objects. Supports optional image upload and
 // records whether a user or admin created the quest.
@@ -7,6 +19,7 @@ const Media = require('../models/Media');
 exports.getAllSideQuests = async (req, res) => {
   try {
     const sideQuests = await SideQuest.find({ active: true }).sort({ createdAt: 1 });
+    await Promise.all(sideQuests.map((sq) => ensureQrCode(sq)));
     res.json(sideQuests);
   } catch (err) {
     console.error(err);
@@ -39,6 +52,7 @@ exports.createSideQuest = async (req, res) => {
     });
 
     await newSQ.save();
+    await ensureQrCode(newSQ);
     res.status(201).json(newSQ);
   } catch (err) {
     console.error(err);
@@ -67,6 +81,7 @@ exports.updateSideQuest = async (req, res) => {
       new: true
     });
     if (!sq) return res.status(404).json({ message: 'Side quest not found' });
+    await ensureQrCode(sq);
     res.json(sq);
   } catch (err) {
     console.error(err);
