@@ -4,7 +4,7 @@ import { fetchClue, submitAnswer } from '../services/api';
 
 // Question view for the single active game
 export default function QuestionPage() {
-  // Only clueId remains now that game slugs were removed
+  // Grab clue ID from the URL
   const { clueId } = useParams();
   const navigate = useNavigate();
   const [clue, setClue] = useState(null);

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { fetchMe, fetchTeam, addTeamMember } from '../services/api';
-import { DEFAULT_GAME_SLUG } from '../config';
 import TeamMemberForm from '../components/TeamMemberForm';
 
 export default function Dashboard() {
@@ -77,7 +76,7 @@ export default function Dashboard() {
       {user.isAdmin && <TeamMemberForm onAdd={handleAddMember} />}
 
       <div style={{ marginTop: '1rem' }}>
-        <a href={`/${DEFAULT_GAME_SLUG}/clue/${currentClue}`}>
+        <a href={`/clue/${currentClue}`}>
           <button>Go to Current Clue</button>
         </a>
       </div>

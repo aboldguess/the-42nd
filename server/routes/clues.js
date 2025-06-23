@@ -5,8 +5,7 @@ const router = express.Router();
 
 const auth = require('../middleware/auth');
 const upload = require('../middleware/upload');
-// These routes used to be namespaced by a game slug, but the
-// application now supports only a single active game.
+// Routes for managing and answering clues in the single game instance.
 const {
   getClue,
   getAllClues,
