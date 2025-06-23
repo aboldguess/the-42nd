@@ -80,15 +80,21 @@ exports.onboard = async (req, res) => {
       selfieUrl = '/uploads/' + req.files.selfie[0].filename;
     }
 
-    // 2b) Create the User document, linking to this team
+    // 2b) Parse first and last name for storage
+    const [firstName, ...rest] = name.trim().split(' ');
+    const lastName = rest.join(' ');
+
+    // 2c) Create the User document, linking to this team
     const user = await User.create({
       name,
+      firstName,
+      lastName,
       photoUrl: selfieUrl,
       team: team._id,
       isAdmin: isNewTeam === 'true'  // mark as admin if they created the team
     });
 
-    // 2c) If we just created a new team, put this user in team.members
+    // 2d) If we just created a new team, put this user in team.members
     if (isNewTeam === 'true') {
       team.members.push({ name: user.name, avatarUrl: selfieUrl });
       await team.save();
