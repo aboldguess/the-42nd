@@ -4,6 +4,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Team = require('../models/Team');
 const User = require('../models/User');
+const QRCode = require('qrcode');
+const Settings = require('../models/Settings');
+
+// Helper to retrieve the base URL for QR codes
+async function getQrBase() {
+  const settings = await Settings.findOne();
+  return settings?.qrBaseUrl || process.env.QR_BASE_URL || 'http://localhost:3000';
+}
 
 // 1) GET /api/onboard/teams
 //    Return an array of { _id, name } for each existing team.
@@ -96,6 +104,15 @@ exports.onboard = async (req, res) => {
       team: team._id,
       isAdmin: isNewTeam === 'true'  // mark as admin if they created the team
     });
+
+    // Generate and store a QR code for this player's public profile
+    // This allows others to scan and view their page
+    const base = await getQrBase();
+    user.qrCodeData = await QRCode.toDataURL(
+      `${base.replace(/\/$/, '')}/player/${user._id}`
+    );
+    user.qrBaseUrl = base;
+    await user.save();
 
     // 2d) If we just created a new team, put this user in team.members
     if (isNewTeam === 'true') {

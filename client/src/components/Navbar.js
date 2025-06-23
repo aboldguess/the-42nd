@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { fetchMe } from '../services/api';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -7,6 +8,20 @@ export default function Navbar() {
   // Tokens for player and admin
   const token = localStorage.getItem('token');
   const adminToken = localStorage.getItem('adminToken');
+
+  const [me, setMe] = useState(null);
+
+  // Load current player info (including QR code) whenever the
+  // login token changes
+  useEffect(() => {
+    if (token) {
+      fetchMe()
+        .then((res) => setMe(res.data))
+        .catch((err) => console.error(err));
+    } else {
+      setMe(null);
+    }
+  }, [token]);
 
   // Toggle the sidebar on small screens
   const toggleSidebar = () => {
@@ -38,6 +53,16 @@ export default function Navbar() {
       </div>
 
       <ul className="nav-right">
+        {/* Player QR code: clicking or scanning goes to their profile */}
+        {me && (
+          <li onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
+            <img
+              src={me.qrCodeData}
+              alt="My QR"
+              style={{ width: '40px', height: '40px' }}
+            />
+          </li>
+        )}
         {/* Admin links */}
         {!adminToken && (
           <li>

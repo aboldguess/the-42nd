@@ -47,6 +47,7 @@ export default function AdminPlayersPage() {
           <tr>
             <th>Name</th>
             <th>Team</th>
+            {/* Show each player's QR code */}
             <th>QR</th>
             <th>Actions</th>
           </tr>
@@ -65,7 +66,12 @@ export default function AdminPlayersPage() {
                       ))}
                     </select>
                   </td>
-                  <td>-</td>
+                  <td>
+                    {/* Data URL from the API renders the player's QR */}
+                    {p.qrCodeData && (
+                      <img src={p.qrCodeData} alt="qr" width="40" />
+                    )}
+                  </td>
                   <td>
                     <button onClick={() => handleSave(p._id)}>Save</button>
                     <button onClick={() => setEditId(null)}>Cancel</button>
@@ -75,7 +81,11 @@ export default function AdminPlayersPage() {
                 <>
                   <td>{p.name}</td>
                   <td>{p.team?.name}</td>
-                  <td>-</td>
+                  <td>
+                    {p.qrCodeData && (
+                      <img src={p.qrCodeData} alt="qr" width="40" />
+                    )}
+                  </td>
                   <td>
                     <button onClick={() => { setEditId(p._id); setEditData({ name: p.name, team: p.team?._id }); }}>Edit</button>
                     <button onClick={() => handleDelete(p._id)}>Delete</button>

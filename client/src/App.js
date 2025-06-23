@@ -7,6 +7,7 @@ import OnboardingPage from './pages/OnboardingPage';
 import Dashboard from './pages/Dashboard';
 import QuestionPage from './pages/QuestionPage';
 import ProfilePage from './pages/ProfilePage';
+import PlayerProfilePage from './pages/PlayerProfilePage';
 import SideQuestPage from './pages/SideQuestPage';
 import RoguesGalleryPage from './pages/RoguesGalleryPage';
 import InfoPage from './pages/InfoPage';
@@ -79,6 +80,8 @@ export default function App() {
                   </AuthRoute>
                 }
               />
+              {/* Public page for viewing another player's profile */}
+              <Route path="/player/:id" element={<PlayerProfilePage />} />
               <Route
                 path="/sidequests"
                 element={

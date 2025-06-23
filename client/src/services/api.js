@@ -35,6 +35,7 @@ export const login = (creds) => axios.post('/api/auth/login', creds);
 
 // Player endpoints
 export const fetchMe = () => axios.get('/api/users/me');
+export const fetchUserPublic = (id) => axios.get(`/api/users/${id}`);
 export const updateMe = (formData) =>
   axios.put('/api/users/me', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
