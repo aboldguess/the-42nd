@@ -27,10 +27,11 @@ export const onboard = (formData) =>
   axios.post('/api/onboard', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   });
+// This remains for backwards compatibility but is unused by the simplified UI
 export const fetchTeamsList = () => axios.get('/api/onboard/teams');
 
 // Player authentication
-// Submit player and team credentials to receive a JWT
+// Submit player names to receive a JWT
 export const login = (creds) => axios.post('/api/auth/login', creds);
 
 // Player endpoints

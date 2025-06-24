@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
 
 export default function OnboardingPage() {
@@ -8,27 +7,17 @@ export default function OnboardingPage() {
   // `name` field but the API now expects `firstName` and `lastName`.
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [teams, setTeams] = useState([]);
-  const [selectedTeamId, setSelectedTeamId] = useState('');
+  // When joining an existing team the player will provide the first name of
+  // the team leader instead of selecting a team by name.
+  const [leaderFirstName, setLeaderFirstName] = useState('');
   const [isNewTeam, setIsNewTeam] = useState(false);
-  const [teamName, setTeamName] = useState('');
-  const [teamPassword, setTeamPassword] = useState('');
   const [selfieFile, setSelfieFile] = useState(null);
   const [teamPhotoFile, setTeamPhotoFile] = useState(null);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchTeams = async () => {
-      try {
-        const res = await axios.get('/api/teams/list/all');
-        setTeams(res.data);
-      } catch (err) {
-        console.error('Error fetching teams:', err);
-      }
-    };
-    fetchTeams();
-  }, []);
+  // No team list is fetched because players join a team using the leader's
+  // first name.
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,19 +31,14 @@ export default function OnboardingPage() {
     formData.append('isNewTeam', isNewTeam ? 'true' : 'false');
 
     if (isNewTeam) {
-      if (!teamName) return alert('Please enter a new team name');
-      if (!teamPassword) return alert('Please set a team password');
+      // Creating a team only requires an optional team photo
       if (!teamPhotoFile) return alert('Please upload a team photo');
-
-      formData.append('teamName', teamName);
-      formData.append('teamPassword', teamPassword);
       formData.append('teamPhoto', teamPhotoFile);
     } else {
-      if (!selectedTeamId) return alert('Please select a team');
-      if (!teamPassword) return alert('Please enter the team password');
-      const chosen = teams.find((t) => t._id === selectedTeamId);
-      formData.append('teamName', chosen?.name || '');
-      formData.append('teamPassword', teamPassword);
+      // Joining a team requires the leader's first name so the server can look
+      // up the correct team.
+      if (!leaderFirstName) return alert('Enter the team leader\'s first name');
+      formData.append('leaderFirstName', leaderFirstName);
     }
 
     formData.append('selfie', selfieFile);
@@ -101,10 +85,9 @@ export default function OnboardingPage() {
               checked={!isNewTeam}
               onChange={() => {
                 setIsNewTeam(false);
-                setTeamName('');
                 setTeamPhotoFile(null);
-                setSelectedTeamId('');
-                setTeamPassword('');
+                // Reset leader name when switching modes
+                setLeaderFirstName('');
               }}
             />
             Join Existing Team
@@ -116,8 +99,8 @@ export default function OnboardingPage() {
               checked={isNewTeam}
               onChange={() => {
                 setIsNewTeam(true);
-                setSelectedTeamId('');
-                setTeamPassword('');
+                // Clear leader name when switching to create mode
+                setLeaderFirstName('');
               }}
             />
             Create New Team
@@ -126,49 +109,17 @@ export default function OnboardingPage() {
 
         {!isNewTeam ? (
           <>
-            <label>Select Team:</label>
-            <select
-              value={selectedTeamId}
-              onChange={(e) => setSelectedTeamId(e.target.value)}
-              required
-            >
-              <option value="">— Choose a Team —</option>
-              {teams.map((t) => (
-                <option key={t._id} value={t._id}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
-
-            <label>Team Password:</label>
+            <label>Team Leader's First Name:</label>
             <input
               type="text"
-              value={teamPassword}
-              onChange={(e) => setTeamPassword(e.target.value)}
+              value={leaderFirstName}
+              onChange={(e) => setLeaderFirstName(e.target.value)}
               required
-              placeholder="Enter team password"
+              placeholder="Leader first name"
             />
           </>
         ) : (
           <>
-            <label>New Team Name:</label>
-            <input
-              type="text"
-              value={teamName}
-              onChange={(e) => setTeamName(e.target.value)}
-              required
-              placeholder="Your new team’s name"
-            />
-
-            <label>Create Team Password:</label>
-            <input
-              type="text"
-              value={teamPassword}
-              onChange={(e) => setTeamPassword(e.target.value)}
-              required
-              placeholder="Choose a password"
-            />
-
             <label>Team Photo:</label>
             <input
               type="file"
