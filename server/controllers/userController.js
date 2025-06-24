@@ -54,8 +54,11 @@ exports.createPlayer = async (req, res) => {
   try {
     const [firstName, ...rest] = (req.body.name || '').trim().split(' ');
     const lastName = rest.join(' ');
+    // Derive username and hash the surname so it never needs to be stored in
+    // plain text
     const username = `${firstName}${lastName[0]}`.toLowerCase();
     const hash = await require('bcryptjs').hash(lastName, 10);
+    // Only the first name is stored as the display name
     const player = await User.create({
       name: firstName,
       firstName,

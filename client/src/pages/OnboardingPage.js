@@ -3,6 +3,11 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../services/api';
 
+// This component handles both new player sign-up and returning player login in
+// a single form. Players provide their first and last name and either join an
+// existing team or create a new one. The last name acts as a password and never
+// appears publicly.
+
 export default function OnboardingPage() {
   const [isLogin, setIsLogin] = useState(false); // true -> login, false -> sign up
   const [firstName, setFirstName] = useState('');
@@ -17,6 +22,7 @@ export default function OnboardingPage() {
 
   const navigate = useNavigate();
 
+  // Grab the list of existing teams for the "join" option on first render.
   useEffect(() => {
     const fetchTeams = async () => {
       try {
@@ -29,6 +35,7 @@ export default function OnboardingPage() {
     fetchTeams();
   }, []);
 
+  // Handle form submission for both login and sign up flows.
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!firstName || !lastName) return alert('Please enter your full name');
@@ -54,6 +61,7 @@ export default function OnboardingPage() {
 
     if (!selfieFile) return alert('Please upload a selfie');
 
+    // Build multipart form data for the onboarding endpoint
     const formData = new FormData();
     formData.append('firstName', firstName);
     formData.append('lastName', lastName);
@@ -85,6 +93,8 @@ export default function OnboardingPage() {
     }
   };
 
+  // Render the form. Fields are conditionally shown depending on whether the
+  // player is logging in or signing up / creating a team.
   return (
     <div className="card" style={{ maxWidth: '500px', margin: '0 auto' }}>
       <h2>{isLogin ? 'Player Login' : 'Player Onboarding'}</h2>
