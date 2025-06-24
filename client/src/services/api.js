@@ -117,4 +117,9 @@ export const deleteQuestion = (id) =>
 export const fetchSettings = () => axios.get('/api/settings');
 export const fetchSettingsAdmin = () => axios.get('/api/admin/settings');
 export const updateSettingsAdmin = (data) => axios.put('/api/admin/settings', data);
+export const exportGameAdmin = () => axios.get('/api/admin/settings/export', { responseType: 'blob' });
+export const importGameAdmin = (data) =>
+  axios.post('/api/admin/settings/import', data, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
 
