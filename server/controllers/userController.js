@@ -41,10 +41,15 @@ exports.updateMe = async (req, res) => {
   }
 };
 
-// List all players (admin use)
+// List all players. Accepts optional ?team=<teamId> to filter by team
 exports.getAllPlayers = async (req, res) => {
   try {
-    const players = await User.find().populate('team', 'name');
+    const query = {};
+    // When a team id is provided, limit the search to that team
+    if (req.query.team) {
+      query.team = req.query.team;
+    }
+    const players = await User.find(query).populate('team', 'name');
     res.json(players);
   } catch (err) {
     console.error(err);
@@ -55,8 +60,15 @@ exports.getAllPlayers = async (req, res) => {
 // Create a new player attached to a team
 exports.createPlayer = async (req, res) => {
   try {
+    // Ensure a team id was provided
+    if (!req.body.team) {
+      return res.status(400).json({ message: 'Team is required' });
+    }
+
+    // Split name into first and last for convenience
     const [firstName, ...rest] = (req.body.name || '').trim().split(' ');
     const lastName = rest.join(' ');
+
     const player = await User.create({
       name: req.body.name,
       firstName,

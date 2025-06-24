@@ -1,5 +1,6 @@
 const Team = require('../models/Team');
 const Media = require('../models/Media');
+const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 
 exports.getTeam = async (req, res) => {
@@ -140,6 +141,8 @@ exports.deleteTeam = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized' });
     }
 
+    // Removing the team should also remove any players linked to it
+    await User.deleteMany({ team: team._id });
     await Team.deleteOne({ _id: team._id });
     res.json({ message: 'Team deleted' });
   } catch (err) {
