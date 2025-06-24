@@ -16,9 +16,8 @@ exports.updateMe = async (req, res) => {
     const updates = {};
     if (req.body.name) {
       updates.name = req.body.name;
-      const [firstName, ...rest] = req.body.name.trim().split(' ');
+      const [firstName] = req.body.name.trim().split(' ');
       updates.firstName = firstName;
-      updates.lastName = rest.join(' ');
     }
     if (req.files && req.files.selfie) {
       const avatarPath = '/uploads/' + req.files.selfie[0].filename;
@@ -55,10 +54,13 @@ exports.createPlayer = async (req, res) => {
   try {
     const [firstName, ...rest] = (req.body.name || '').trim().split(' ');
     const lastName = rest.join(' ');
+    const username = `${firstName}${lastName[0]}`.toLowerCase();
+    const hash = await require('bcryptjs').hash(lastName, 10);
     const player = await User.create({
-      name: req.body.name,
+      name: firstName,
       firstName,
-      lastName,
+      username,
+      password: hash,
       team: req.body.team
     });
     res.status(201).json(player);

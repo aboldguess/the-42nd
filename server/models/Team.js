@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const teamSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, unique: true },
-    password: { type: String, required: true },          // bcrypt‐hashed
+    // Stored lowercase to allow case-insensitive checks when players join
+    creatorFirstName: { type: String, required: true },
     photoUrl: { type: String, default: '' },             // e.g. "/uploads/uuid.jpg"
     members: [
       {

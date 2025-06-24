@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
+import { login } from '../services/api';
 
 export default function OnboardingPage() {
-  // Store first and last names separately. Previously we used a single
-  // `name` field but the API now expects `firstName` and `lastName`.
+  const [isLogin, setIsLogin] = useState(false); // true -> login, false -> sign up
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [teams, setTeams] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState('');
   const [isNewTeam, setIsNewTeam] = useState(false);
   const [teamName, setTeamName] = useState('');
-  const [teamPassword, setTeamPassword] = useState('');
+  const [creatorName, setCreatorName] = useState('');
   const [selfieFile, setSelfieFile] = useState(null);
   const [teamPhotoFile, setTeamPhotoFile] = useState(null);
 
@@ -33,98 +32,130 @@ export default function OnboardingPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!firstName || !lastName) return alert('Please enter your full name');
+
+    if (isLogin) {
+      if (!selectedTeamId) return alert('Please select your team');
+      if (!creatorName) return alert("Enter your team's creator name");
+      const team = teams.find((t) => t._id === selectedTeamId);
+      try {
+        const { data } = await login({
+          firstName,
+          lastName,
+          teamName: team?.name || '',
+          creatorFirstName: creatorName,
+        });
+        localStorage.setItem('token', data.token);
+        navigate('/dashboard');
+      } catch (err) {
+        alert(err.response?.data?.message || 'Login failed');
+      }
+      return;
+    }
+
     if (!selfieFile) return alert('Please upload a selfie');
 
     const formData = new FormData();
-    // Send first and last name as separate fields
     formData.append('firstName', firstName);
     formData.append('lastName', lastName);
     formData.append('isNewTeam', isNewTeam ? 'true' : 'false');
 
     if (isNewTeam) {
       if (!teamName) return alert('Please enter a new team name');
-      if (!teamPassword) return alert('Please set a team password');
       if (!teamPhotoFile) return alert('Please upload a team photo');
-
       formData.append('teamName', teamName);
-      formData.append('teamPassword', teamPassword);
       formData.append('teamPhoto', teamPhotoFile);
     } else {
       if (!selectedTeamId) return alert('Please select a team');
-      if (!teamPassword) return alert('Please enter the team password');
+      if (!creatorName) return alert("Enter your team's creator name");
       const chosen = teams.find((t) => t._id === selectedTeamId);
       formData.append('teamName', chosen?.name || '');
-      formData.append('teamPassword', teamPassword);
+      formData.append('creatorFirstName', creatorName);
     }
 
     formData.append('selfie', selfieFile);
 
     try {
       const res = await axios.post('/api/onboard', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
       localStorage.setItem('token', res.data.token);
       navigate('/dashboard');
     } catch (err) {
       alert(err.response?.data?.message || 'Registration failed');
-      console.error(err);
     }
   };
 
   return (
     <div className="card" style={{ maxWidth: '500px', margin: '0 auto' }}>
-      <h2>Welcome! Let’s get you set up.</h2>
+      <h2>{isLogin ? 'Player Login' : 'Player Onboarding'}</h2>
       <form onSubmit={handleSubmit}>
-        {/* Collect first and last names separately */}
         <label>First Name:</label>
         <input
           type="text"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           required
-          placeholder="First"
         />
         <label>Last Name:</label>
         <input
-          type="text"
+          type="password"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
           required
-          placeholder="Last"
         />
 
         <div style={{ margin: '1rem 0' }}>
           <label>
             <input
               type="radio"
-              name="teamChoice"
-              checked={!isNewTeam}
-              onChange={() => {
-                setIsNewTeam(false);
-                setTeamName('');
-                setTeamPhotoFile(null);
-                setSelectedTeamId('');
-                setTeamPassword('');
-              }}
-            />
-            Join Existing Team
+              name="mode"
+              checked={isLogin}
+              onChange={() => setIsLogin(true)}
+            />{' '}
+            Login
           </label>
           <label style={{ marginLeft: '1rem' }}>
             <input
               type="radio"
-              name="teamChoice"
-              checked={isNewTeam}
-              onChange={() => {
-                setIsNewTeam(true);
-                setSelectedTeamId('');
-                setTeamPassword('');
-              }}
-            />
-            Create New Team
+              name="mode"
+              checked={!isLogin}
+              onChange={() => setIsLogin(false)}
+            />{' '}
+            Sign Up
           </label>
         </div>
 
-        {!isNewTeam ? (
+        {!isLogin && (
+          <div style={{ margin: '1rem 0' }}>
+            <label>
+              <input
+                type="radio"
+                name="teamChoice"
+                checked={!isNewTeam}
+                onChange={() => {
+                  setIsNewTeam(false);
+                  setTeamName('');
+                  setTeamPhotoFile(null);
+                }}
+              />
+              Join Existing Team
+            </label>
+            <label style={{ marginLeft: '1rem' }}>
+              <input
+                type="radio"
+                name="teamChoice"
+                checked={isNewTeam}
+                onChange={() => {
+                  setIsNewTeam(true);
+                  setSelectedTeamId('');
+                }}
+              />
+              Create New Team
+            </label>
+          </div>
+        )}
+
+        {!isNewTeam && (
           <>
             <label>Select Team:</label>
             <select
@@ -139,17 +170,17 @@ export default function OnboardingPage() {
                 </option>
               ))}
             </select>
-
-            <label>Team Password:</label>
+            <label>Team Creator First Name:</label>
             <input
               type="text"
-              value={teamPassword}
-              onChange={(e) => setTeamPassword(e.target.value)}
+              value={creatorName}
+              onChange={(e) => setCreatorName(e.target.value)}
               required
-              placeholder="Enter team password"
             />
           </>
-        ) : (
+        )}
+
+        {isNewTeam && !isLogin && (
           <>
             <label>New Team Name:</label>
             <input
@@ -157,18 +188,7 @@ export default function OnboardingPage() {
               value={teamName}
               onChange={(e) => setTeamName(e.target.value)}
               required
-              placeholder="Your new team’s name"
             />
-
-            <label>Create Team Password:</label>
-            <input
-              type="text"
-              value={teamPassword}
-              onChange={(e) => setTeamPassword(e.target.value)}
-              required
-              placeholder="Choose a password"
-            />
-
             <label>Team Photo:</label>
             <input
               type="file"
@@ -179,16 +199,20 @@ export default function OnboardingPage() {
           </>
         )}
 
-        <label>Your Selfie:</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setSelfieFile(e.target.files[0])}
-          required
-        />
+        {!isLogin && (
+          <>
+            <label>Your Selfie:</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setSelfieFile(e.target.files[0])}
+              required
+            />
+          </>
+        )}
 
         <button type="submit" style={{ marginTop: '1rem' }}>
-          {isNewTeam ? 'Create Team & Join' : 'Join Team'}
+          {isLogin ? 'Log In' : isNewTeam ? 'Create Team & Join' : 'Join Team'}
         </button>
       </form>
     </div>

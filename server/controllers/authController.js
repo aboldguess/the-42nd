@@ -10,10 +10,10 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   // Extract submitted credentials
-  const { firstName, lastName, teamName, teamPassword } = req.body;
+  const { firstName, lastName, teamName, creatorFirstName } = req.body;
 
   // 1) Basic validation of required fields
-  if (!firstName || !lastName || !teamName || !teamPassword) {
+  if (!firstName || !lastName || !teamName || !creatorFirstName) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
@@ -24,20 +24,21 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Team not found' });
     }
 
-    // 3) Verify the provided team password against the stored hash
-    const match = await bcrypt.compare(teamPassword, team.password);
-    if (!match) {
-      return res.status(400).json({ message: 'Incorrect team password' });
+    // 3) Verify the provided creator name matches the one stored on the team
+    if (team.creatorFirstName.toLowerCase() !== creatorFirstName.trim().toLowerCase()) {
+      return res.status(400).json({ message: 'Incorrect team creator name' });
     }
 
     // 4) Find the user within this team using first and last name
-    const user = await User.findOne({
-      firstName,
-      lastName,
-      team: team._id
-    });
+    const username = `${firstName.trim()}${lastName.trim()[0]}`.toLowerCase();
+    const user = await User.findOne({ username, team: team._id });
     if (!user) {
       return res.status(400).json({ message: 'Player not found' });
+    }
+
+    const pwMatch = await bcrypt.compare(lastName, user.password);
+    if (!pwMatch) {
+      return res.status(400).json({ message: 'Incorrect password' });
     }
 
     // 5) Issue a JWT containing the user id
