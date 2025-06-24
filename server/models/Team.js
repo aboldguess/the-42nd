@@ -6,6 +6,8 @@ const teamSchema = new mongoose.Schema(
     name: { type: String, required: true, unique: true },
     password: { type: String, required: true },          // bcrypt‐hashed
     photoUrl: { type: String, default: '' },             // e.g. "/uploads/uuid.jpg"
+    // Reference to the User who originally created the team
+    leader: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     members: [
       {
         name: { type: String, required: true },

@@ -115,6 +115,8 @@ exports.onboard = async (req, res) => {
     // and log the team photo if one was provided
     if (isNewTeam === 'true') {
       team.members.push({ name: user.name, avatarUrl: selfieUrl });
+      // Record the creator as the team leader for future authorization
+      team.leader = user._id;
       await team.save();
 
       if (team.photoUrl) {
