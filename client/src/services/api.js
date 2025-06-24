@@ -98,6 +98,8 @@ export const deleteSideQuestAdmin = (id) => axios.delete(`/api/admin/sidequests/
 
 // Admin CRUD for players
 export const fetchPlayers = () => axios.get('/api/admin/players');
+export const fetchPlayersByTeam = (teamId) =>
+  axios.get(`/api/admin/players?team=${teamId}`);
 export const createPlayer = (data) => axios.post('/api/admin/players', data);
 export const updatePlayer = (id, data) => axios.put(`/api/admin/players/${id}`, data);
 export const deletePlayer = (id) => axios.delete(`/api/admin/players/${id}`);
