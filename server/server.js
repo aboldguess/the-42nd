@@ -36,7 +36,7 @@ const Settings = require('./models/Settings');
   try {
     const count = await Settings.countDocuments();
     if (count === 0) {
-      await Settings.create({});
+      await Settings.create({ fontFamily: 'Arial, sans-serif' });
       console.log('Seeded default settings');
     }
   } catch (err) {

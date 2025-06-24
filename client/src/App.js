@@ -41,7 +41,8 @@ export default function App() {
       className="app-container"
       style={{
         '--primary-color': theme.primary,
-        '--secondary-color': theme.secondary
+        '--secondary-color': theme.secondary,
+        '--font-family': theme.fontFamily
       }}
     >
       <BrowserRouter>

@@ -116,5 +116,8 @@ export const deleteQuestion = (id) =>
 // Settings endpoints
 export const fetchSettings = () => axios.get('/api/settings');
 export const fetchSettingsAdmin = () => axios.get('/api/admin/settings');
-export const updateSettingsAdmin = (data) => axios.put('/api/admin/settings', data);
+export const updateSettingsAdmin = (data) =>
+  axios.put('/api/admin/settings', data, {
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+  });
 
