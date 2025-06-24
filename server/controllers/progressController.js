@@ -7,17 +7,21 @@ exports.getScoreboard = async (req, res) => {
     const teams = await Team.find().populate('sideQuestProgress.sideQuest', 'title');
 
     // Map to a summary object for easier consumption by the client
-    const board = teams.map(t => ({
-      teamId: t._id,
-      name: t.name,
-      completedClues: t.completedClues.length,
-      completedSideQuests: t.sideQuestProgress.length,
-      score: t.completedClues.length + t.sideQuestProgress.length
-    }))
-    // Highest score first
-    .sort((a, b) => b.score - a.score);
+    const board = teams.map(t => {
+      const clues = t.completedClues ? t.completedClues.length : 0;
+      const quests = t.sideQuestProgress ? t.sideQuestProgress.length : 0;
+      return {
+        teamId: t._id,
+        name: t.name,
+        completedClues: clues,
+        completedSideQuests: quests,
+        score: clues + quests
+      };
+    });
+    // Highest score first then return
+    const sorted = board.sort((a, b) => b.score - a.score);
 
-    res.json(board);
+    res.json(sorted);
   } catch (err) {
     console.error('Error building scoreboard:', err);
     res.status(500).json({ message: 'Error building scoreboard' });
