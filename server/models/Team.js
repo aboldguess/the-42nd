@@ -16,17 +16,26 @@ const teamSchema = new mongoose.Schema(
     ],
     // You may keep any other fields you need (e.g. currentClue, colourScheme, etc.)
     currentClue: { type: Number, default: 1 },
-    completedClues: [Number],
+    // Track the numeric IDs of all solved clues
+    completedClues: {
+      type: [Number],
+      default: []
+    },
     colourScheme: {
       primary: { type: String, default: '#2196F3' },
       secondary: { type: String, default: '#FFC107' }
     },
-    sideQuestProgress: [
-      {
-        sideQuest: { type: mongoose.Schema.Types.ObjectId, ref: 'SideQuest' },
-        completedAt: Date
-      }
-    ]
+    // Log when a team completes each side quest. Defaults to an empty array so
+    // new teams won't cause runtime errors when counting completed quests.
+    sideQuestProgress: {
+      type: [
+        {
+          sideQuest: { type: mongoose.Schema.Types.ObjectId, ref: 'SideQuest' },
+          completedAt: Date
+        }
+      ],
+      default: []
+    }
   },
   { timestamps: true }
 );
