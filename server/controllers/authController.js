@@ -10,35 +10,24 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   // Extract submitted credentials
-  const { firstName, lastName, teamName, teamPassword } = req.body;
+  const { firstName, lastName } = req.body;
 
   // 1) Basic validation of required fields
-  if (!firstName || !lastName || !teamName || !teamPassword) {
+  // Only the player's name is needed to authenticate. This assumes names are
+  // unique across all teams.
+  if (!firstName || !lastName) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
   try {
-    // 2) Look up the team by name
-    const team = await Team.findOne({ name: teamName });
-    if (!team) {
-      return res.status(400).json({ message: 'Team not found' });
-    }
-
-    // 3) Verify the provided team password against the stored hash
-    const match = await bcrypt.compare(teamPassword, team.password);
-    if (!match) {
-      return res.status(400).json({ message: 'Incorrect team password' });
-    }
-
-    // 4) Find the user within this team using first and last name
-    const user = await User.findOne({
-      firstName,
-      lastName,
-      team: team._id
-    });
+    // 2) Find the user by first and last name only
+    const user = await User.findOne({ firstName, lastName });
     if (!user) {
       return res.status(400).json({ message: 'Player not found' });
     }
+
+    // 3) Load the user's team for the response
+    const team = await Team.findById(user.team);
 
     // 5) Issue a JWT containing the user id
     const payload = { id: user._id };

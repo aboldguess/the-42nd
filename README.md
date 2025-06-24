@@ -4,12 +4,18 @@ This project contains a React client and an Express/MongoDB server for running a
 
 ## Features
 - Onboarding flow for players to create or join teams
+- Simplified signup using only first and last name
 - Sequential clues with answer submission
 - Side quests and a rogues gallery for uploaded media
 - Admin authentication and dashboard endpoints
 - Team colour schemes and profile management
 - Admin settings include a **master reset** to wipe all game data after typing
   `definitely` as confirmation
+
+## Player Onboarding and Login
+Players now sign up and log in using **only** their first and last name. To join
+an existing team simply provide the first name of the person who originally
+created the team.
 
 ## Development notes
 - Client source in `client/` built with React

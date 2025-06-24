@@ -8,7 +8,9 @@ const User = require('../models/User');
 const Media = require('../models/Media');
 
 // 1) GET /api/onboard/teams
-//    Return an array of { _id, name } for each existing team.
+//    Return an array of { _id, name } for each existing team. This endpoint
+//    is largely kept for backwards compatibility but is no longer used by the
+//    simplified onboarding flow.
 exports.getTeamsList = async (req, res) => {
   try {
     const teams = await Team.find().select('name');
@@ -21,21 +23,23 @@ exports.getTeamsList = async (req, res) => {
 
 // 2) POST /api/onboard
 //    Expects multipart/form-data with fields:
-//      - firstName     (string)
-//      - lastName      (string)
-//      - isNewTeam     ("true" or "false")
-//      - teamName      (string)
-//      - teamPassword  (string)
-//      - selfie        (file upload, maxCount:1)
-//      - teamPhoto     (file upload, maxCount:1) [only if isNewTeam === "true"]
+//      - firstName        (string)
+//      - lastName         (string)
+//      - isNewTeam        ("true" or "false")
+//      - leaderFirstName  (string) required when joining a team
+//      - selfie           (file upload, maxCount:1)
+//      - teamPhoto        (file upload, maxCount:1) [only when creating a team]
 exports.onboard = async (req, res) => {
   try {
     // The client now provides first and last names separately. Older
     // implementations sent a single `name` string.
-    const { firstName, lastName, teamName, teamPassword, isNewTeam } = req.body;
+    const { firstName, lastName, isNewTeam, leaderFirstName } = req.body;
 
     // Basic validation
-    if (!firstName || !lastName || !teamName || !teamPassword) {
+    // Only the player's name is required. If joining an existing team the
+    // leader's first name must also be provided so we know which team to add
+    // them to.
+    if (!firstName || !lastName || (isNewTeam !== 'true' && !leaderFirstName)) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
@@ -43,24 +47,22 @@ exports.onboard = async (req, res) => {
 
     // (A) Creating a new team?
     if (isNewTeam === 'true') {
-      // 1) Ensure the team name is not already taken
-      const existingTeam = await Team.findOne({ name: teamName });
-      if (existingTeam) {
-        return res.status(400).json({ message: 'Team name already taken' });
-      }
+      // 1) The simplified flow no longer asks for a team name or password.
+      //    Generate a unique placeholder name and password internally.
+      const generatedName = `team-${Date.now()}`;
+      const hashed = await bcrypt.hash(generatedName, 10);
 
-      // 2) Hash the submitted team password
-      const hashed = await bcrypt.hash(teamPassword, 10);
-
-      // 3) Save the uploaded team photo file (if present)
+      // 2) Save the uploaded team photo file (if present)
       let teamPhotoUrl = '';
       if (req.files && req.files.teamPhoto && req.files.teamPhoto.length > 0) {
         teamPhotoUrl = '/uploads/' + req.files.teamPhoto[0].filename;
       }
 
-      // 4) Create the Team document
+      // 3) Create the Team document
       team = await Team.create({
-        name: teamName,
+        // Name/password are essentially hidden from the user so the schema
+        // requirements are satisfied
+        name: generatedName,
         password: hashed,
         photoUrl: teamPhotoUrl,
         members: []  // we’ll push the creator below
@@ -68,14 +70,17 @@ exports.onboard = async (req, res) => {
     }
     // (B) Joining an existing team?
     else {
-      team = await Team.findOne({ name: teamName });
-      if (!team) {
+      // Look up the leader by first name and then retrieve their team
+      const leader = await User.findOne({
+        firstName: leaderFirstName,
+        isAdmin: true
+      });
+      if (!leader) {
         return res.status(400).json({ message: 'Team not found' });
       }
-      // Compare submitted password to stored hash
-      const match = await bcrypt.compare(teamPassword, team.password);
-      if (!match) {
-        return res.status(400).json({ message: 'Incorrect team password' });
+      team = await Team.findOne({ leader: leader._id });
+      if (!team) {
+        return res.status(400).json({ message: 'Team not found' });
       }
     }
 
