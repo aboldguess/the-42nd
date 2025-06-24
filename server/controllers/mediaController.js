@@ -1,7 +1,18 @@
 // server/controllers/mediaController.js
 // Controller handling media file operations for admins
 
-const archiver = require('archiver');
+// Attempt to load the archiver library used to create zip files. If it is
+// missing we log a clear error and rethrow so the server startup fails with
+// an informative message instead of a generic module not found error.
+let archiver;
+try {
+  archiver = require('archiver');
+} catch (err) {
+  console.error(
+    'Missing dependency "archiver". Run "npm install" in the server directory.'
+  );
+  throw err;
+}
 const fs = require('fs');
 const path = require('path');
 
