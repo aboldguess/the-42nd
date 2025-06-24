@@ -14,29 +14,53 @@ export default function AdminPlayersPage() {
     load();
   }, []);
 
+  // Fetch players and available teams for the dropdown
   const load = async () => {
-    const { data } = await fetchPlayers();
-    setPlayers(data);
-    const teamRes = await fetchTeamsList();
-    setTeams(teamRes.data);
+    try {
+      const { data } = await fetchPlayers();
+      setPlayers(data);
+      const teamRes = await fetchTeamsList();
+      setTeams(teamRes.data);
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error loading players');
+    }
   };
 
+  // Add a new player record
   const handleCreate = async () => {
-    await createPlayer(newPlayer);
-    setNewPlayer({ name: '', team: '' });
-    load();
+    try {
+      await createPlayer(newPlayer);
+      setNewPlayer({ name: '', team: '' });
+      load();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error creating player');
+    }
   };
 
+  // Persist edits to an existing player
   const handleSave = async (id) => {
-    await updatePlayer(id, editData);
-    setEditId(null);
-    setEditData({});
-    load();
+    try {
+      await updatePlayer(id, editData);
+      setEditId(null);
+      setEditData({});
+      load();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error updating player');
+    }
   };
 
+  // Remove a player
   const handleDelete = async (id) => {
-    await deletePlayer(id);
-    load();
+    try {
+      await deletePlayer(id);
+      load();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error deleting player');
+    }
   };
 
   return (
