@@ -30,7 +30,7 @@ export const onboard = (formData) =>
 export const fetchTeamsList = () => axios.get('/api/onboard/teams');
 
 // Player authentication
-// Posts first/last name credentials to obtain a JWT
+// Submit player and team credentials to receive a JWT
 export const login = (creds) => axios.post('/api/auth/login', creds);
 
 // Player endpoints
