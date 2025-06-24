@@ -24,46 +24,70 @@ export default function AdminSideQuestsPage() {
     load();
   }, []);
 
+  // Retrieve all side quests for display
   const load = async () => {
-    const { data } = await fetchSideQuestsAdmin();
-    setQuests(data);
-  };
-
-  const handleCreate = async () => {
-    const formData = new FormData();
-    formData.append('title', newQuest.title);
-    formData.append('text', newQuest.text);
-    if (newQuest.image) formData.append('image', newQuest.image);
-    if (newQuest.timeLimitSeconds)
-      formData.append('timeLimitSeconds', newQuest.timeLimitSeconds);
-    formData.append('useStopwatch', newQuest.useStopwatch ? 'true' : 'false');
-    await createSideQuestAdmin(formData);
-    setNewQuest({ title: '', text: '', timeLimitSeconds: '', useStopwatch: false, image: null });
-    load();
-  };
-
-  const handleSave = async (id) => {
-    // If a new image was selected send multipart data, otherwise plain JSON
-    let payload = editData;
-    if (editData.image) {
-      // build multipart form data when a new image file is present
-      const formData = new FormData();
-      formData.append('title', editData.title);
-      formData.append('text', editData.text);
-      formData.append('image', editData.image);
-      formData.append('timeLimitSeconds', editData.timeLimitSeconds);
-      formData.append('useStopwatch', editData.useStopwatch ? 'true' : 'false');
-      payload = formData;
+    try {
+      const { data } = await fetchSideQuestsAdmin();
+      setQuests(data);
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error loading side quests');
     }
-    await updateSideQuestAdmin(id, payload);
-    setEditId(null);
-    setEditData({});
-    load();
   };
 
+  // Create a new side quest entry
+  const handleCreate = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('title', newQuest.title);
+      formData.append('text', newQuest.text);
+      if (newQuest.image) formData.append('image', newQuest.image);
+      if (newQuest.timeLimitSeconds)
+        formData.append('timeLimitSeconds', newQuest.timeLimitSeconds);
+      formData.append('useStopwatch', newQuest.useStopwatch ? 'true' : 'false');
+      await createSideQuestAdmin(formData);
+      setNewQuest({ title: '', text: '', timeLimitSeconds: '', useStopwatch: false, image: null });
+      load();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error creating side quest');
+    }
+  };
+
+  // Save updates to a quest
+  const handleSave = async (id) => {
+    try {
+      // If a new image was selected send multipart data, otherwise plain JSON
+      let payload = editData;
+      if (editData.image) {
+        // build multipart form data when a new image file is present
+        const formData = new FormData();
+        formData.append('title', editData.title);
+        formData.append('text', editData.text);
+        formData.append('image', editData.image);
+        formData.append('timeLimitSeconds', editData.timeLimitSeconds);
+        formData.append('useStopwatch', editData.useStopwatch ? 'true' : 'false');
+        payload = formData;
+      }
+      await updateSideQuestAdmin(id, payload);
+      setEditId(null);
+      setEditData({});
+      load();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error updating side quest');
+    }
+  };
+
+  // Delete a quest
   const handleDelete = async (id) => {
-    await deleteSideQuestAdmin(id);
-    load();
+    try {
+      await deleteSideQuestAdmin(id);
+      load();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error deleting side quest');
+    }
   };
 
   return (

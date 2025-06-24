@@ -26,40 +26,64 @@ export default function AdminQuestionsPage() {
     load();
   }, []);
 
+  // Fetch all existing trivia questions
   const load = async () => {
-    const { data } = await fetchQuestions();
-    setQuestions(data);
-  };
-
-  const handleCreate = async () => {
-    const formData = new FormData();
-    formData.append('title', newQ.title);
-    formData.append('text', newQ.text);
-    formData.append('options', newQ.options);
-    formData.append('correctAnswer', newQ.correctAnswer);
-    formData.append('notes', newQ.notes);
-    if (newImage) formData.append('image', newImage);
-    await createQuestion(formData);
-    setNewQ({ title: '', text: '', options: '', correctAnswer: '', notes: '' });
-    setNewImage(null);
-    load();
-  };
-
-  const handleSave = async (id) => {
-    const payload = { ...editData };
-    await updateQuestion(id, payload);
-    if (editImage) {
-      // image update not supported in API yet
+    try {
+      const { data } = await fetchQuestions();
+      setQuestions(data);
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error loading questions');
     }
-    setEditId(null);
-    setEditData({});
-    setEditImage(null);
-    load();
   };
 
+  // Create a new trivia question
+  const handleCreate = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('title', newQ.title);
+      formData.append('text', newQ.text);
+      formData.append('options', newQ.options);
+      formData.append('correctAnswer', newQ.correctAnswer);
+      formData.append('notes', newQ.notes);
+      if (newImage) formData.append('image', newImage);
+      await createQuestion(formData);
+      setNewQ({ title: '', text: '', options: '', correctAnswer: '', notes: '' });
+      setNewImage(null);
+      load();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error creating question');
+    }
+  };
+
+  // Persist edits to an existing question
+  const handleSave = async (id) => {
+    try {
+      const payload = { ...editData };
+      await updateQuestion(id, payload);
+      if (editImage) {
+        // image update not supported in API yet
+      }
+      setEditId(null);
+      setEditData({});
+      setEditImage(null);
+      load();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error updating question');
+    }
+  };
+
+  // Delete a question
   const handleDelete = async (id) => {
-    await deleteQuestion(id);
-    load();
+    try {
+      await deleteQuestion(id);
+      load();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error deleting question');
+    }
   };
 
   return (

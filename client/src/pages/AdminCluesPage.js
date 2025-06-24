@@ -25,43 +25,67 @@ export default function AdminCluesPage() {
     load();
   }, []);
 
+  // Fetch existing clues for the list
   const load = async () => {
-    const { data } = await fetchClues();
-    setClues(data);
+    try {
+      const { data } = await fetchClues();
+      setClues(data);
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error loading clues');
+    }
   };
 
   // Create a new clue using the bottom row inputs
+  // Create a new clue using the form inputs
   const handleCreate = async () => {
-    const formData = new FormData();
-    formData.append('title', newClue.title);
-    formData.append('text', newClue.text);
-    formData.append('options', newClue.options);
-    formData.append('correctAnswer', newClue.correctAnswer);
-    formData.append('infoPage', newClue.infoPage ? 'true' : 'false');
-    if (newClue.image) formData.append('questionImage', newClue.image);
-    await createClueAdmin(formData);
-    setNewClue({ title: '', text: '', options: '', correctAnswer: '', infoPage: false, image: null });
-    load();
+    try {
+      const formData = new FormData();
+      formData.append('title', newClue.title);
+      formData.append('text', newClue.text);
+      formData.append('options', newClue.options);
+      formData.append('correctAnswer', newClue.correctAnswer);
+      formData.append('infoPage', newClue.infoPage ? 'true' : 'false');
+      if (newClue.image) formData.append('questionImage', newClue.image);
+      await createClueAdmin(formData);
+      setNewClue({ title: '', text: '', options: '', correctAnswer: '', infoPage: false, image: null });
+      load();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error creating clue');
+    }
   };
 
   // Save edits for an existing clue
+  // Persist edits to a clue
   const handleSave = async (id) => {
-    const formData = new FormData();
-    formData.append('title', editData.title);
-    formData.append('text', editData.text);
-    formData.append('options', editData.options);
-    formData.append('correctAnswer', editData.correctAnswer);
-    formData.append('infoPage', editData.infoPage ? 'true' : 'false');
-    if (editData.image) formData.append('questionImage', editData.image);
-    await updateClueAdmin(id, formData);
-    setEditId(null);
-    setEditData({});
-    load();
+    try {
+      const formData = new FormData();
+      formData.append('title', editData.title);
+      formData.append('text', editData.text);
+      formData.append('options', editData.options);
+      formData.append('correctAnswer', editData.correctAnswer);
+      formData.append('infoPage', editData.infoPage ? 'true' : 'false');
+      if (editData.image) formData.append('questionImage', editData.image);
+      await updateClueAdmin(id, formData);
+      setEditId(null);
+      setEditData({});
+      load();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error updating clue');
+    }
   };
 
+  // Delete a clue by ID
   const handleDelete = async (id) => {
-    await deleteClueAdmin(id);
-    load();
+    try {
+      await deleteClueAdmin(id);
+      load();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Error deleting clue');
+    }
   };
 
   return (
