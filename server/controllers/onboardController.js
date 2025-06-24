@@ -4,6 +4,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Team = require('../models/Team');
 const User = require('../models/User');
+// Model used to record all uploaded media files for the rogues gallery
+const Media = require('../models/Media');
 const QRCode = require('qrcode');
 const Settings = require('../models/Settings');
 
@@ -105,8 +107,21 @@ exports.onboard = async (req, res) => {
       isAdmin: isNewTeam === 'true'  // mark as admin if they created the team
     });
 
-    // Generate and store a QR code for this player's public profile
-    // This allows others to scan and view their page
+    // Record the uploaded selfie for the rogues gallery
+    if (selfieUrl) {
+      await Media.create({
+        url: selfieUrl,
+        uploadedBy: user._id,
+        uploadedByModel: 'User',
+        team: team._id,
+        type: 'profile',
+        tag: 'selfie'
+      });
+    }
+
+    // Generate and store a QR code for this player's public profile.
+    // The base URL can be configured in settings, so we store it to know
+    // when regeneration is needed.
     const base = await getQrBase();
     user.qrCodeData = await QRCode.toDataURL(
       `${base.replace(/\/$/, '')}/player/${user._id}`
@@ -114,10 +129,22 @@ exports.onboard = async (req, res) => {
     user.qrBaseUrl = base;
     await user.save();
 
-    // 2d) If we just created a new team, put this user in team.members
+    // 2d) If we just created a new team, record the new member and log
+    // the optional team photo to the Media collection
     if (isNewTeam === 'true') {
       team.members.push({ name: user.name, avatarUrl: selfieUrl });
       await team.save();
+
+      if (team.photoUrl) {
+        await Media.create({
+          url: team.photoUrl,
+          uploadedBy: user._id,
+          uploadedByModel: 'User',
+          team: team._id,
+          type: 'profile',
+          tag: 'team_photo'
+        });
+      }
     }
 
     // 3) Issue a JWT that the client will store in localStorage
