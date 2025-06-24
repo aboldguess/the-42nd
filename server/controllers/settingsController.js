@@ -25,12 +25,32 @@ exports.getSettings = async (req, res) => {
 // Update the settings document (admin only)
 exports.updateSettings = async (req, res) => {
   try {
-    const updates = req.body;
-    // upsert: create if not exists
+    const updates = { ...req.body };
+
+    // If theme is provided as a JSON string, parse it
+    if (typeof updates.theme === 'string') {
+      try {
+        updates.theme = JSON.parse(updates.theme);
+      } catch (e) {
+        console.error('Invalid theme JSON');
+        delete updates.theme;
+      }
+    }
+
+    // Attach uploaded files if present
+    if (req.files && req.files.logo && req.files.logo[0]) {
+      updates.logoUrl = '/uploads/' + req.files.logo[0].filename;
+    }
+    if (req.files && req.files.favicon && req.files.favicon[0]) {
+      updates.faviconUrl = '/uploads/' + req.files.favicon[0].filename;
+    }
+
+    // upsert: create document if none exists
     const settings = await Settings.findOneAndUpdate({}, updates, {
       new: true,
       upsert: true
     });
+
     res.json(settings);
   } catch (err) {
     console.error('Error updating settings:', err);

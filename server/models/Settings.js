@@ -6,7 +6,12 @@ const settingsSchema = new mongoose.Schema({
   theme: {
     primary: { type: String, default: '#2196F3' },
     secondary: { type: String, default: '#FFC107' }
-  }
+  },
+  // Optional logo and favicon paths served from /uploads
+  logoUrl: String,
+  faviconUrl: String,
+  // Global font family applied to the UI
+  fontFamily: { type: String, default: 'Arial, sans-serif' }
 });
 
 module.exports = mongoose.model('Settings', settingsSchema);

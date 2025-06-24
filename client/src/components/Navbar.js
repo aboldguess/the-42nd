@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ThemeContext } from '../context/ThemeContext';
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const { theme } = useContext(ThemeContext);
 
   // Tokens for player and admin
   const token = localStorage.getItem('token');
@@ -34,7 +36,17 @@ export default function Navbar() {
           &#9776;
         </button>
 
-        <Link to="/">Treasure Hunt</Link>
+        {theme.logoUrl ? (
+          <Link to="/">
+            <img
+              src={theme.logoUrl}
+              alt="Logo"
+              style={{ height: '40px' }}
+            />
+          </Link>
+        ) : (
+          <Link to="/">Treasure Hunt</Link>
+        )}
       </div>
 
       <ul className="nav-right">

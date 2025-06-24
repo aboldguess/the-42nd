@@ -6,16 +6,28 @@ export const ThemeContext = createContext();
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState({
     primary: '#2196F3',
-    secondary: '#FFC107'
+    secondary: '#FFC107',
+    fontFamily: 'Arial, sans-serif',
+    logoUrl: '',
+    faviconUrl: ''
   });
 
   useEffect(() => {
     // Fetch global theme, then override with team colours if logged in
     const fetchTheme = async () => {
       try {
-        let th = { primary: '#2196F3', secondary: '#FFC107' };
+        let th = {
+          primary: '#2196F3',
+          secondary: '#FFC107',
+          fontFamily: 'Arial, sans-serif',
+          logoUrl: '',
+          faviconUrl: ''
+        };
         const globalRes = await axios.get('/api/settings');
-        if (globalRes.data.theme) th = globalRes.data.theme;
+        if (globalRes.data.theme) th = { ...th, ...globalRes.data.theme };
+        if (globalRes.data.fontFamily) th.fontFamily = globalRes.data.fontFamily;
+        if (globalRes.data.logoUrl) th.logoUrl = globalRes.data.logoUrl;
+        if (globalRes.data.faviconUrl) th.faviconUrl = globalRes.data.faviconUrl;
 
         const token = localStorage.getItem('token');
         if (token) {
@@ -23,7 +35,7 @@ export const ThemeProvider = ({ children }) => {
           const teamId = userRes.data.team._id;
           const teamRes = await axios.get(`/api/teams/${teamId}`);
           const cs = teamRes.data.colourScheme;
-          th = { primary: cs.primary, secondary: cs.secondary };
+          th = { ...th, primary: cs.primary, secondary: cs.secondary };
         }
         setTheme(th);
       } catch (err) {
@@ -32,6 +44,19 @@ export const ThemeProvider = ({ children }) => {
     };
     fetchTheme();
   }, []);
+
+  // Apply favicon whenever it changes
+  useEffect(() => {
+    if (theme.faviconUrl) {
+      let link = document.querySelector("link[rel='icon']");
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.head.appendChild(link);
+      }
+      link.href = theme.faviconUrl;
+    }
+  }, [theme.faviconUrl]);
 
   return (
     // Expose only the current theme values; modifications are restricted to admin
