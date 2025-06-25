@@ -1,11 +1,17 @@
 import React from 'react';
 
-function RogueItem({ media }) {
-  const { url, uploadedBy, team, sideQuest, type, createdAt } = media;
+function RogueItem({ media, onSelect }) {
+  const { url, uploadedBy, team, sideQuest, createdAt, reactions = [] } = media;
   const isVideo = url.match(/\.(mp4|mov|avi)$/i);
 
+  // Tally how many times each emoji was used
+  const counts = reactions.reduce((acc, r) => {
+    acc[r.emoji] = (acc[r.emoji] || 0) + 1;
+    return acc;
+  }, {});
+
   return (
-    <div className="card">
+    <div className="card" onClick={() => onSelect && onSelect(media)}>
       {isVideo ? (
         <video width="100%" controls>
           <source src={url} />
@@ -25,6 +31,16 @@ function RogueItem({ media }) {
           </>
         )}
         <small style={{ color: '#666' }}>{new Date(createdAt).toLocaleString()}</small>
+        {/* Display reaction counts beside each emoji */}
+        {Object.keys(counts).length > 0 && (
+          <div style={{ marginTop: '0.5rem' }}>
+            {Object.entries(counts).map(([emo, c]) => (
+              <span key={emo} style={{ marginRight: '0.5rem' }}>
+                {emo} {c}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

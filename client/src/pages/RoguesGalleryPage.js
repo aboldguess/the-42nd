@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { fetchRoguesGallery } from '../services/api';
+import { fetchRoguesGallery, reactToMedia } from '../services/api';
 import RogueItem from '../components/RogueItem';
+import RogueModal from '../components/RogueModal';
 
 export default function RoguesGalleryPage() {
   // Gallery items returned from the server
   const [media, setMedia] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Media item currently shown in the modal
+  const [selected, setSelected] = useState(null);
   // Selected filters for team, player and type
   const [teamFilter, setTeamFilter] = useState('');
   const [playerFilter, setPlayerFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
+  // Emojis players can choose from when reacting
+  const emojiOptions = ['👍', '😂', '😮', '😢', '🎉'];
 
   useEffect(() => {
     // Load all uploaded media on mount
@@ -25,6 +30,22 @@ export default function RoguesGalleryPage() {
     };
     load();
   }, []);
+
+  /**
+   * Record a player's reaction for the currently selected media item and update
+   * the gallery state with the server's response.
+   */
+  const handleReact = async (emoji) => {
+    if (!selected) return;
+    try {
+      const { data } = await reactToMedia(selected._id, emoji);
+      // Update the selected item and the full media list
+      setSelected(data);
+      setMedia((list) => list.map((m) => (m._id === data._id ? data : m)));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   // Build dropdown options from the loaded media
   const teamOptions = Array.from(
@@ -105,9 +126,15 @@ export default function RoguesGalleryPage() {
         }}
       >
         {filteredMedia.map((m) => (
-          <RogueItem key={m._id} media={m} />
+          <RogueItem key={m._id} media={m} onSelect={setSelected} />
         ))}
       </div>
+      <RogueModal
+        media={selected}
+        onClose={() => setSelected(null)}
+        onReact={handleReact}
+        emojiOptions={emojiOptions}
+      />
     </div>
   );
 }

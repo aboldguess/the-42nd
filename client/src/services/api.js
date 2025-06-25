@@ -59,6 +59,8 @@ export const submitSideQuest = (id, data) =>
     headers: { 'Content-Type': 'multipart/form-data' }
   });
 export const fetchRoguesGallery = () => axios.get('/api/roguery');
+export const reactToMedia = (id, emoji) =>
+  axios.post(`/api/roguery/${id}/react`, { emoji });
 
 
 // Admin endpoints

@@ -24,7 +24,15 @@ const mediaSchema = new mongoose.Schema(
       enum: ['profile', 'question', 'sideQuest', 'other'],
       default: 'other'
     },
-    tag: String
+    tag: String,
+    // Track which users reacted with which emoji. Each entry stores the
+    // reacting player's ObjectId and the emoji string they selected.
+    reactions: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        emoji: String
+      }
+    ]
   },
   { timestamps: true }
 );
