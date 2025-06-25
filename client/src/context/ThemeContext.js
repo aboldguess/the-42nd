@@ -16,7 +16,13 @@ export const ThemeProvider = ({ children }) => {
    * Fetch the current theme from the server and update state. Team colours
    * override the global settings if a player is logged in.
    */
-  const fetchTheme = async () => {
+  /**
+   * Retrieve the theme from the server. If `opts.ignoreTeam` is true the
+   * currently logged in player's team colours will not override the global
+   * settings. This is useful when an admin saves new colours and wants to
+   * preview the global scheme regardless of their team membership.
+   */
+  const fetchTheme = async (opts = {}) => {
     try {
       let th = {
         primary: '#2196F3',
@@ -32,7 +38,8 @@ export const ThemeProvider = ({ children }) => {
       if (globalRes.data.faviconUrl) th.faviconUrl = globalRes.data.faviconUrl;
 
       const token = localStorage.getItem('token');
-      if (token) {
+      // Only apply team-specific colours when not explicitly ignored
+      if (token && !opts.ignoreTeam) {
         const userRes = await axios.get('/api/users/me');
         const teamId = userRes.data.team._id;
         const teamRes = await axios.get(`/api/teams/${teamId}`);
