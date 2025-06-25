@@ -1,15 +1,20 @@
 const Media = require('../models/Media');
 
+// Controller functions for the rogues gallery.  Players can browse uploaded
+// media and react to each item with an emoji.
+
 exports.getAllMedia = async (req, res) => {
   try {
     const allMedia = await Media.find()
-      // Populate uploader regardless of whether it's a User or Admin.
-      // We request both possible name fields so the client can display one.
+      // Populate uploader regardless of whether it's a User or Admin. We
+      // request both possible name fields so the client can display whichever
+      // one exists.
       .populate('uploadedBy', 'name username photoUrl')
       .populate('team', 'name')
       .populate('sideQuest', 'title')
-      // Include reacting players' names for display
+      // Include the names of players who reacted so the UI can list them
       .populate('reactions.user', 'name')
+      // Newest uploads first
       .sort({ createdAt: -1 });
     res.json(allMedia);
   } catch (err) {
@@ -18,7 +23,9 @@ exports.getAllMedia = async (req, res) => {
   }
 };
 
-// Handle a player reacting to a media item with an emoji
+// Handle a player reacting to a media item with an emoji. The same emoji will
+// remove a previous reaction, while a different emoji updates the existing
+// reaction.
 exports.addReaction = async (req, res) => {
   const { id } = req.params;
   const { emoji } = req.body;
@@ -34,6 +41,7 @@ exports.addReaction = async (req, res) => {
 
     // Check if this user has already reacted
     const existing = media.reactions.find(
+      // Compare ObjectIds as strings to find a prior reaction from this user
       (r) => r.user.toString() === req.user._id.toString()
     );
 
@@ -52,6 +60,7 @@ exports.addReaction = async (req, res) => {
       media.reactions.push({ user: req.user._id, emoji });
     }
 
+    // Persist the new reaction state and load player names for the response
     await media.save();
     await media.populate('reactions.user', 'name');
 

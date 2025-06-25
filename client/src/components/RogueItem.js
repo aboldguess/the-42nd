@@ -1,10 +1,14 @@
 import React from 'react';
 
+// Display a gallery thumbnail with a summary of reactions. Clicking the card
+// will open a modal with the full media and reaction details.
+
 function RogueItem({ media, onSelect }) {
   const { url, uploadedBy, team, sideQuest, createdAt, reactions = [] } = media;
   const isVideo = url.match(/\.(mp4|mov|avi)$/i);
 
-  // Tally how many times each emoji was used
+  // Tally how many times each emoji was used so we can show counts next to
+  // each button.
   const counts = reactions.reduce((acc, r) => {
     acc[r.emoji] = (acc[r.emoji] || 0) + 1;
     return acc;
@@ -31,7 +35,7 @@ function RogueItem({ media, onSelect }) {
           </>
         )}
         <small style={{ color: '#666' }}>{new Date(createdAt).toLocaleString()}</small>
-        {/* Display reaction counts beside each emoji */}
+        {/* Display reaction counts beside each emoji on the card */}
         {Object.keys(counts).length > 0 && (
           <div style={{ marginTop: '0.5rem' }}>
             {Object.entries(counts).map(([emo, c]) => (

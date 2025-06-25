@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 
+// Schema definition for images or videos uploaded to the "Rogues Gallery". A
+// single document may be referenced by either an Admin or a regular User.
+
 // Media documents may be uploaded by either a regular user or an admin.  Using
 // a dynamic reference via `refPath` allows us to populate the appropriate
 // collection when querying.
@@ -25,8 +28,8 @@ const mediaSchema = new mongoose.Schema(
       default: 'other'
     },
     tag: String,
-    // Track which users reacted with which emoji. Each entry stores the
-    // reacting player's ObjectId and the emoji string they selected.
+    // Track which players reacted with which emoji.  Each reaction records
+    // the player's ObjectId so we can populate their name later.
     reactions: [
       {
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

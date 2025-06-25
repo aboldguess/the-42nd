@@ -13,7 +13,8 @@ export default function RoguesGalleryPage() {
   const [teamFilter, setTeamFilter] = useState('');
   const [playerFilter, setPlayerFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
-  // Emojis players can choose from when reacting
+  // Emojis players can choose from when reacting.  Feel free to expand this list
+  // as new reactions are desired.
   const emojiOptions = ['👍', '😂', '😮', '😢', '🎉'];
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export default function RoguesGalleryPage() {
     if (!selected) return;
     try {
       const { data } = await reactToMedia(selected._id, emoji);
-      // Update the selected item and the full media list
+      // Update both the modal and the grid with the latest reaction info
       setSelected(data);
       setMedia((list) => list.map((m) => (m._id === data._id ? data : m)));
     } catch (err) {

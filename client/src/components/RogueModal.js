@@ -1,5 +1,8 @@
 import React from 'react';
 
+// Fullscreen modal that shows a piece of media and allows players to react
+// with emoji. Also lists which players used each reaction.
+
 /**
  * Display a full-screen overlay with the selected media item enlarged and
  * a list of which players reacted with each emoji.
@@ -11,6 +14,7 @@ export default function RogueModal({ media, onClose, onReact, emojiOptions }) {
   // Group reactions by emoji so we can list the reacting players
   const grouped = media.reactions.reduce((acc, r) => {
     if (!acc[r.emoji]) acc[r.emoji] = [];
+    // Collect the name of each player under the emoji they used
     acc[r.emoji].push(r.user.name);
     return acc;
   }, {});
@@ -51,7 +55,7 @@ export default function RogueModal({ media, onClose, onReact, emojiOptions }) {
           {emojiOptions.map((emo) => (
             <button
               key={emo}
-              onClick={() => onReact(emo)}
+              onClick={() => onReact(emo)} // notify parent when player reacts
               style={{ fontSize: '1.5rem', marginRight: '0.5rem' }}
             >
               {emo}

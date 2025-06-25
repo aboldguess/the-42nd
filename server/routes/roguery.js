@@ -3,9 +3,12 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const { getAllMedia, addReaction } = require('../controllers/rogueController');
 
+// Routes for browsing the rogues gallery and reacting to items
+
+// List all uploaded media items
 router.get('/', getAllMedia);
 
-// Allow authenticated players to react to an image/video
+// React to a specific image or video (requires authentication)
 router.post('/:id/react', auth, addReaction);
 
 module.exports = router;
