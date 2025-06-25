@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
+// Pull in theme helpers so new colours update instantly
 import { ThemeContext } from '../context/ThemeContext';
 import { fetchSettingsAdmin, updateSettingsAdmin } from '../services/api';
 
 // Page allowing admin users to configure global game settings
 export default function AdminSettingsPage() {
-  const { refreshTheme } = useContext(ThemeContext);
+  const { refreshTheme, updateTheme } = useContext(ThemeContext);
   const [settings, setSettings] = useState({
     gameName: '',
     qrBaseUrl: '',
@@ -42,7 +43,9 @@ export default function AdminSettingsPage() {
 
       const { data } = await updateSettingsAdmin(formData);
       setSettings(data);
-      // Re-fetch theme so changes apply immediately across the app
+      // Immediately update the site theme with the new colours
+      updateTheme(data.theme.primary, data.theme.secondary);
+      // Re-fetch from the server so fonts, logos and other settings refresh
       refreshTheme();
       alert('Settings saved');
     } catch (err) {
