@@ -37,15 +37,18 @@ export default function QuestionPage() {
       if (clue.infoPage) {
         // submitAnswer likewise just takes the clue ID
         const res = await submitAnswer(clueId, '');
-        if (res.data.nextClue) {
-          navigate(`/clue/${res.data.nextClue}`);
+        // API returns the ObjectId of the next clue so we can route directly
+        const nextId = res.data.nextClue;
+        if (nextId) {
+          navigate(`/clue/${nextId}`);
         }
       } else {
         const res = await submitAnswer(clueId, answer);
         if (res.data.correct) {
           setFeedback('Correct! Loading next clue…');
+          const nextId = res.data.nextClue;
           setTimeout(() => {
-            navigate(`/clue/${res.data.nextClue}`);
+            navigate(`/clue/${nextId}`);
           }, 1000);
         } else {
           setFeedback('Incorrect; try again.');

@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { fetchMe, fetchTeam, addTeamMember } from '../services/api';
+import {
+  fetchMe,
+  fetchTeam,
+  addTeamMember,
+  fetchCluesPlayer
+} from '../services/api';
 import TeamMemberForm from '../components/TeamMemberForm';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [team, setTeam] = useState(null);
   const [currentClue, setCurrentClue] = useState(null);
+  const [currentClueId, setCurrentClueId] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,6 +23,14 @@ export default function Dashboard() {
         setTeam(teamRes.data);
         if (teamRes.data.currentClue) {
           setCurrentClue(teamRes.data.currentClue);
+
+          // Fetch all clues so we can map the numeric progress index to the
+          // actual clue ObjectId used in routes.
+          const cluesRes = await fetchCluesPlayer();
+          const idx = teamRes.data.currentClue - 1;
+          if (idx >= 0 && idx < cluesRes.data.length) {
+            setCurrentClueId(cluesRes.data[idx]._id);
+          }
         }
         setLoading(false);
       } catch (err) {
@@ -76,7 +90,7 @@ export default function Dashboard() {
       {user.isAdmin && <TeamMemberForm onAdd={handleAddMember} />}
 
       <div style={{ marginTop: '1rem' }}>
-        <a href={`/clue/${currentClue}`}>
+        <a href={`/clue/${currentClueId || currentClue}`}> 
           <button>Go to Current Clue</button>
         </a>
       </div>

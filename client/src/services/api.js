@@ -52,6 +52,10 @@ export const fetchClue = (clueId) => axios.get(`/api/clues/${clueId}`);
 export const submitAnswer = (clueId, answer) =>
   axios.post(`/api/clues/${clueId}/answer`, { answer });
 
+// Retrieve all clues for the logged-in player. The list is ordered by creation
+// time so indexes correspond to the "currentClue" number stored on each team.
+export const fetchCluesPlayer = () => axios.get('/api/clues');
+
 // Public/player side quest endpoints
 export const fetchSideQuests = () => axios.get('/api/sidequests/public');
 export const submitSideQuest = (id, data) =>
