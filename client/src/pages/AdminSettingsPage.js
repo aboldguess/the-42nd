@@ -12,11 +12,13 @@ export default function AdminSettingsPage() {
     theme: { primary: '#2196F3', secondary: '#FFC107' },
     fontFamily: 'Arial, sans-serif',
     logoUrl: '',
-    faviconUrl: ''
+    faviconUrl: '',
+    placeholderUrl: ''
   });
   // Local file objects for uploads
   const [logoFile, setLogoFile] = useState(null);
   const [faviconFile, setFaviconFile] = useState(null);
+  const [placeholderFile, setPlaceholderFile] = useState(null);
 
   // Load settings on mount
   useEffect(() => {
@@ -40,6 +42,7 @@ export default function AdminSettingsPage() {
       formData.append('theme', JSON.stringify(settings.theme));
       if (logoFile) formData.append('logo', logoFile);
       if (faviconFile) formData.append('favicon', faviconFile);
+      if (placeholderFile) formData.append('placeholder', placeholderFile);
 
       const { data } = await updateSettingsAdmin(formData);
       setSettings(data);
@@ -106,6 +109,11 @@ export default function AdminSettingsPage() {
       <input type="file" accept="image/*" onChange={(e) => setFaviconFile(e.target.files[0])} />
       {settings.faviconUrl && (
         <img src={settings.faviconUrl} alt="Current favicon" style={{ height: '16px', marginTop: '0.5rem' }} />
+      )}
+      <label>Gallery Placeholder:</label>
+      <input type="file" accept="image/*" onChange={(e) => setPlaceholderFile(e.target.files[0])} />
+      {settings.placeholderUrl && (
+        <img src={settings.placeholderUrl} alt="Current placeholder" style={{ height: '40px', marginTop: '0.5rem' }} />
       )}
 
       <button onClick={handleSave}>Save Changes</button>

@@ -44,6 +44,10 @@ exports.updateSettings = async (req, res) => {
     if (req.files && req.files.favicon && req.files.favicon[0]) {
       updates.faviconUrl = '/uploads/' + req.files.favicon[0].filename;
     }
+    // Save uploaded placeholder image if provided
+    if (req.files && req.files.placeholder && req.files.placeholder[0]) {
+      updates.placeholderUrl = '/uploads/' + req.files.placeholder[0].filename;
+    }
 
     // upsert: create document if none exists
     const settings = await Settings.findOneAndUpdate({}, updates, {

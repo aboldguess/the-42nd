@@ -13,7 +13,8 @@ router.put(
   '/',
   upload.fields([
     { name: 'logo', maxCount: 1 },
-    { name: 'favicon', maxCount: 1 }
+    { name: 'favicon', maxCount: 1 },
+    { name: 'placeholder', maxCount: 1 }
   ]),
   updateSettings
 );

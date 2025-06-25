@@ -17,6 +17,7 @@ import AdminQuestionsPage from './pages/AdminQuestionsPage';
 import AdminSideQuestsPage from './pages/AdminSideQuestsPage';
 import AdminPlayersPage from './pages/AdminPlayersPage';
 import AdminTeamsPage from './pages/AdminTeamsPage';
+import AdminGalleryPage from './pages/AdminGalleryPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 
 import AdminLoginPage from './pages/AdminLoginPage';
@@ -165,6 +166,14 @@ export default function App() {
                 element={
                   <AdminRoute>
                     <AdminTeamsPage />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/gallery"
+                element={
+                  <AdminRoute>
+                    <AdminGalleryPage />
                   </AdminRoute>
                 }
               />

@@ -60,6 +60,11 @@ export const submitSideQuest = (id, data) =>
   });
 export const fetchRoguesGallery = () => axios.get('/api/roguery');
 
+// Admin gallery endpoints
+export const fetchAdminGallery = () => axios.get('/api/admin/gallery');
+export const updateMediaVisibility = (id, hidden) =>
+  axios.put(`/api/admin/gallery/${id}`, { hidden });
+
 
 // Admin endpoints
 export const adminRegister = (data) =>
