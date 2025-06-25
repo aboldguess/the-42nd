@@ -72,9 +72,21 @@ export const ThemeProvider = ({ children }) => {
     }
   }, [theme.faviconUrl]);
 
+  /**
+   * Update the currently applied theme colours locally. This does not persist
+   * to the server but ensures the UI updates immediately after the admin saves
+   * new colours.
+   */
+  const updateTheme = (primary, secondary) => {
+    setTheme((t) => ({ ...t, primary, secondary }));
+  };
+
   return (
-    // Expose current theme and a helper to re-fetch it after admin changes
-    <ThemeContext.Provider value={{ theme, refreshTheme: fetchTheme }}>
+    /* Expose the current theme plus helpers for fetching or locally updating
+       the values after an admin changes them */
+    <ThemeContext.Provider
+      value={{ theme, refreshTheme: fetchTheme, updateTheme }}
+    >
       {children}
     </ThemeContext.Provider>
   );
