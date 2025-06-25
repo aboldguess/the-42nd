@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchTeamsPublic, onboard } from '../services/api';
+import ProfilePic from '../components/ProfilePic';
 
 // Second step of the authentication flow. Players can join an
 // existing team or create a new one. After completion they are
@@ -13,6 +14,9 @@ export default function SignupPage() {
 
   const [teams, setTeams] = useState([]);
   const [leaderNames, setLeaderNames] = useState({});
+  const [selfieFile, setSelfieFile] = useState(null);
+  const [teamName, setTeamName] = useState('');
+  const [teamPhotoFile, setTeamPhotoFile] = useState(null);
 
   useEffect(() => {
     // Fetch the public team roster for display
@@ -21,11 +25,15 @@ export default function SignupPage() {
 
   // Generic handler for joining an existing team
   const joinTeam = async (leaderLastName) => {
+    if (!selfieFile) {
+      return alert('Please select a profile picture.');
+    }
     const form = new FormData();
     form.append('firstName', firstName);
     form.append('lastName', lastName);
     form.append('isNewTeam', 'false');
     form.append('leaderLastName', leaderLastName);
+    form.append('selfie', selfieFile);
     try {
       const { data } = await onboard(form);
       localStorage.setItem('token', data.token);
@@ -35,12 +43,19 @@ export default function SignupPage() {
     }
   };
 
-  // Creating a new team is simpler: no extra fields required
+  // Creating a new team requires a name, selfie and team photo
   const createTeam = async () => {
+    if (!teamName) return alert('Please enter a team name.');
+    if (!selfieFile) return alert('Please select a profile picture.');
+    if (!teamPhotoFile) return alert('Please select a team photo.');
+
     const form = new FormData();
     form.append('firstName', firstName);
     form.append('lastName', lastName);
     form.append('isNewTeam', 'true');
+    form.append('teamName', teamName);
+    form.append('selfie', selfieFile);
+    form.append('teamPhoto', teamPhotoFile);
     try {
       const { data } = await onboard(form);
       localStorage.setItem('token', data.token);
@@ -53,6 +68,9 @@ export default function SignupPage() {
   return (
     <div className="card" style={{ maxWidth: 600, margin: '2rem auto' }}>
       <h2>Choose a Team</h2>
+      {/* All players must provide a selfie before they can join or create a team */}
+      <label>Your Selfie:</label>
+      <ProfilePic avatarUrl="" onFileSelect={(file) => setSelfieFile(file)} />
       {teams.map((team) => (
         <div key={team._id} style={{ borderBottom: '1px solid #ccc', padding: '1rem 0' }}>
           {team.photoUrl && (
@@ -70,10 +88,19 @@ export default function SignupPage() {
             onChange={(e) => setLeaderNames({ ...leaderNames, [team._id]: e.target.value })}
             style={{ marginRight: '0.5rem' }}
           />
-          <button onClick={() => joinTeam(leaderNames[team._id] || '')}>Join Team</button>
-        </div>
+        <button onClick={() => joinTeam(leaderNames[team._id] || '')}>Join Team</button>
+      </div>
       ))}
       <div style={{ marginTop: '1rem' }}>
+        <h3>Create New Team</h3>
+        <input
+          type="text"
+          placeholder="Team Name"
+          value={teamName}
+          onChange={(e) => setTeamName(e.target.value)}
+        />
+        <label>Team Photo:</label>
+        <ProfilePic avatarUrl="" onFileSelect={(file) => setTeamPhotoFile(file)} />
         <button onClick={createTeam}>Create New Team</button>
       </div>
     </div>

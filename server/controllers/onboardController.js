@@ -27,13 +27,14 @@ exports.getTeamsList = async (req, res) => {
 //      - lastName         (string)
 //      - isNewTeam        ("true" or "false")
 //      - leaderLastName   (string) required when joining a team
-//      - selfie           (file upload, maxCount:1)
-//      - teamPhoto        (file upload, maxCount:1) [only when creating a team]
+//      - teamName         (string) required when creating a team
+//      - selfie           (file upload, maxCount:1)          **required**
+//      - teamPhoto        (file upload, maxCount:1) [required when creating]
 exports.onboard = async (req, res) => {
   try {
     // The client now provides first and last names separately. Older
     // implementations sent a single `name` string.
-    const { firstName, lastName, isNewTeam, leaderLastName } = req.body;
+    const { firstName, lastName, isNewTeam, leaderLastName, teamName } = req.body;
 
     // Basic validation
     // Only the player's name is required. If joining an existing team the
@@ -43,29 +44,38 @@ exports.onboard = async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
+    // A profile picture is mandatory for all users
+    if (!req.files || !req.files.selfie || req.files.selfie.length === 0) {
+      return res.status(400).json({ message: 'Profile picture is required' });
+    }
+
     let team;
 
     // (A) Creating a new team?
     if (isNewTeam === 'true') {
-      // 1) The simplified flow no longer asks for a team name or password.
-      //    Generate a unique placeholder name and password internally.
-      const generatedName = `team-${Date.now()}`;
-      const hashed = await bcrypt.hash(generatedName, 10);
-
-      // 2) Save the uploaded team photo file (if present)
-      let teamPhotoUrl = '';
-      if (req.files && req.files.teamPhoto && req.files.teamPhoto.length > 0) {
-        teamPhotoUrl = '/uploads/' + req.files.teamPhoto[0].filename;
+      // Validate required fields for a new team
+      if (!teamName) {
+        return res.status(400).json({ message: 'Team name is required' });
+      }
+      if (!req.files.teamPhoto || req.files.teamPhoto.length === 0) {
+        return res.status(400).json({ message: 'Team photo is required' });
+      }
+      if (await Team.findOne({ name: teamName })) {
+        return res.status(400).json({ message: 'Team name already taken' });
       }
 
-      // 3) Create the Team document
+      // Hash a placeholder password since login doesn't use it
+      const hashed = await bcrypt.hash(Date.now().toString(), 10);
+
+      // Save the uploaded team photo file
+      const teamPhotoUrl = '/uploads/' + req.files.teamPhoto[0].filename;
+
+      // Create the Team document with the provided unique name
       team = await Team.create({
-        // Name/password are essentially hidden from the user so the schema
-        // requirements are satisfied
-        name: generatedName,
+        name: teamName,
         password: hashed,
         photoUrl: teamPhotoUrl,
-        members: []  // we’ll push the creator below
+        members: [] // creator added below
       });
     }
     // (B) Joining an existing team?
