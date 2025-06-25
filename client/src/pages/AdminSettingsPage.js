@@ -45,8 +45,10 @@ export default function AdminSettingsPage() {
       setSettings(data);
       // Immediately update the site theme with the new colours
       updateTheme(data.theme.primary, data.theme.secondary);
-      // Re-fetch from the server so fonts, logos and other settings refresh
-      refreshTheme();
+      // Re-fetch from the server so fonts, logos and other settings refresh.
+      // `ignoreTeam` prevents the admin's personal team colours from
+      // overriding the newly saved global theme during preview.
+      refreshTheme({ ignoreTeam: true });
       alert('Settings saved');
     } catch (err) {
       alert(err.response?.data?.message || 'Error saving settings');
