@@ -13,9 +13,10 @@ This project contains a React client and an Express/MongoDB server for running a
   `definitely` as confirmation
 
 ## Player Onboarding and Login
-Players now sign up and log in using **only** their first and last name. To join
-an existing team simply provide the first name of the person who originally
-created the team.
+Players still enter only their first and last name, but a selfie must be
+uploaded during signup. When creating a new team you must also provide a unique
+team name and a team photo. To join an existing team simply provide the last
+name of the player who originally created it.
 
 ## Development notes
 - Client source in `client/` built with React
