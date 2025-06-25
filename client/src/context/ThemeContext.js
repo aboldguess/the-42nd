@@ -50,6 +50,15 @@ export const ThemeProvider = ({ children }) => {
     fetchTheme();
   }, []);
 
+  // Apply the current theme values as CSS custom properties on the root
+  // element so global styles like fonts and colours update immediately
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--primary-color', theme.primary);
+    root.style.setProperty('--secondary-color', theme.secondary);
+    root.style.setProperty('--font-family', theme.fontFamily);
+  }, [theme]);
+
   // Apply favicon whenever it changes
   useEffect(() => {
     if (theme.faviconUrl) {
