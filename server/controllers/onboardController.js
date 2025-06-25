@@ -26,20 +26,20 @@ exports.getTeamsList = async (req, res) => {
 //      - firstName        (string)
 //      - lastName         (string)
 //      - isNewTeam        ("true" or "false")
-//      - leaderFirstName  (string) required when joining a team
+//      - leaderLastName   (string) required when joining a team
 //      - selfie           (file upload, maxCount:1)
 //      - teamPhoto        (file upload, maxCount:1) [only when creating a team]
 exports.onboard = async (req, res) => {
   try {
     // The client now provides first and last names separately. Older
     // implementations sent a single `name` string.
-    const { firstName, lastName, isNewTeam, leaderFirstName } = req.body;
+    const { firstName, lastName, isNewTeam, leaderLastName } = req.body;
 
     // Basic validation
     // Only the player's name is required. If joining an existing team the
     // leader's first name must also be provided so we know which team to add
     // them to.
-    if (!firstName || !lastName || (isNewTeam !== 'true' && !leaderFirstName)) {
+    if (!firstName || !lastName || (isNewTeam !== 'true' && !leaderLastName)) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
@@ -70,9 +70,9 @@ exports.onboard = async (req, res) => {
     }
     // (B) Joining an existing team?
     else {
-      // Look up the leader by first name and then retrieve their team
+      // Look up the leader by last name and then retrieve their team
       const leader = await User.findOne({
-        firstName: leaderFirstName,
+        lastName: leaderLastName,
         isAdmin: true
       });
       if (!leader) {
