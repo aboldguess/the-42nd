@@ -114,6 +114,7 @@ exports.submitAnswer = async (req, res) => {
     }
 
     if (correct) {
+      // Record the completed clue by storing its ObjectId on the team
       team.completedClues.push(clue._id);
       team.currentClue = team.currentClue + 1;
       await team.save();
