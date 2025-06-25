@@ -3,7 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeContext } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
-import OnboardingPage from './pages/OnboardingPage';
+import WelcomePage from './pages/WelcomePage';
+import SignupPage from './pages/SignupPage';
 import Dashboard from './pages/Dashboard';
 import QuestionPage from './pages/QuestionPage';
 import ProfilePage from './pages/ProfilePage';
@@ -11,7 +12,6 @@ import SideQuestPage from './pages/SideQuestPage';
 import RoguesGalleryPage from './pages/RoguesGalleryPage';
 import InfoPage from './pages/InfoPage';
 import ScoreboardPage from './pages/ScoreboardPage';
-import LoginPage from './pages/LoginPage';
 import AdminCluesPage from './pages/AdminCluesPage';
 import AdminQuestionsPage from './pages/AdminQuestionsPage';
 import AdminSideQuestsPage from './pages/AdminSideQuestsPage';
@@ -25,7 +25,8 @@ import AdminDashboardPage from './pages/AdminDashboardPage';
 // Guard for regular users
 const AuthRoute = ({ children }) => {
   const token = localStorage.getItem('token');
-  return token ? children : <Navigate to="/" replace />;
+  const location = window.location.pathname + window.location.search;
+  return token ? children : <Navigate to={`/?next=${encodeURIComponent(location)}`} replace />;
 };
 
 // Guard for admin users
@@ -53,8 +54,8 @@ export default function App() {
           <div className="content">
             <Routes>
               {/* Public routes */}
-              <Route path="/" element={<OnboardingPage />} />
-              <Route path="/login" element={<LoginPage />} />
+              <Route path="/" element={<WelcomePage />} />
+              <Route path="/signup" element={<SignupPage />} />
 
               {/* Player routes */}
               <Route

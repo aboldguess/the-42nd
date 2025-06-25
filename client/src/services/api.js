@@ -29,6 +29,8 @@ export const onboard = (formData) =>
   });
 // This remains for backwards compatibility but is unused by the simplified UI
 export const fetchTeamsList = () => axios.get('/api/onboard/teams');
+// Public list of teams used during signup to display available options
+export const fetchTeamsPublic = () => axios.get('/api/teams');
 
 // Player authentication
 // Submit player names to receive a JWT
