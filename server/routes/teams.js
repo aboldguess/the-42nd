@@ -9,9 +9,13 @@ const {
   addMember,
   createTeam,
   updateTeam,
-  deleteTeam
+  deleteTeam,
+  getTeamsPublic
 } = require('../controllers/teamController');
 const Team = require('../models/Team');
+
+// Public list of teams with minimal details
+router.get('/', getTeamsPublic);
 
 router.get('/:teamId', auth, getTeam);
 // Only global admins may modify a team's colour scheme

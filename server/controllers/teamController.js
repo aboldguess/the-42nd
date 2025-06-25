@@ -13,6 +13,18 @@ exports.getTeam = async (req, res) => {
   }
 };
 
+// Return only public fields for all teams so the client can build a roster
+exports.getTeamsPublic = async (req, res) => {
+  try {
+    // Select safe fields only; _id is included by default
+    const teams = await Team.find().select('name photoUrl members colourScheme');
+    res.json(teams);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching teams' });
+  }
+};
+
 exports.updateColourScheme = async (req, res) => {
   const { primary, secondary } = req.body;
   try {

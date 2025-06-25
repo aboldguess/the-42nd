@@ -57,6 +57,33 @@ exports.getAllPlayers = async (req, res) => {
   }
 };
 
+// Public list of players with their teams. Password fields are omitted
+exports.getPlayersPublic = async (req, res) => {
+  try {
+    const players = await User.find()
+      .select('-password')
+      .populate('team', 'name');
+    res.json(players);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching players' });
+  }
+};
+
+// Fetch a single player by ID for the profile page
+exports.getPlayerById = async (req, res) => {
+  try {
+    const player = await User.findById(req.params.id)
+      .select('-password')
+      .populate('team', 'name');
+    if (!player) return res.status(404).json({ message: 'Player not found' });
+    res.json(player);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching player' });
+  }
+};
+
 // Create a new player attached to a team
 exports.createPlayer = async (req, res) => {
   try {
