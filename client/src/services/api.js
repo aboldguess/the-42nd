@@ -51,6 +51,8 @@ export const addTeamMember = (teamId, formData) =>
 export const fetchClue = (clueId) => axios.get(`/api/clues/${clueId}`);
 export const submitAnswer = (clueId, answer) =>
   axios.post(`/api/clues/${clueId}/answer`, { answer });
+export const fetchQuestion = (id) => axios.get(`/api/questions/${id}`);
+export const fetchSideQuest = (id) => axios.get(`/api/sidequests/${id}`);
 
 // Public/player side quest endpoints
 export const fetchSideQuests = () => axios.get('/api/sidequests/public');

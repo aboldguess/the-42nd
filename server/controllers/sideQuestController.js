@@ -3,6 +3,7 @@ const Media = require('../models/Media');
 const QRCode = require('qrcode');
 const Team = require('../models/Team');
 const { getQrBase } = require('../utils/qr');
+const mongoose = require('mongoose');
 
 // Ensure a side quest has a QR code stored
 // Ensure the QR code for a side quest reflects the current base URL
@@ -104,6 +105,29 @@ exports.deleteSideQuest = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error deleting side quest' });
+  }
+};
+
+// Retrieve a side quest by ID for public display
+exports.getSideQuest = async (req, res) => {
+  const { id } = req.params;
+
+  // Validate ObjectId first to avoid casting errors
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ message: 'Side quest not found' });
+  }
+
+  try {
+    const sq = await SideQuest.findById(id);
+    if (!sq) {
+      return res.status(404).json({ message: 'Side quest not found' });
+    }
+    // Ensure QR codes remain current for scans
+    await ensureQrCode(sq);
+    res.json(sq);
+  } catch (err) {
+    console.error('Error fetching side quest:', err);
+    res.status(500).json({ message: 'Error fetching side quest' });
   }
 };
 
