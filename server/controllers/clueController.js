@@ -116,9 +116,25 @@ exports.submitAnswer = async (req, res) => {
     if (correct) {
       // Record the completed clue by storing its ObjectId on the team
       team.completedClues.push(clue._id);
+
+      // Increment numeric progress tracker
       team.currentClue = team.currentClue + 1;
+
+      // Determine the next clue document in creation order. This allows the
+      // client to navigate using the actual ObjectId rather than a numeric
+      // index.
+      const next = await Clue.findOne()
+        .sort({ createdAt: 1 })
+        .skip(team.currentClue - 1)
+        .select('_id');
+
       await team.save();
-      return res.json({ correct: true, nextClue: team.currentClue });
+
+      // Respond with the ObjectId of the next clue (or null if none)
+      return res.json({
+        correct: true,
+        nextClue: next ? next._id : null
+      });
     } else {
       return res.json({ correct: false });
     }
