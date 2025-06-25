@@ -3,18 +3,37 @@ const Settings = require('../models/Settings');
 
 exports.getAllMedia = async (req, res) => {
   try {
+    // URL of the placeholder image, if one has been configured in the settings
     const placeholder = (await Settings.findOne())?.placeholderUrl;
-    const allMedia = await Media.find({ hidden: { $ne: true } })
+
+    // Load *all* media. Visibility rules are applied below so that hidden
+    // profile photos can be replaced with the placeholder rather than being
+    // filtered out entirely.
+    const allMedia = await Media.find()
       .populate('uploadedBy', 'name username photoUrl')
       .populate('team', 'name')
       .populate('sideQuest', 'title')
       .sort({ createdAt: -1 });
-    const sanitized = allMedia.map((m) => {
-      if (placeholder && m.type === 'profile') {
-        return { ...m.toObject(), url: placeholder };
+
+    // Build the final list respecting hidden flags:
+    //   - Non-profile media marked as hidden should not be returned
+    //   - Hidden profile photos are returned with the placeholder image
+    //   - All other media is returned as-is
+    const sanitized = [];
+    for (const m of allMedia) {
+      if (m.hidden) {
+        // Replace hidden profile photos with the placeholder if available.
+        if (placeholder && m.type === 'profile') {
+          sanitized.push({ ...m.toObject(), url: placeholder });
+        }
+        // Non-profile media marked hidden are omitted entirely
+        continue;
       }
-      return m;
-    });
+
+      // Visible media are returned unchanged
+      sanitized.push(m);
+    }
+
     res.json(sanitized);
   } catch (err) {
     console.error(err);

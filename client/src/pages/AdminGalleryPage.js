@@ -85,7 +85,11 @@ export default function AdminGalleryPage() {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1rem' }}>
         {filteredMedia.map((m) => {
-          const display = { ...m, url: m.type === 'profile' && placeholder ? placeholder : m.url };
+          // Only swap in the placeholder when a profile photo has been hidden
+          const display = {
+            ...m,
+            url: m.type === 'profile' && m.hidden && placeholder ? placeholder : m.url
+          };
           return (
             <div key={m._id}>
               <RogueItem media={display} />
