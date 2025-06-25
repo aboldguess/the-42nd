@@ -6,6 +6,7 @@ const Media = require('../models/Media');
 const mongoose = require('mongoose');
 const QRCode = require('qrcode');
 const { getQrBase } = require('../utils/qr');
+const { recordScan } = require('../utils/scans');
 
 
 // Ensure the given clue has an up-to-date QR code based on current settings.
@@ -33,6 +34,8 @@ exports.getClue = async (req, res) => {
       return res.status(404).json({ message: 'Clue not found' });
     }
     await ensureQrCode(clue);
+    // Track that this user viewed the clue so analytics know who scanned it
+    await recordScan(req.user, 'clue', clue._id);
     res.json(clue);
   } catch (err) {
     console.error('Error fetching clue:', err);

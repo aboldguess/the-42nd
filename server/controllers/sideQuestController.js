@@ -3,6 +3,7 @@ const Media = require('../models/Media');
 const QRCode = require('qrcode');
 const Team = require('../models/Team');
 const { getQrBase } = require('../utils/qr');
+const { recordScan } = require('../utils/scans');
 
 // Ensure a side quest has a QR code stored
 // Ensure the QR code for a side quest reflects the current base URL
@@ -23,6 +24,12 @@ exports.getAllSideQuests = async (req, res) => {
   try {
     const sideQuests = await SideQuest.find({ active: true }).sort({ createdAt: 1 });
     await Promise.all(sideQuests.map((sq) => ensureQrCode(sq)));
+    // Record a scan for each quest the player loads
+    if (req.user) {
+      await Promise.all(
+        sideQuests.map((sq) => recordScan(req.user, 'sidequest', sq._id))
+      );
+    }
     res.json(sideQuests);
   } catch (err) {
     console.error(err);

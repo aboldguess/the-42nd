@@ -3,7 +3,8 @@ import {
   fetchQuestions,
   createQuestion,
   updateQuestion,
-  deleteQuestion
+  deleteQuestion,
+  fetchScanSummary
 } from '../services/api';
 
 // Admin table for trivia questions with CRUD actions
@@ -21,6 +22,7 @@ export default function AdminQuestionsPage() {
   const [editData, setEditData] = useState({});
   const [newImage, setNewImage] = useState(null); // file selected for new question
   const [editImage, setEditImage] = useState(null); // unused placeholder for future updates
+  const [scanInfo, setScanInfo] = useState({});
 
   useEffect(() => {
     load();
@@ -31,6 +33,18 @@ export default function AdminQuestionsPage() {
     try {
       const { data } = await fetchQuestions();
       setQuestions(data);
+      const info = {};
+      await Promise.all(
+        data.map(async (q) => {
+          try {
+            const res = await fetchScanSummary('question', q._id);
+            info[q._id] = res.data;
+          } catch (e) {
+            console.error(e);
+          }
+        })
+      );
+      setScanInfo(info);
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.message || 'Error loading questions');
@@ -93,6 +107,10 @@ export default function AdminQuestionsPage() {
         <thead>
           <tr>
             <th>Title</th>
+            <th>Scanned By</th>
+            <th>Status</th>
+            <th>Last Scanned By</th>
+            <th>Total Scans</th>
             <th>Question</th>
             <th>Options</th>
             <th>Answer</th>
@@ -107,6 +125,10 @@ export default function AdminQuestionsPage() {
             <tr key={q._id}>
               {editId === q._id ? (
                 <>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
                   <td>
                     <input
                       value={editData.title}
@@ -151,7 +173,13 @@ export default function AdminQuestionsPage() {
                 </>
               ) : (
                 <>
-                  <td>{q.title}</td>
+                  <td>
+                    <a href={`/question/${q._id}`}>{q.title}</a>
+                  </td>
+                  <td>{Object.keys(scanInfo[q._id]?.firstPerTeam || {}).length}</td>
+                  <td>{(scanInfo[q._id]?.solved || []).length}</td>
+                  <td>{scanInfo[q._id]?.lastScanner?.user || '-'}</td>
+                  <td>{scanInfo[q._id]?.totalUniqueScanners || 0}</td>
                   <td>{q.text}</td>
                   <td>{q.options?.join(', ')}</td>
                   <td>{q.correctAnswer || '-'}</td>
@@ -180,6 +208,10 @@ export default function AdminQuestionsPage() {
             </tr>
           ))}
           <tr>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
             <td>
               <input
                 value={newQ.title}

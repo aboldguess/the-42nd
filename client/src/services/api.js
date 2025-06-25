@@ -52,12 +52,16 @@ export const fetchClue = (clueId) => axios.get(`/api/clues/${clueId}`);
 export const submitAnswer = (clueId, answer) =>
   axios.post(`/api/clues/${clueId}/answer`, { answer });
 
+// Retrieve a trivia question for players
+export const fetchQuestionPlayer = (id) => axios.get(`/api/questions/${id}`);
+
 // Retrieve all clues for the logged-in player. The list is ordered by creation
 // time so indexes correspond to the "currentClue" number stored on each team.
 export const fetchCluesPlayer = () => axios.get('/api/clues');
 
 // Public/player side quest endpoints
-export const fetchSideQuests = () => axios.get('/api/sidequests/public');
+// Authenticated endpoint so scans can be recorded server-side
+export const fetchSideQuests = () => axios.get('/api/sidequests');
 export const submitSideQuest = (id, data) =>
   axios.post(`/api/sidequests/${id}/submit`, data, {
     headers: { 'Content-Type': 'multipart/form-data' }
@@ -68,6 +72,10 @@ export const fetchRoguesGallery = () => axios.get('/api/roguery');
 export const fetchAdminGallery = () => axios.get('/api/admin/gallery');
 export const updateMediaVisibility = (id, hidden) =>
   axios.put(`/api/admin/gallery/${id}`, { hidden });
+
+// Retrieve scan summary details for an item
+export const fetchScanSummary = (type, id) =>
+  axios.get(`/api/scans/${type}/${id}/summary`);
 
 
 // Admin endpoints

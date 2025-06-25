@@ -3,7 +3,8 @@ import {
   fetchSideQuestsAdmin,
   createSideQuestAdmin,
   updateSideQuestAdmin,
-  deleteSideQuestAdmin
+  deleteSideQuestAdmin,
+  fetchScanSummary
 } from '../services/api';
 
 // Admin table for side quests with CRUD
@@ -19,6 +20,7 @@ export default function AdminSideQuestsPage() {
   });
   const [editId, setEditId] = useState(null);
   const [editData, setEditData] = useState({});
+  const [scanInfo, setScanInfo] = useState({});
 
   useEffect(() => {
     load();
@@ -29,6 +31,18 @@ export default function AdminSideQuestsPage() {
     try {
       const { data } = await fetchSideQuestsAdmin();
       setQuests(data);
+      const info = {};
+      await Promise.all(
+        data.map(async (sq) => {
+          try {
+            const res = await fetchScanSummary('sidequest', sq._id);
+            info[sq._id] = res.data;
+          } catch (e) {
+            console.error(e);
+          }
+        })
+      );
+      setScanInfo(info);
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.message || 'Error loading side quests');
@@ -97,6 +111,10 @@ export default function AdminSideQuestsPage() {
         <thead>
           <tr>
             <th>Title</th>
+            <th>Scanned By</th>
+            <th>Status</th>
+            <th>Last Scanned By</th>
+            <th>Total Scans</th>
             <th>Text</th>
             <th>Image</th>
             <th>Time Limit</th>
@@ -109,6 +127,10 @@ export default function AdminSideQuestsPage() {
             <tr key={q._id}>
               {editId === q._id ? (
                 <>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
                   <td>
                     <input
                       value={editData.title}
@@ -160,7 +182,13 @@ export default function AdminSideQuestsPage() {
                 </>
               ) : (
                 <>
-                  <td>{q.title}</td>
+                  <td>
+                    <a href={`/sidequest/${q._id}`}>{q.title}</a>
+                  </td>
+                  <td>{Object.keys(scanInfo[q._id]?.firstPerTeam || {}).length}</td>
+                  <td>{(scanInfo[q._id]?.solved || []).length}</td>
+                  <td>{scanInfo[q._id]?.lastScanner?.user || '-'}</td>
+                  <td>{scanInfo[q._id]?.totalUniqueScanners || 0}</td>
                   <td>{q.text}</td>
                   <td>
                     {/* show thumbnail if quest has an image */}
@@ -187,6 +215,10 @@ export default function AdminSideQuestsPage() {
             </tr>
           ))}
           <tr>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
             <td>
               <input
                 value={newQuest.title}

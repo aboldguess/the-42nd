@@ -59,6 +59,10 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/teams', require('./routes/teams'));
 app.use('/api/sidequests', require('./routes/sidequests'));
+// Player-facing question routes
+app.use('/api/questions', require('./routes/questions'));
+// Scan summary routes
+app.use('/api/scans', require('./routes/scans'));
 app.use('/api/roguery', require('./routes/roguery'));
 
 // Public settings route

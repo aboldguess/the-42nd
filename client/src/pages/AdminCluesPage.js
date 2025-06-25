@@ -3,7 +3,8 @@ import {
   fetchClues,
   createClueAdmin,
   updateClueAdmin,
-  deleteClueAdmin
+  deleteClueAdmin,
+  fetchScanSummary
 } from '../services/api';
 
 // Admin table for managing clues with inline editing
@@ -19,6 +20,8 @@ export default function AdminCluesPage() {
   });
   const [editId, setEditId] = useState(null); // currently edited clue id
   const [editData, setEditData] = useState({}); // form state for edit row
+  // Map of clueId -> scan summary
+  const [scanInfo, setScanInfo] = useState({});
 
   // Fetch clues on mount
   useEffect(() => {
@@ -30,6 +33,19 @@ export default function AdminCluesPage() {
     try {
       const { data } = await fetchClues();
       setClues(data);
+      // Retrieve scan metrics for each clue
+      const info = {};
+      await Promise.all(
+        data.map(async (c) => {
+          try {
+            const res = await fetchScanSummary('clue', c._id);
+            info[c._id] = res.data;
+          } catch (e) {
+            console.error(e);
+          }
+        })
+      );
+      setScanInfo(info);
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.message || 'Error loading clues');
@@ -95,6 +111,10 @@ export default function AdminCluesPage() {
         <thead>
           <tr>
             <th>Title</th>
+            <th>Scanned By</th>
+            <th>Status</th>
+            <th>Last Scanned By</th>
+            <th>Total Scans</th>
             <th>Text</th>
             <th>Image</th>
             <th>Answer</th>
@@ -107,6 +127,10 @@ export default function AdminCluesPage() {
             <tr key={c._id}>
               {editId === c._id ? (
                 <>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
                   <td>
                     <input value={editData.title} onChange={(e) => setEditData({ ...editData, title: e.target.value })} />
                   </td>
@@ -153,7 +177,13 @@ export default function AdminCluesPage() {
                 </>
               ) : (
                 <>
-                  <td>{c.title}</td>
+                  <td>
+                    <a href={`/clue/${c._id}`}>{c.title}</a>
+                  </td>
+                  <td>{Object.keys(scanInfo[c._id]?.firstPerTeam || {}).length}</td>
+                  <td>{(scanInfo[c._id]?.solved || []).length}</td>
+                  <td>{scanInfo[c._id]?.lastScanner?.user || '-'}</td>
+                  <td>{scanInfo[c._id]?.totalUniqueScanners || 0}</td>
                   <td>{c.text}</td>
                   <td>
                     {c.imageUrl ? (
@@ -180,6 +210,10 @@ export default function AdminCluesPage() {
           ))}
           {/* Bottom row for creating a new clue */}
           <tr>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
             <td>
               <input
                 value={newClue.title}

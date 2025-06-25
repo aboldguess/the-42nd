@@ -4,6 +4,7 @@ const Question = require('../models/Question');
 const Media = require('../models/Media');
 const QRCode = require('qrcode');
 const Settings = require('../models/Settings');
+const { recordScan } = require('../utils/scans');
 
 // Retrieve the base URL used for QR codes
 async function getQrBase() {
@@ -95,5 +96,19 @@ exports.deleteQuestion = async (req, res) => {
   } catch (err) {
     console.error('Error deleting question:', err);
     res.status(500).json({ message: 'Error deleting question' });
+  }
+};
+
+// Fetch a single question for players and record the scan
+exports.getQuestion = async (req, res) => {
+  try {
+    const q = await Question.findById(req.params.id);
+    if (!q) return res.status(404).json({ message: 'Question not found' });
+    await ensureQrCode(q);
+    await recordScan(req.user, 'question', q._id);
+    res.json(q);
+  } catch (err) {
+    console.error('Error fetching question:', err);
+    res.status(500).json({ message: 'Error fetching question' });
   }
 };
