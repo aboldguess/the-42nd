@@ -50,6 +50,7 @@ export default function Sidebar() {
           {renderLink('/admin/sidequests', 'Side Quests')}
           {renderLink('/admin/players', 'Players')}
           {renderLink('/admin/teams', 'Teams')}
+          {renderLink('/admin/gallery', 'Gallery')}
           {renderLink('/admin/settings', 'Settings')}
         </>
       )}

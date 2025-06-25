@@ -24,7 +24,9 @@ const mediaSchema = new mongoose.Schema(
       enum: ['profile', 'question', 'sideQuest', 'other'],
       default: 'other'
     },
-    tag: String
+    tag: String,
+    // When true the media is hidden from the public rogues gallery
+    hidden: { type: Boolean, default: false }
   },
   { timestamps: true }
 );

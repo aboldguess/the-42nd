@@ -10,6 +10,8 @@ const settingsSchema = new mongoose.Schema({
   // Optional logo and favicon paths served from /uploads
   logoUrl: String,
   faviconUrl: String,
+  // Placeholder image shown in the admin gallery instead of selfies/usies
+  placeholderUrl: String,
   // Global font family applied to the UI
   fontFamily: { type: String, default: 'Arial, sans-serif' }
 });
