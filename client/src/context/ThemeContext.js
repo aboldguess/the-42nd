@@ -12,36 +12,41 @@ export const ThemeProvider = ({ children }) => {
     faviconUrl: ''
   });
 
-  useEffect(() => {
-    // Fetch global theme, then override with team colours if logged in
-    const fetchTheme = async () => {
-      try {
-        let th = {
-          primary: '#2196F3',
-          secondary: '#FFC107',
-          fontFamily: 'Arial, sans-serif',
-          logoUrl: '',
-          faviconUrl: ''
-        };
-        const globalRes = await axios.get('/api/settings');
-        if (globalRes.data.theme) th = { ...th, ...globalRes.data.theme };
-        if (globalRes.data.fontFamily) th.fontFamily = globalRes.data.fontFamily;
-        if (globalRes.data.logoUrl) th.logoUrl = globalRes.data.logoUrl;
-        if (globalRes.data.faviconUrl) th.faviconUrl = globalRes.data.faviconUrl;
+  /**
+   * Fetch the current theme from the server and update state. Team colours
+   * override the global settings if a player is logged in.
+   */
+  const fetchTheme = async () => {
+    try {
+      let th = {
+        primary: '#2196F3',
+        secondary: '#FFC107',
+        fontFamily: 'Arial, sans-serif',
+        logoUrl: '',
+        faviconUrl: ''
+      };
+      const globalRes = await axios.get('/api/settings');
+      if (globalRes.data.theme) th = { ...th, ...globalRes.data.theme };
+      if (globalRes.data.fontFamily) th.fontFamily = globalRes.data.fontFamily;
+      if (globalRes.data.logoUrl) th.logoUrl = globalRes.data.logoUrl;
+      if (globalRes.data.faviconUrl) th.faviconUrl = globalRes.data.faviconUrl;
 
-        const token = localStorage.getItem('token');
-        if (token) {
-          const userRes = await axios.get('/api/users/me');
-          const teamId = userRes.data.team._id;
-          const teamRes = await axios.get(`/api/teams/${teamId}`);
-          const cs = teamRes.data.colourScheme;
-          th = { ...th, primary: cs.primary, secondary: cs.secondary };
-        }
-        setTheme(th);
-      } catch (err) {
-        console.error('Error fetching theme:', err);
+      const token = localStorage.getItem('token');
+      if (token) {
+        const userRes = await axios.get('/api/users/me');
+        const teamId = userRes.data.team._id;
+        const teamRes = await axios.get(`/api/teams/${teamId}`);
+        const cs = teamRes.data.colourScheme;
+        th = { ...th, primary: cs.primary, secondary: cs.secondary };
       }
-    };
+      setTheme(th);
+    } catch (err) {
+      console.error('Error fetching theme:', err);
+    }
+  };
+
+  // Fetch theme on first mount
+  useEffect(() => {
     fetchTheme();
   }, []);
 
@@ -59,8 +64,8 @@ export const ThemeProvider = ({ children }) => {
   }, [theme.faviconUrl]);
 
   return (
-    // Expose only the current theme values; modifications are restricted to admin
-    <ThemeContext.Provider value={{ theme }}>
+    // Expose current theme and a helper to re-fetch it after admin changes
+    <ThemeContext.Provider value={{ theme, refreshTheme: fetchTheme }}>
       {children}
     </ThemeContext.Provider>
   );

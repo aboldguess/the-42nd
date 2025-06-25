@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { ThemeContext } from '../context/ThemeContext';
 import { fetchSettingsAdmin, updateSettingsAdmin } from '../services/api';
 
 // Page allowing admin users to configure global game settings
 export default function AdminSettingsPage() {
+  const { refreshTheme } = useContext(ThemeContext);
   const [settings, setSettings] = useState({
     gameName: '',
     qrBaseUrl: '',
@@ -40,6 +42,8 @@ export default function AdminSettingsPage() {
 
       const { data } = await updateSettingsAdmin(formData);
       setSettings(data);
+      // Re-fetch theme so changes apply immediately across the app
+      refreshTheme();
       alert('Settings saved');
     } catch (err) {
       alert(err.response?.data?.message || 'Error saving settings');
