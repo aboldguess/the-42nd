@@ -16,9 +16,10 @@ const Settings = require('./models/Settings');
 
 (async function seedAdmin() {
   try {
-    const username = process.env.ADMIN_USERNAME;
-    const password = process.env.ADMIN_PASSWORD;
+    const username = process.env.ADMIN_USERNAME?.toLowerCase();
+    const password = process.env.ADMIN_PASSWORD?.toLowerCase();
     if (username && password) {
+      // Store admin credentials in lowercase to keep them case-insensitive
       const exists = await Admin.findOne({ username });
       if (!exists) {
         const hash = await bcrypt.hash(password, 10);

@@ -12,6 +12,12 @@ exports.login = async (req, res) => {
   // Extract submitted credentials
   const { firstName, lastName } = req.body;
 
+  // Convert credentials to a consistent case so authentication is
+  // case-insensitive. Names are stored as originally entered, so we
+  // perform the comparison using RegExp with the 'i' flag.
+  const first = firstName?.trim();
+  const last = lastName?.trim();
+
   // 1) Basic validation of required fields
   // Only the player's name is needed to authenticate. This assumes names are
   // unique across all teams.
@@ -20,8 +26,11 @@ exports.login = async (req, res) => {
   }
 
   try {
-    // 2) Find the user by first and last name only
-    const user = await User.findOne({ firstName, lastName });
+    // 2) Find the user by name using a case-insensitive match
+    const user = await User.findOne({
+      firstName: new RegExp('^' + first + '$', 'i'),
+      lastName: new RegExp('^' + last + '$', 'i')
+    });
     if (!user) {
       return res.status(400).json({ message: 'Player not found' });
     }
