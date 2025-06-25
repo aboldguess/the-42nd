@@ -7,6 +7,8 @@ import WelcomePage from './pages/WelcomePage';
 import SignupPage from './pages/SignupPage';
 import Dashboard from './pages/Dashboard';
 import QuestionPage from './pages/QuestionPage';
+import QuestionPlayPage from './pages/QuestionPlayPage';
+import SideQuestDetailPage from './pages/SideQuestDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import SideQuestPage from './pages/SideQuestPage';
 import RoguesGalleryPage from './pages/RoguesGalleryPage';
@@ -76,6 +78,12 @@ export default function App() {
                 }
               />
               <Route
+                path="/question/:id"
+                element={
+                  <QuestionPlayPage />
+                }
+              />
+              <Route
                 path="/profile"
                 element={
                   <AuthRoute>
@@ -91,6 +99,7 @@ export default function App() {
                   </AuthRoute>
                 }
               />
+              <Route path="/sidequest/:id" element={<SideQuestDetailPage />} />
               <Route
                 path="/roguery"
                 element={

@@ -60,6 +60,8 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/teams', require('./routes/teams'));
 app.use('/api/sidequests', require('./routes/sidequests'));
 app.use('/api/roguery', require('./routes/roguery'));
+app.use('/api', require('./routes/question'));
+app.use('/api', require('./routes/sidequest'));
 
 // Public settings route
 app.use('/api/settings', require('./routes/settings'));

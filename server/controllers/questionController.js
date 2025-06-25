@@ -4,6 +4,7 @@ const Question = require('../models/Question');
 const Media = require('../models/Media');
 const QRCode = require('qrcode');
 const Settings = require('../models/Settings');
+const mongoose = require('mongoose');
 
 // Retrieve the base URL used for QR codes
 async function getQrBase() {
@@ -95,5 +96,28 @@ exports.deleteQuestion = async (req, res) => {
   } catch (err) {
     console.error('Error deleting question:', err);
     res.status(500).json({ message: 'Error deleting question' });
+  }
+};
+
+// Fetch a single question for players/scans
+exports.getQuestion = async (req, res) => {
+  const { id } = req.params;
+
+  // Validate the provided ObjectId to avoid Mongo errors
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ message: 'Question not found' });
+  }
+
+  try {
+    const question = await Question.findById(id);
+    if (!question) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+    // Keep QR code data in sync with current settings/base URL
+    await ensureQrCode(question);
+    res.json(question);
+  } catch (err) {
+    console.error('Error fetching question:', err);
+    res.status(500).json({ message: 'Error fetching question' });
   }
 };
