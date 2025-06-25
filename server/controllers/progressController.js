@@ -8,6 +8,7 @@ exports.getScoreboard = async (req, res) => {
 
     // Map to a summary object for easier consumption by the client
     const board = teams.map(t => {
+      // completedClues holds ObjectIds, so length gives total solved clue count
       const clues = t.completedClues ? t.completedClues.length : 0;
       const quests = t.sideQuestProgress ? t.sideQuestProgress.length : 0;
       return {

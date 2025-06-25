@@ -17,9 +17,9 @@ const teamSchema = new mongoose.Schema(
     ],
     // You may keep any other fields you need (e.g. currentClue, colourScheme, etc.)
     currentClue: { type: Number, default: 1 },
-    // Track the numeric IDs of all solved clues
+    // Track ObjectIds of solved clues so we can reference them directly
     completedClues: {
-      type: [Number],
+      type: [mongoose.Schema.Types.ObjectId],
       default: []
     },
     colourScheme: {
