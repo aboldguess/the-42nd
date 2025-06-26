@@ -36,27 +36,35 @@ export default function TeamsPage() {
   return (
     <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
       <h2>Teams</h2>
-      {teams.map((team) => (
-        <div key={team._id} className="card" style={{ marginBottom: '1rem' }}>
-          <h3>
-            <Link to={`/team/${team._id}`}>{team.name}</Link>
-          </h3>
-          {team.photoUrl && (
-            <img
-              src={team.photoUrl}
-              alt={`${team.name} photo`}
-              style={{ width: '100%', maxWidth: '300px', objectFit: 'cover' }}
-            />
-          )}
-          <ul>
-            {playersForTeam(team._id).map((p) => (
-              <li key={p._id}>
-                <Link to={`/player/${p._id}`}>{p.name}</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+      <table>
+        <thead>
+          <tr>
+            <th>Team</th>
+            <th>Members</th>
+          </tr>
+        </thead>
+        <tbody>
+          {teams.map((team) => (
+            <tr key={team._id}>
+              <td data-label="Team">
+                {team.photoUrl && (
+                  <img
+                    src={team.photoUrl}
+                    alt="team"
+                    style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '0.5rem' }}
+                  />
+                )}
+                <Link to={`/team/${team._id}`}>{team.name}</Link>
+              </td>
+              <td data-label="Members">
+                {playersForTeam(team._id)
+                  .map((p) => p.name)
+                  .join(', ')}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

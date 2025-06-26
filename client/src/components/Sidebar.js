@@ -33,12 +33,12 @@ export default function Sidebar() {
       {token && (
         <>
           {renderLink('/dashboard', 'Dashboard')}
-          {renderLink('/clue/1', 'Hunt')}
-          {renderLink('/sidequests', 'Side Quests')}
-          {renderLink('/roguery', 'Gallery')}
-          {renderLink('/scoreboard', 'Scoreboard')}
+          {renderLink('/questions', 'Questions')}
+          {renderLink('/clues', 'Clues')}
+          {renderLink('/sidequests', 'Sidequests')}
           {renderLink('/players', 'Players')}
           {renderLink('/teams', 'Teams')}
+          {renderLink('/scoreboard', 'Scoreboard')}
           {renderLink('/profile', 'My Profile')}
         </>
       )}
