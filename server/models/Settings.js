@@ -14,6 +14,13 @@ const settingsSchema = new mongoose.Schema({
   placeholderUrl: String,
   // Global font family applied to the UI
   fontFamily: { type: String, default: 'Arial, sans-serif' }
+  ,
+  // Weights used when calculating team scores on the scoreboard. These can
+  // be customised via the admin settings page so different actions carry
+  // more or less importance in the final ranking.
+  scoreWeightCorrectAnswer: { type: Number, default: 1 },
+  scoreWeightSideQuestCompleted: { type: Number, default: 1 },
+  scoreWeightSideQuestCreated: { type: Number, default: 1 }
 });
 
 module.exports = mongoose.model('Settings', settingsSchema);

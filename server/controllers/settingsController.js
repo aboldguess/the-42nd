@@ -27,6 +27,17 @@ exports.updateSettings = async (req, res) => {
   try {
     const updates = { ...req.body };
 
+    // Convert numeric score weight fields from strings
+    if (updates.scoreWeightCorrectAnswer !== undefined) {
+      updates.scoreWeightCorrectAnswer = Number(updates.scoreWeightCorrectAnswer);
+    }
+    if (updates.scoreWeightSideQuestCompleted !== undefined) {
+      updates.scoreWeightSideQuestCompleted = Number(updates.scoreWeightSideQuestCompleted);
+    }
+    if (updates.scoreWeightSideQuestCreated !== undefined) {
+      updates.scoreWeightSideQuestCreated = Number(updates.scoreWeightSideQuestCreated);
+    }
+
     // If theme is provided as a JSON string, parse it
     if (typeof updates.theme === 'string') {
       try {

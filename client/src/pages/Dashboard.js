@@ -3,7 +3,9 @@ import {
   fetchMe,
   fetchTeam,
   addTeamMember,
-  fetchCluesPlayer
+  fetchCluesPlayer,
+  fetchProgress,
+  fetchScoreboard
 } from '../services/api';
 import TeamMemberForm from '../components/TeamMemberForm';
 
@@ -13,6 +15,17 @@ export default function Dashboard() {
   const [currentClue, setCurrentClue] = useState(null);
   const [currentClueId, setCurrentClueId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState({
+    qFound: 0,
+    qTotal: 0,
+    cluesFound: 0,
+    cluesTotal: 0,
+    sqFound: 0,
+    sqTotal: 0,
+    correct: 0,
+    sqCreated: 0,
+    photos: 0
+  });
 
   useEffect(() => {
     const load = async () => {
@@ -21,6 +34,7 @@ export default function Dashboard() {
         setUser(meRes.data);
         const teamRes = await fetchTeam(meRes.data.team._id);
         setTeam(teamRes.data);
+
         if (teamRes.data.currentClue) {
           setCurrentClue(teamRes.data.currentClue);
 
@@ -32,6 +46,28 @@ export default function Dashboard() {
             setCurrentClueId(cluesRes.data[idx]._id);
           }
         }
+
+        // Load progress tables for counts
+        const [qProg, clueProg, sqProg, board] = await Promise.all([
+          fetchProgress('question'),
+          fetchProgress('clue'),
+          fetchProgress('sidequest'),
+          fetchScoreboard()
+        ]);
+
+        const myBoard = board.data.find((b) => b.teamId === teamRes.data._id);
+        setProgress({
+          qFound: qProg.data.filter((i) => i.scanned).length,
+          qTotal: qProg.data.length,
+          cluesFound: clueProg.data.filter((i) => i.scanned).length,
+          cluesTotal: clueProg.data.length,
+          sqFound: sqProg.data.filter((i) => i.scanned).length,
+          sqTotal: sqProg.data.length,
+          correct: clueProg.data.filter((i) => i.status === 'SOLVED!').length,
+          sqCreated: myBoard?.sidequestsCreated || 0,
+          photos: myBoard?.photosUploaded || 0
+        });
+
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -84,6 +120,23 @@ export default function Dashboard() {
               {m.name}
             </li>
           ))}
+        </ul>
+        <p style={{ marginTop: '1rem' }}>
+          <strong>Progress:</strong>
+        </p>
+        <ul>
+          <li>
+            Questions Found: {progress.qFound} / {progress.qTotal}
+          </li>
+          <li>
+            Clues Found: {progress.cluesFound} / {progress.cluesTotal}
+          </li>
+          <li>
+            Sidequests Found: {progress.sqFound} / {progress.sqTotal}
+          </li>
+          <li>Correct Answers: {progress.correct}</li>
+          <li>Sidequests Created: {progress.sqCreated}</li>
+          <li>Photos Uploaded: {progress.photos}</li>
         </ul>
       </div>
 

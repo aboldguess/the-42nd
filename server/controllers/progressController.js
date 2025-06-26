@@ -4,30 +4,74 @@ const Clue = require('../models/Clue');
 const Question = require('../models/Question');
 const SideQuest = require('../models/SideQuest');
 const User = require('../models/User');
+const Media = require('../models/Media');
+const Settings = require('../models/Settings');
 
-// Build a simple scoreboard summarizing each team's progress.
+// Build a detailed scoreboard summarizing each team's progress.
 exports.getScoreboard = async (req, res) => {
   try {
-    // Fetch all teams with their side quest progress populated for counts
+    // Pull weighting factors from the global settings document. Defaults
+    // ensure a sensible score even if the settings have not been configured.
+    const s = await Settings.findOne();
+    const wCorrect = s?.scoreWeightCorrectAnswer || 1;
+    const wCompleted = s?.scoreWeightSideQuestCompleted || 1;
+    const wCreated = s?.scoreWeightSideQuestCreated || 1;
+
+    // Fetch all teams so we can compile aggregate stats for each one.
     const teams = await Team.find().populate('sideQuestProgress.sideQuest', 'title');
 
-    // Map to a summary object for easier consumption by the client
-    const board = teams.map(t => {
-      // completedClues holds ObjectIds, so length gives total solved clue count
-      const clues = t.completedClues ? t.completedClues.length : 0;
-      const quests = t.sideQuestProgress ? t.sideQuestProgress.length : 0;
-      return {
+    const board = [];
+
+    for (const t of teams) {
+      // Total number of questions scanned by this team
+      const questionsFound = (
+        await Scan.distinct('itemId', { team: t._id, itemType: 'question' })
+      ).length;
+
+      // Distinct side quests scanned
+      const sidequestsFound = (
+        await Scan.distinct('itemId', { team: t._id, itemType: 'sidequest' })
+      ).length;
+
+      const correctAnswers = t.completedClues ? t.completedClues.length : 0;
+      const sidequestsCompleted = t.sideQuestProgress ? t.sideQuestProgress.length : 0;
+
+      // IDs of all players on this team for lookup convenience
+      const members = await User.find({ team: t._id }).select('_id');
+      const memberIds = members.map((m) => m._id);
+
+      // Count of quests created by team members
+      const sidequestsCreated = await SideQuest.countDocuments({
+        createdBy: { $in: memberIds },
+        createdByType: 'User'
+      });
+
+      // Count of photos/videos uploaded by the team
+      const photosUploaded = await Media.countDocuments({ team: t._id });
+
+      const score =
+        wCorrect * correctAnswers +
+        wCompleted * sidequestsCompleted +
+        wCreated * sidequestsCreated;
+
+      board.push({
         teamId: t._id,
         name: t.name,
-        completedClues: clues,
-        completedSideQuests: quests,
-        score: clues + quests
-      };
-    });
-    // Highest score first then return
-    const sorted = board.sort((a, b) => b.score - a.score);
+        photoUrl: t.photoUrl,
+        questionsFound,
+        correctAnswers,
+        sidequestsFound,
+        sidequestsCompleted,
+        sidequestsCreated,
+        photosUploaded,
+        score
+      });
+    }
 
-    res.json(sorted);
+    // Highest score first
+    board.sort((a, b) => b.score - a.score);
+
+    res.json(board);
   } catch (err) {
     console.error('Error building scoreboard:', err);
     res.status(500).json({ message: 'Error building scoreboard' });

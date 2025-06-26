@@ -14,7 +14,10 @@ export default function AdminSettingsPage() {
     fontFamily: 'Arial, sans-serif',
     logoUrl: '',
     faviconUrl: '',
-    placeholderUrl: ''
+    placeholderUrl: '',
+    scoreWeightCorrectAnswer: 1,
+    scoreWeightSideQuestCompleted: 1,
+    scoreWeightSideQuestCreated: 1
   });
   // Local file objects for uploads
   const [logoFile, setLogoFile] = useState(null);
@@ -44,6 +47,9 @@ export default function AdminSettingsPage() {
       if (logoFile) formData.append('logo', logoFile);
       if (faviconFile) formData.append('favicon', faviconFile);
       if (placeholderFile) formData.append('placeholder', placeholderFile);
+      formData.append('scoreWeightCorrectAnswer', settings.scoreWeightCorrectAnswer);
+      formData.append('scoreWeightSideQuestCompleted', settings.scoreWeightSideQuestCompleted);
+      formData.append('scoreWeightSideQuestCreated', settings.scoreWeightSideQuestCreated);
 
       const { data } = await updateSettingsAdmin(formData);
       setSettings(data);
@@ -117,6 +123,32 @@ export default function AdminSettingsPage() {
       {settings.placeholderUrl && (
         <img src={settings.placeholderUrl} alt="Current placeholder" style={{ height: '40px', marginTop: '0.5rem' }} />
       )}
+
+      <h3>Score Weights</h3>
+      <label>Per Correct Answer:</label>
+      <input
+        type="number"
+        value={settings.scoreWeightCorrectAnswer}
+        onChange={(e) =>
+          setSettings({ ...settings, scoreWeightCorrectAnswer: Number(e.target.value) })
+        }
+      />
+      <label>Per Side Quest Completed:</label>
+      <input
+        type="number"
+        value={settings.scoreWeightSideQuestCompleted}
+        onChange={(e) =>
+          setSettings({ ...settings, scoreWeightSideQuestCompleted: Number(e.target.value) })
+        }
+      />
+      <label>Per Side Quest Created:</label>
+      <input
+        type="number"
+        value={settings.scoreWeightSideQuestCreated}
+        onChange={(e) =>
+          setSettings({ ...settings, scoreWeightSideQuestCreated: Number(e.target.value) })
+        }
+      />
 
       <button onClick={handleSave}>Save Changes</button>
     </div>
