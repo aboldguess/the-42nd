@@ -66,3 +66,5 @@ npm start
 The client will automatically proxy requests to the server on port `5000`.
 
 Once both services are running you can visit `http://localhost:3000` to use the app.
+
+**Note:** The QR scanner requires camera access, which is only permitted in secure contexts. When testing on a mobile device, open the site over `https://` or via `localhost`; otherwise the browser will block camera access and scanning will fail.
