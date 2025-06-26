@@ -28,8 +28,10 @@ const mediaSchema = new mongoose.Schema(
       default: 'other'
     },
     tag: String,
-    // Track which players reacted with which emoji.  Each reaction records
-    // the player's ObjectId so we can populate their name later.
+    // When true the media is hidden from the public rogues gallery
+    hidden: { type: Boolean, default: false },
+    // Track which players reacted with which emoji. Each reaction stores
+    // the reacting player's ObjectId so their name can be populated later.
     reactions: [
       {
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

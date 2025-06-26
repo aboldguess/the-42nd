@@ -1,10 +1,14 @@
 const Media = require('../models/Media');
+const Settings = require('../models/Settings');
 
 // Controller functions for the rogues gallery.  Players can browse uploaded
 // media and react to each item with an emoji.
 
 exports.getAllMedia = async (req, res) => {
   try {
+    // URL of the placeholder image if configured in settings
+    const placeholder = (await Settings.findOne())?.placeholderUrl;
+
     const allMedia = await Media.find()
       // Populate uploader regardless of whether it's a User or Admin. We
       // request both possible name fields so the client can display whichever
@@ -16,7 +20,23 @@ exports.getAllMedia = async (req, res) => {
       .populate('reactions.user', 'name')
       // Newest uploads first
       .sort({ createdAt: -1 });
-    res.json(allMedia);
+
+    // Respect hidden flags when returning media to the public gallery
+    const sanitized = [];
+    for (const m of allMedia) {
+      if (m.hidden) {
+        // Replace hidden profile photos with a placeholder if provided
+        if (placeholder && m.type === 'profile') {
+          sanitized.push({ ...m.toObject(), url: placeholder });
+        }
+        // Non-profile media marked hidden are omitted entirely
+        continue;
+      }
+      // Visible media are returned unchanged
+      sanitized.push(m);
+    }
+
+    res.json(sanitized);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error fetching rogues gallery' });
@@ -68,5 +88,38 @@ exports.addReaction = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error updating reaction' });
+  }
+};
+
+// Retrieve the complete gallery for administrators without filtering out
+// hidden items. Useful for moderation and management pages.
+exports.getAllMediaAdmin = async (req, res) => {
+  try {
+    const allMedia = await Media.find()
+      .populate('uploadedBy', 'name username photoUrl')
+      .populate('team', 'name')
+      .populate('sideQuest', 'title')
+      .populate('reactions.user', 'name')
+      .sort({ createdAt: -1 });
+    res.json(allMedia);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching gallery' });
+  }
+};
+
+// Allow admins to toggle whether a media item is visible in the public gallery
+exports.updateMediaVisibility = async (req, res) => {
+  try {
+    const media = await Media.findByIdAndUpdate(
+      req.params.id,
+      { hidden: req.body.hidden },
+      { new: true }
+    );
+    if (!media) return res.status(404).json({ message: 'Media not found' });
+    res.json(media);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error updating media' });
   }
 };
