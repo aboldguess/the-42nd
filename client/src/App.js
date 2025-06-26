@@ -27,6 +27,7 @@ import AdminSettingsPage from './pages/AdminSettingsPage';
 
 import AdminLoginPage from './pages/AdminLoginPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+import QrScanButton from './components/QrScanButton';
 
 // Guard for regular users
 const AuthRoute = ({ children }) => {
@@ -236,6 +237,7 @@ export default function App() {
             </Routes>
           </div>
         </div>
+        <QrScanButton />
       </BrowserRouter>
     </div>
   );
