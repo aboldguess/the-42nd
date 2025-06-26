@@ -10,6 +10,14 @@ export default function QrScanButton() {
   const [open, setOpen] = useState(false); // show/hide scanner overlay
   const navigate = useNavigate();
 
+  // Check if the browser can access the camera. On mobile devices the page must
+  // be served over HTTPS (or from `localhost`) for `getUserMedia` to be
+  // available. Older/unsupported browsers will not have this API either.
+  const cameraAvailable =
+    typeof navigator !== 'undefined' &&
+    navigator.mediaDevices &&
+    typeof navigator.mediaDevices.getUserMedia === 'function';
+
   // Called each time the scanner decodes a QR code
   const handleScan = (data) => {
     if (!data) return; // ignore empty scans
@@ -40,7 +48,16 @@ export default function QrScanButton() {
     <>
       <button
         className="qr-scan-button"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          if (cameraAvailable) {
+            setOpen(true);
+          } else {
+            // Show a simple alert when camera access is not possible
+            alert(
+              'Camera access is not available. Please use HTTPS or localhost.'
+            );
+          }
+        }}
         aria-label="Scan QR Code"
       >
         &#128247;
@@ -68,13 +85,23 @@ export default function QrScanButton() {
             >
               ×
             </button>
-            <QrReader
-              delay={300}
-              onError={handleError}
-              onScan={handleScan}
-              style={{ width: '100%' }}
-            />
-            <p style={{ textAlign: 'center' }}>Align QR code within frame</p>
+            {cameraAvailable ? (
+              <>
+                <QrReader
+                  delay={300}
+                  onError={handleError}
+                  onScan={handleScan}
+                  style={{ width: '100%' }}
+                />
+                <p style={{ textAlign: 'center' }}>
+                  Align QR code within frame
+                </p>
+              </>
+            ) : (
+              <p style={{ textAlign: 'center' }}>
+                Camera access is not available. Use HTTPS or localhost.
+              </p>
+            )}
           </div>
         </div>
       )}
