@@ -1,4 +1,5 @@
 :root {
+  /* CSS variables allow dynamic theming via admin settings */
   --primary-color: #2196F3;
   --secondary-color: #FFC107;
   --background-color: #f5f5f5;
@@ -19,6 +20,7 @@ html,
 }
 
 .app-container {
+  /* Mobile-first vertical layout; sidebar and content stack on small screens */
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -26,6 +28,7 @@ html,
 
 /* ───────────────── NAVBAR ───────────────── */
 .navbar {
+  /* Sticky top bar for branding and navigation */
   background-color: var(--primary-color);
   padding: 0.5rem 1rem;
   color: #fff;
@@ -65,6 +68,7 @@ html,
 }
 
 .sidebar {
+  /* Collapsible navigation on the left */
   width: var(--sidebar-width);
   background-color: var(--secondary-color);
   padding: 1rem;
@@ -136,7 +140,7 @@ form textarea {
 
 /* ───────────────── RESPONSIVE ───────────────── */
 
-/* 1) Completely hide sidebar on phones */
+/* 1) Completely hide sidebar on phones to maximise screen real estate */
 @media (max-width: 600px) {
   .mobile-hide {
     display: none !important;
@@ -155,7 +159,7 @@ form textarea {
     font-size: 0.85rem;
   }
 }
-/* Hamburger hidden on big screens, visible <=600 px */
+/* Hamburger menu toggles the sidebar on phones */
 .hamburger {
   background: none;
   border: none;
