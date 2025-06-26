@@ -90,6 +90,8 @@ export const postComment = (type, id, data) =>
 export const fetchAdminGallery = () => axios.get('/api/admin/gallery');
 export const updateMediaVisibility = (id, hidden) =>
   axios.put(`/api/admin/gallery/${id}`, { hidden });
+export const deleteMediaAdmin = (id) =>
+  axios.delete(`/api/admin/gallery/${id}`);
 
 
 // Admin endpoints
