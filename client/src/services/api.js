@@ -92,6 +92,9 @@ export const fetchAdminSummary = () =>
 export const fetchScoreboard = () => axios.get('/api/scoreboard');
 export const fetchAdminScoreboard = () => axios.get('/api/admin/scoreboard');
 
+// Player progress tables
+export const fetchProgress = (type) => axios.get(`/api/progress/${type}`);
+
 
 // Admin CRUD for clues
 export const fetchClues = () => axios.get('/api/admin/clues');

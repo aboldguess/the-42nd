@@ -6,6 +6,7 @@ const Media = require('../models/Media');
 const mongoose = require('mongoose');
 const QRCode = require('qrcode');
 const { getQrBase } = require('../utils/qr');
+const { recordScan } = require('../utils/scan');
 
 
 // Ensure the given clue has an up-to-date QR code based on current settings.
@@ -33,6 +34,8 @@ exports.getClue = async (req, res) => {
       return res.status(404).json({ message: 'Clue not found' });
     }
     await ensureQrCode(clue);
+    // Log that this player viewed/scanned the clue
+    await recordScan('clue', clue._id, req.user, 'NEW');
     res.json(clue);
   } catch (err) {
     console.error('Error fetching clue:', err);
@@ -131,11 +134,15 @@ exports.submitAnswer = async (req, res) => {
       await team.save();
 
       // Respond with the ObjectId of the next clue (or null if none)
+      // Mark this scan as solved for progress tracking
+      await recordScan('clue', clue._id, req.user, 'SOLVED!');
       return res.json({
         correct: true,
         nextClue: next ? next._id : null
       });
     } else {
+      // Record the incorrect attempt so status can show INCORRECT
+      await recordScan('clue', clue._id, req.user, 'INCORRECT');
       return res.json({ correct: false });
     }
   } catch (err) {

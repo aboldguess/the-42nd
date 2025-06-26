@@ -64,6 +64,8 @@ app.use('/api/roguery', require('./routes/roguery'));
 app.use('/api/reactions', require('./routes/reactions'));
 app.use('/api', require('./routes/question'));
 app.use('/api', require('./routes/sidequest'));
+// Player progress routes
+app.use('/api/progress', require('./routes/progress'));
 
 // Public settings route
 app.use('/api/settings', require('./routes/settings'));

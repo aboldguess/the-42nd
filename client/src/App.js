@@ -14,6 +14,9 @@ import SideQuestPage from './pages/SideQuestPage';
 import RoguesGalleryPage from './pages/RoguesGalleryPage';
 import InfoPage from './pages/InfoPage';
 import ScoreboardPage from './pages/ScoreboardPage';
+import ClueStatusPage from './pages/ClueStatusPage';
+import QuestionStatusPage from './pages/QuestionStatusPage';
+import SideQuestStatusPage from './pages/SideQuestStatusPage';
 import AdminCluesPage from './pages/AdminCluesPage';
 import AdminQuestionsPage from './pages/AdminQuestionsPage';
 import AdminSideQuestsPage from './pages/AdminSideQuestsPage';
@@ -113,6 +116,30 @@ export default function App() {
                 element={
                   <AuthRoute>
                     <ScoreboardPage />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/progress/clues"
+                element={
+                  <AuthRoute>
+                    <ClueStatusPage />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/progress/questions"
+                element={
+                  <AuthRoute>
+                    <QuestionStatusPage />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/progress/sidequests"
+                element={
+                  <AuthRoute>
+                    <SideQuestStatusPage />
                   </AuthRoute>
                 }
               />

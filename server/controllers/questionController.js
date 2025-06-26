@@ -5,6 +5,7 @@ const Media = require('../models/Media');
 const QRCode = require('qrcode');
 const Settings = require('../models/Settings');
 const mongoose = require('mongoose');
+const { recordScan } = require('../utils/scan');
 
 // Retrieve the base URL used for QR codes
 async function getQrBase() {
@@ -115,6 +116,8 @@ exports.getQuestion = async (req, res) => {
     }
     // Keep QR code data in sync with current settings/base URL
     await ensureQrCode(question);
+    // Record that this question was scanned if player is logged in
+    await recordScan('question', question._id, req.user, 'NEW');
     res.json(question);
   } catch (err) {
     console.error('Error fetching question:', err);
