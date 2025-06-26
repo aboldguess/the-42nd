@@ -56,6 +56,9 @@ export default function QrScanButton() {
       <button
         className="qr-scan-button"
         onClick={async () => {
+          // Reload the user's preferred camera in case it was changed via the
+          // profile page while this component remained mounted.
+          setFacingMode(localStorage.getItem('cameraFacingMode') || 'rear');
           if (!cameraAvailable) {
             alert('Camera access is not available. Use HTTPS or localhost.');
             return;
@@ -97,8 +100,9 @@ export default function QrScanButton() {
                 right: 8,
                 background: 'none',
                 border: 'none',
-                fontSize: '1.5rem',
-                cursor: 'pointer'
+                fontSize: '2rem',
+                cursor: 'pointer',
+                zIndex: 5
               }}
               aria-label="Close scanner"
             >
@@ -117,8 +121,9 @@ export default function QrScanButton() {
                 left: 8,
                 background: 'none',
                 border: 'none',
-                fontSize: '1.5rem',
-                cursor: 'pointer'
+                fontSize: '2rem',
+                cursor: 'pointer',
+                zIndex: 5
               }}
               aria-label="Switch camera"
             >
@@ -127,6 +132,7 @@ export default function QrScanButton() {
             {cameraAvailable ? (
               <>
                 <QrReader
+                  key={facingMode} // force re-mount when switching cameras
                   delay={300}
                   onError={handleError}
                   onScan={handleScan}
