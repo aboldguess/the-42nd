@@ -10,6 +10,9 @@ import QuestionPage from './pages/QuestionPage';
 import QuestionPlayPage from './pages/QuestionPlayPage';
 import SideQuestDetailPage from './pages/SideQuestDetailPage';
 import ProfilePage from './pages/ProfilePage';
+import PlayerProfilePage from './pages/PlayerProfilePage';
+import PlayersPage from './pages/PlayersPage';
+import TeamsPage from './pages/TeamsPage';
 import SideQuestPage from './pages/SideQuestPage';
 import RoguesGalleryPage from './pages/RoguesGalleryPage';
 import InfoPage from './pages/InfoPage';
@@ -94,6 +97,30 @@ export default function App() {
                 element={
                   <AuthRoute>
                     <ProfilePage />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/player/:id"
+                element={
+                  <AuthRoute>
+                    <PlayerProfilePage />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/players"
+                element={
+                  <AuthRoute>
+                    <PlayersPage />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/teams"
+                element={
+                  <AuthRoute>
+                    <TeamsPage />
                   </AuthRoute>
                 }
               />

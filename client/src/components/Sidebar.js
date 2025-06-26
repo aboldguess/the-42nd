@@ -37,7 +37,9 @@ export default function Sidebar() {
           {renderLink('/sidequests', 'Side Quests')}
           {renderLink('/roguery', 'Gallery')}
           {renderLink('/scoreboard', 'Scoreboard')}
-          {renderLink('/profile', 'Profile')}
+          {renderLink('/players', 'Players')}
+          {renderLink('/teams', 'Teams')}
+          {renderLink('/profile', 'My Profile')}
         </>
       )}
 
