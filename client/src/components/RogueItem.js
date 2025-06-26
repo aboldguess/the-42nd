@@ -8,7 +8,9 @@ function RogueItem({ media }) {
   const { url, uploadedBy, team, sideQuest, createdAt, emojiCounts = {} } = media;
   const isVideo = url.match(/\.(mp4|mov|avi)$/i);
   const [show, setShow] = useState(false); // modal visibility
-  const [reactions, setReactions] = useState([]); // fetched reactions
+  const [reactions, setReactions] = useState([]); // fetched reactions for modal view
+  // Track emoji counts on the card so they can update after reacting inline
+  const [counts, setCounts] = useState(emojiCounts);
 
   // Fetch existing reactions when the modal is opened
   useEffect(() => {
@@ -17,6 +19,12 @@ function RogueItem({ media }) {
       try {
         const { data } = await fetchReactions(media._id);
         setReactions(data);
+        // Update counts so the modal displays up to date numbers
+        const newCounts = data.reduce((acc, r) => {
+          acc[r.emoji] = (acc[r.emoji] || 0) + 1;
+          return acc;
+        }, {});
+        setCounts(newCounts);
       } catch (err) {
         console.error(err);
       }
@@ -31,12 +39,20 @@ function RogueItem({ media }) {
     return acc;
   }, {});
 
-  // Handle the user selecting an emoji reaction
-  const handleReact = async (emoji) => {
+  // Handle the user selecting an emoji reaction. An event parameter is optional
+  // so that clicks on inline emoji buttons can prevent the card from opening.
+  const handleReact = async (emoji, e) => {
+    if (e) e.stopPropagation();
     try {
       await addReaction(media._id, emoji);
+      // Refresh reactions from the server to keep counts in sync
       const { data } = await fetchReactions(media._id);
       setReactions(data);
+      const newCounts = data.reduce((acc, r) => {
+        acc[r.emoji] = (acc[r.emoji] || 0) + 1;
+        return acc;
+      }, {});
+      setCounts(newCounts);
     } catch (err) {
       console.error(err);
     }
@@ -67,9 +83,19 @@ function RogueItem({ media }) {
         </div>
         <div style={{ marginTop: '0.25rem' }}>
           {EMOJIS.map((e) => (
-            <span key={e} style={{ marginRight: '0.5rem' }}>
-              {e} {emojiCounts[e] || 0}
-            </span>
+            <button
+              key={e}
+              onClick={(evt) => handleReact(e, evt)}
+              style={{
+                marginRight: '0.5rem',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '1rem'
+              }}
+            >
+              {e} {counts[e] || 0}
+            </button>
           ))}
         </div>
       </div>
@@ -85,12 +111,19 @@ function RogueItem({ media }) {
               ×
             </button>
             {isVideo ? (
-              <video controls style={{ maxWidth: '100%' }}>
+              <video
+                controls
+                style={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain' }}
+              >
                 <source src={url} />
                 Your browser does not support the video tag.
               </video>
             ) : (
-              <img src={url} alt="Media" style={{ maxWidth: '100%', borderRadius: '4px' }} />
+              <img
+                src={url}
+                alt="Media"
+                style={{ maxWidth: '100%', maxHeight: '80vh', borderRadius: '4px', objectFit: 'contain' }}
+              />
             )}
             <div style={{ marginTop: '1rem' }}>
               {EMOJIS.map((e) => (
