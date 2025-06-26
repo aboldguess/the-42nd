@@ -11,10 +11,12 @@ export default function QrScanButton() {
   const [errorMsg, setErrorMsg] = useState(''); // display permission errors
   const navigate = useNavigate();
 
-  // Default to the rear camera, but allow users to override this
-  // preference by storing a value in localStorage.
-  const preferredFacing =
-    localStorage.getItem('cameraFacingMode') || 'rear';
+  // Keep track of which camera should be used. We default to the rear camera
+  // (often labelled "environment" by browsers) but persist the user's choice
+  // in localStorage so it is reused next time.
+  const [facingMode, setFacingMode] = useState(
+    localStorage.getItem('cameraFacingMode') || 'rear'
+  );
 
   // Determine if the browser exposes `getUserMedia` at all. Modern browsers
   // only make this API available on secure origins (HTTPS or `localhost`).
@@ -102,15 +104,36 @@ export default function QrScanButton() {
             >
               ×
             </button>
+            {/* Allow the user to swap between front and rear cameras */}
+            <button
+              onClick={() => {
+                const next = facingMode === 'rear' ? 'front' : 'rear';
+                setFacingMode(next);
+                localStorage.setItem('cameraFacingMode', next);
+              }}
+              style={{
+                position: 'absolute',
+                top: 8,
+                left: 8,
+                background: 'none',
+                border: 'none',
+                fontSize: '1.5rem',
+                cursor: 'pointer'
+              }}
+              aria-label="Switch camera"
+            >
+              ↻
+            </button>
             {cameraAvailable ? (
               <>
                 <QrReader
                   delay={300}
                   onError={handleError}
                   onScan={handleScan}
-                  // Use the rear camera by default; this value can be
-                  // changed via the user profile settings.
-                  facingMode={preferredFacing}
+                  // The facing mode determines which camera to use. When this
+                  // state changes the component re-renders, effectively
+                  // switching cameras.
+                  facingMode={facingMode}
                   style={{ width: '100%' }}
                 />
                 <p style={{ textAlign: 'center' }}>Align QR code within frame</p>
