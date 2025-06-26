@@ -6,6 +6,16 @@ export default function ProfilePage() {
   const [user, setUser] = useState(null);
   const [newName, setNewName] = useState('');
   const [selfieFile, setSelfieFile] = useState(null);
+  // Persist the user's preferred camera for QR scanning.
+  const [cameraPref, setCameraPref] = useState(
+    localStorage.getItem('cameraFacingMode') || 'rear'
+  );
+
+  // Store the preference whenever it changes so the
+  // scanner component can read it from localStorage.
+  useEffect(() => {
+    localStorage.setItem('cameraFacingMode', cameraPref);
+  }, [cameraPref]);
 
   useEffect(() => {
     const load = async () => {
@@ -46,7 +56,20 @@ export default function ProfilePage() {
           <input value={newName} onChange={(e) => setNewName(e.target.value)} required />
 
           <label>Profile Picture:</label>
-          <ProfilePic avatarUrl={user.photoUrl} onFileSelect={(file) => setSelfieFile(file)} />
+          <ProfilePic
+            avatarUrl={user.photoUrl}
+            onFileSelect={(file) => setSelfieFile(file)}
+          />
+
+          <label>QR Scanner Camera:</label>
+          {/* Allows the user to control which camera opens when scanning */}
+          <select
+            value={cameraPref}
+            onChange={(e) => setCameraPref(e.target.value)}
+          >
+            <option value="rear">Rear (default)</option>
+            <option value="front">Front</option>
+          </select>
 
           <button type="submit">Save Changes</button>
         </form>
