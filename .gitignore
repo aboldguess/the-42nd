@@ -4,6 +4,7 @@
 
 # Environment files
 /server/.env
+/client/.env
 
 # Uploads folder
 /server/uploads

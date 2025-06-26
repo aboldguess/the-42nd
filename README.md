@@ -62,7 +62,13 @@ npm start        # plain node
 Start the React client (from `client`):
 ```bash
 # Use HTTPS so mobile browsers allow camera access
+# Option 1: run with an environment variable
 HTTPS=true npm start
+
+# Option 2: create a `.env` file in `client/` containing:
+#   HTTPS=true
+# Then simply run:
+# npm start
 ```
 The client will automatically proxy requests to the server on port `5000`.
 
