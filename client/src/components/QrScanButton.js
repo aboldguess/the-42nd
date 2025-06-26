@@ -8,11 +8,11 @@ import QrReader from 'react-qr-scanner';
  */
 export default function QrScanButton() {
   const [open, setOpen] = useState(false); // show/hide scanner overlay
+  const [errorMsg, setErrorMsg] = useState(''); // display permission errors
   const navigate = useNavigate();
 
-  // Check if the browser can access the camera. On mobile devices the page must
-  // be served over HTTPS (or from `localhost`) for `getUserMedia` to be
-  // available. Older/unsupported browsers will not have this API either.
+  // Determine if the browser exposes `getUserMedia` at all. Modern browsers
+  // only make this API available on secure origins (HTTPS or `localhost`).
   const cameraAvailable =
     typeof navigator !== 'undefined' &&
     navigator.mediaDevices &&
@@ -48,13 +48,25 @@ export default function QrScanButton() {
     <>
       <button
         className="qr-scan-button"
-        onClick={() => {
-          if (cameraAvailable) {
+        onClick={async () => {
+          if (!cameraAvailable) {
+            alert('Camera access is not available. Use HTTPS or localhost.');
+            return;
+          }
+          try {
+            // Request permission before opening the scanner so the browser
+            // prompts the user to allow camera access on first use.
+            const stream = await navigator.mediaDevices.getUserMedia({
+              video: true
+            });
+            // Immediately stop the stream so `react-qr-scanner` can take over
+            stream.getTracks().forEach((t) => t.stop());
+            setErrorMsg('');
             setOpen(true);
-          } else {
-            // Show a simple alert when camera access is not possible
-            alert(
-              'Camera access is not available. Please use HTTPS or localhost.'
+          } catch (err) {
+            console.error('Camera permission error:', err);
+            setErrorMsg(
+              'Unable to access camera. Please grant permission and refresh the page.'
             );
           }
         }}
@@ -93,14 +105,15 @@ export default function QrScanButton() {
                   onScan={handleScan}
                   style={{ width: '100%' }}
                 />
-                <p style={{ textAlign: 'center' }}>
-                  Align QR code within frame
-                </p>
+                <p style={{ textAlign: 'center' }}>Align QR code within frame</p>
               </>
             ) : (
               <p style={{ textAlign: 'center' }}>
                 Camera access is not available. Use HTTPS or localhost.
               </p>
+            )}
+            {errorMsg && (
+              <p style={{ textAlign: 'center', color: 'red' }}>{errorMsg}</p>
             )}
           </div>
         </div>
