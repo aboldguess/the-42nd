@@ -233,3 +233,22 @@ td {
   overflow: auto;
   border-radius: 4px;
 }
+
+/* Floating QR scan button */
+.qr-scan-button {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 1100;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
