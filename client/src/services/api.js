@@ -79,6 +79,13 @@ export const addReaction = (mediaId, emoji) =>
 export const fetchReactions = (mediaId) =>
   axios.get(`/api/reactions/${mediaId}`);
 
+// Wall comments on player/team profiles
+export const fetchWall = (type, id) => axios.get(`/api/wall/${type}/${id}`);
+export const postComment = (type, id, data) =>
+  axios.post(`/api/wall/${type}/${id}`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+
 // Admin gallery endpoints
 export const fetchAdminGallery = () => axios.get('/api/admin/gallery');
 export const updateMediaVisibility = (id, hidden) =>

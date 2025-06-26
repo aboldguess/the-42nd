@@ -38,7 +38,9 @@ export default function TeamsPage() {
       <h2>Teams</h2>
       {teams.map((team) => (
         <div key={team._id} className="card" style={{ marginBottom: '1rem' }}>
-          <h3>{team.name}</h3>
+          <h3>
+            <Link to={`/team/${team._id}`}>{team.name}</Link>
+          </h3>
           {team.photoUrl && (
             <img
               src={team.photoUrl}

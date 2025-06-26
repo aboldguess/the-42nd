@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchPlayerById } from '../services/api';
+import Wall from '../components/Wall';
 
 // Read-only profile for any player
 export default function PlayerProfilePage() {
@@ -33,6 +34,7 @@ export default function PlayerProfilePage() {
         />
       )}
       <p>Team: {player.team ? player.team.name : '-'}</p>
+      <Wall type="user" id={id} />
     </div>
   );
 }

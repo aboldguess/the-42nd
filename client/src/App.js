@@ -11,6 +11,7 @@ import QuestionPlayPage from './pages/QuestionPlayPage';
 import SideQuestDetailPage from './pages/SideQuestDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import PlayerProfilePage from './pages/PlayerProfilePage';
+import TeamProfilePage from './pages/TeamProfilePage';
 import PlayersPage from './pages/PlayersPage';
 import TeamsPage from './pages/TeamsPage';
 import SideQuestPage from './pages/SideQuestPage';
@@ -105,6 +106,14 @@ export default function App() {
                 element={
                   <AuthRoute>
                     <PlayerProfilePage />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/team/:id"
+                element={
+                  <AuthRoute>
+                    <TeamProfilePage />
                   </AuthRoute>
                 }
               />
