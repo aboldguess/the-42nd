@@ -82,6 +82,8 @@ app.use('/api/admin/scoreboard', require('./routes/admin/scoreboard'));
 app.use('/api/admin/settings', require('./routes/admin/settings'));
 // Route allowing admins to download all uploaded media as a zip
 app.use('/api/admin/media', require('./routes/admin/media'));
+// List and manage gallery items including hidden ones
+app.use('/api/admin/gallery', require('./routes/admin/gallery'));
 
 // (If serving React in production, keep these lines. For local dev they can remain commented.)
 // app.use(express.static(path.join(__dirname, '../client/build')));
