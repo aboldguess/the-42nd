@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { getSideQuest } = require('../controllers/sideQuestController');
-const optionalAuth = require('../middleware/optionalAuth');
+const auth = require('../middleware/auth');
 
-// Public endpoint to fetch a single side quest by ID
-router.get('/sidequests/:id', optionalAuth, getSideQuest);
+// Player endpoint to fetch a single side quest by ID
+// Authentication required to prevent registering scans for anonymous users
+router.get('/sidequests/:id', auth, getSideQuest);
 
 module.exports = router;
