@@ -11,6 +11,11 @@ export default function QrScanButton() {
   const [errorMsg, setErrorMsg] = useState(''); // display permission errors
   const navigate = useNavigate();
 
+  // Default to the rear camera, but allow users to override this
+  // preference by storing a value in localStorage.
+  const preferredFacing =
+    localStorage.getItem('cameraFacingMode') || 'rear';
+
   // Determine if the browser exposes `getUserMedia` at all. Modern browsers
   // only make this API available on secure origins (HTTPS or `localhost`).
   const cameraAvailable =
@@ -103,6 +108,9 @@ export default function QrScanButton() {
                   delay={300}
                   onError={handleError}
                   onScan={handleScan}
+                  // Use the rear camera by default; this value can be
+                  // changed via the user profile settings.
+                  facingMode={preferredFacing}
                   style={{ width: '100%' }}
                 />
                 <p style={{ textAlign: 'center' }}>Align QR code within frame</p>
