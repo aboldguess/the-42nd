@@ -48,6 +48,11 @@ export const addTeamMember = (teamId, formData) =>
     headers: { 'Content-Type': 'multipart/form-data' }
   });
 
+// List all players for public roster screens
+export const fetchPlayersPublic = () => axios.get('/api/users');
+// Fetch an individual player's public profile
+export const fetchPlayerById = (id) => axios.get(`/api/users/${id}`);
+
 export const fetchClue = (clueId) => axios.get(`/api/clues/${clueId}`);
 export const submitAnswer = (clueId, answer) =>
   axios.post(`/api/clues/${clueId}/answer`, { answer });
