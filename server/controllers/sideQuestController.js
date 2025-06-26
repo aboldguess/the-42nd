@@ -4,6 +4,7 @@ const QRCode = require('qrcode');
 const Team = require('../models/Team');
 const { getQrBase } = require('../utils/qr');
 const mongoose = require('mongoose');
+const { recordScan } = require('../utils/scan');
 
 // Ensure a side quest has a QR code stored
 // Ensure the QR code for a side quest reflects the current base URL
@@ -124,6 +125,8 @@ exports.getSideQuest = async (req, res) => {
     }
     // Ensure QR codes remain current for scans
     await ensureQrCode(sq);
+    // Record that this side quest QR was scanned
+    await recordScan('sidequest', sq._id, req.user, 'NEW');
     res.json(sq);
   } catch (err) {
     console.error('Error fetching side quest:', err);
@@ -174,6 +177,9 @@ exports.submitSideQuestProof = async (req, res) => {
       completedAt: new Date()
     });
     await team.save();
+
+    // Record completion to update scan status
+    await recordScan('sidequest', sq._id, req.user, 'SOLVED!');
 
     res.json({ message: 'Side quest completed', mediaUrl });
   } catch (err) {
