@@ -10,6 +10,8 @@ const settingsSchema = new mongoose.Schema({
   // Optional logo and favicon paths served from /uploads
   logoUrl: String,
   faviconUrl: String,
+  // Optional placeholder image used when profile media is hidden
+  placeholderUrl: String,
   // Global font family applied to the UI
   fontFamily: { type: String, default: 'Arial, sans-serif' }
 });
