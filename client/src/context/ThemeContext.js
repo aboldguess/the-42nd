@@ -8,6 +8,7 @@ export const ThemeProvider = ({ children }) => {
     primary: '#2196F3',
     secondary: '#FFC107',
     fontFamily: 'Arial, sans-serif',
+    baseFontSize: 16, // px
     logoUrl: '',
     faviconUrl: ''
   });
@@ -28,12 +29,15 @@ export const ThemeProvider = ({ children }) => {
         primary: '#2196F3',
         secondary: '#FFC107',
         fontFamily: 'Arial, sans-serif',
+        baseFontSize: 16,
         logoUrl: '',
         faviconUrl: ''
       };
       const globalRes = await axios.get('/api/settings');
       if (globalRes.data.theme) th = { ...th, ...globalRes.data.theme };
       if (globalRes.data.fontFamily) th.fontFamily = globalRes.data.fontFamily;
+      if (globalRes.data.baseFontSize)
+        th.baseFontSize = Number(globalRes.data.baseFontSize);
       if (globalRes.data.logoUrl) th.logoUrl = globalRes.data.logoUrl;
       if (globalRes.data.faviconUrl) th.faviconUrl = globalRes.data.faviconUrl;
 
@@ -64,6 +68,12 @@ export const ThemeProvider = ({ children }) => {
     root.style.setProperty('--primary-color', theme.primary);
     root.style.setProperty('--secondary-color', theme.secondary);
     root.style.setProperty('--font-family', theme.fontFamily);
+    // Base text size is configured by the admin for mobile readability
+    root.style.setProperty('--font-size', `${theme.baseFontSize}px`);
+
+    // Keep the browser UI (address bar etc) in sync with the chosen theme
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) metaTheme.setAttribute('content', theme.primary);
   }, [theme]);
 
   // Apply favicon whenever it changes

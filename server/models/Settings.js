@@ -13,7 +13,9 @@ const settingsSchema = new mongoose.Schema({
   // Placeholder image shown in the admin gallery instead of selfies/usies
   placeholderUrl: String,
   // Global font family applied to the UI
-  fontFamily: { type: String, default: 'Arial, sans-serif' }
+  fontFamily: { type: String, default: 'Arial, sans-serif' },
+  // Base font size (in pixels) so the admin can tune readability on mobile
+  baseFontSize: { type: Number, default: 16 }
 });
 
 module.exports = mongoose.model('Settings', settingsSchema);

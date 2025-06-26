@@ -27,6 +27,12 @@ exports.updateSettings = async (req, res) => {
   try {
     const updates = { ...req.body };
 
+    // Base font size is sent as a string; convert to number for the schema
+    if (updates.baseFontSize) {
+      updates.baseFontSize = Number(updates.baseFontSize);
+      if (Number.isNaN(updates.baseFontSize)) delete updates.baseFontSize;
+    }
+
     // If theme is provided as a JSON string, parse it
     if (typeof updates.theme === 'string') {
       try {

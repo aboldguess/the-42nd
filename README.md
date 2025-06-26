@@ -9,6 +9,8 @@ This project contains a React client and an Express/MongoDB server for running a
 - Side quests and a rogues gallery for uploaded media
 - Admin authentication and dashboard endpoints
 - Team colour schemes and profile management
+- Installable Progressive Web App with offline support
+- Admins can tweak the base font size for better mobile readability
 - Admin settings include a **master reset** to wipe all game data after typing
   `definitely` as confirmation
 - Scanning QR codes requires login; unauthenticated scans redirect to the sign-in page
@@ -72,7 +74,7 @@ HTTPS=true npm start
 ```
 The client will automatically proxy requests to the server on port `5000`.
 
-Once both services are running you can visit `http://localhost:3000` to use the app.
+Once both services are running you can visit `http://localhost:3000` to use the app. Modern browsers will offer an "Add to Home Screen" prompt because the client is now a Progressive Web App. Installing it provides an app-like experience and offline access.
 
 **Note:** The QR scanner requires camera access, which is only permitted in secure contexts. When testing on a mobile device, open the site over `https://` or via `localhost`; otherwise the browser will block camera access and scanning will fail.
 By default the QR scanner opens the rear camera. This can be changed from the **Profile** page if your device chooses the wrong camera.

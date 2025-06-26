@@ -12,6 +12,7 @@ export default function AdminSettingsPage() {
     qrBaseUrl: '',
     theme: { primary: '#2196F3', secondary: '#FFC107' },
     fontFamily: 'Arial, sans-serif',
+    baseFontSize: 16,
     logoUrl: '',
     faviconUrl: '',
     placeholderUrl: ''
@@ -40,6 +41,7 @@ export default function AdminSettingsPage() {
       formData.append('gameName', settings.gameName);
       formData.append('qrBaseUrl', settings.qrBaseUrl);
       formData.append('fontFamily', settings.fontFamily);
+      formData.append('baseFontSize', settings.baseFontSize);
       formData.append('theme', JSON.stringify(settings.theme));
       if (logoFile) formData.append('logo', logoFile);
       if (faviconFile) formData.append('favicon', faviconFile);
@@ -100,6 +102,16 @@ export default function AdminSettingsPage() {
         <option value="'Times New Roman', serif">Times New Roman</option>
         <option value="'Courier New', monospace">Courier New</option>
       </select>
+      <label>Base Font Size (px):</label>
+      <input
+        type="number"
+        min="12"
+        max="24"
+        value={settings.baseFontSize}
+        onChange={(e) =>
+          setSettings({ ...settings, baseFontSize: parseInt(e.target.value, 10) })
+        }
+      />
 
       <label>Logo:</label>
       {/* Allow taking a new photo or uploading one for the logo */}

@@ -52,7 +52,7 @@ export default function QrScanButton() {
   return (
     <>
       <button
-        className="qr-scan-button"
+        className="qr-scan-button" // styled to float over the UI
         onClick={async () => {
           if (!cameraAvailable) {
             alert('Camera access is not available. Use HTTPS or localhost.');

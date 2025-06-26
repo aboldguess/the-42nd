@@ -1,20 +1,38 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ThemeContext } from '../context/ThemeContext';
+import { fetchMe } from '../services/api';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const { theme } = useContext(ThemeContext);
+  const [avatarUrl, setAvatarUrl] = useState('');
 
   // Tokens for player and admin
   const token = localStorage.getItem('token');
   const adminToken = localStorage.getItem('adminToken');
 
-  // Toggle the sidebar on small screens
+  // Fetch the logged in player's avatar to display it in the navbar
+  useEffect(() => {
+    if (!token) return;
+    const load = async () => {
+      try {
+        const res = await fetchMe();
+        setAvatarUrl(res.data.photoUrl);
+      } catch (err) {
+        console.error('Failed to load profile', err);
+      }
+    };
+    load();
+  }, [token]);
+
+  // Toggle the sidebar on small screens. The CSS slides it in from the left
+  // when the 'open' class is present.
   const toggleSidebar = () => {
     const el = document.querySelector('.sidebar');
     if (el) {
       el.classList.toggle('mobile-hide');
+      el.classList.toggle('open');
     }
   };
 
@@ -75,6 +93,22 @@ export default function Navbar() {
             <button onClick={handleLogout} className="btn-link">
               Log Out
             </button>
+          </li>
+        )}
+        {token && avatarUrl && (
+          <li>
+            <Link to="/profile">
+              <img
+                src={avatarUrl}
+                alt="Profile"
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  objectFit: 'cover'
+                }}
+              />
+            </Link>
           </li>
         )}
       </ul>

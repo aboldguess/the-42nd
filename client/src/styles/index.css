@@ -1,9 +1,11 @@
 :root {
-  --primary-color: #2196F3;
-  --secondary-color: #FFC107;
+  /* CSS variables allow dynamic theming via admin settings */
+  --primary-color: #2196F3; /* default brand colour */
+  --secondary-color: #FFC107; /* accent used by the sidebar */
   --background-color: #f5f5f5;
   --text-color: #333;
   --font-family: Arial, sans-serif;
+  --font-size: 16px; /* base size, increases on phones */
   --sidebar-width: 220px;
 }
 
@@ -14,11 +16,13 @@ html,
   padding: 0;
   height: 100%;
   font-family: var(--font-family);
+  font-size: var(--font-size);
   background-color: var(--background-color);
   color: var(--text-color);
 }
 
 .app-container {
+  /* Mobile-first vertical layout; sidebar and content stack on small screens */
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -26,12 +30,17 @@ html,
 
 /* ───────────────── NAVBAR ───────────────── */
 .navbar {
+  /* Sticky top bar for branding and navigation */
   background-color: var(--primary-color);
   padding: 0.5rem 1rem;
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 900;
 }
 
 .navbar a,
@@ -65,6 +74,7 @@ html,
 }
 
 .sidebar {
+  /* Collapsible navigation on the left */
   width: var(--sidebar-width);
   background-color: var(--secondary-color);
   padding: 1rem;
@@ -72,6 +82,7 @@ html,
   height: 100%;
   box-sizing: border-box;
   overflow-y: auto;
+  flex-shrink: 0;
 }
 
 .sidebar a {
@@ -136,10 +147,25 @@ form textarea {
 
 /* ───────────────── RESPONSIVE ───────────────── */
 
-/* 1) Completely hide sidebar on phones */
+/* 1) Completely hide sidebar on phones to maximise screen real estate */
 @media (max-width: 600px) {
   .mobile-hide {
     display: none !important;
+  }
+  /* Sidebar slides in over the content on phones */
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 80%;
+    max-width: 300px;
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+    z-index: 1000;
+  }
+  .sidebar.open {
+    transform: translateX(0);
   }
 }
 
@@ -155,7 +181,14 @@ form textarea {
     font-size: 0.85rem;
   }
 }
-/* Hamburger hidden on big screens, visible <=600 px */
+
+@media (max-width: 600px) {
+  :root {
+    /* Slightly larger text for readability on phones */
+    --font-size: 18px;
+  }
+}
+/* Hamburger menu toggles the sidebar on phones */
 .hamburger {
   background: none;
   border: none;
@@ -234,11 +267,12 @@ td {
   border-radius: 4px;
 }
 
-/* Floating QR scan button */
+/* Floating QR scan button always visible in bottom-right */
 .qr-scan-button {
   position: fixed;
-  bottom: 1rem;
-  right: 1rem;
+  /* Use safe-area insets so the button isn't hidden by rounded corners */
+  bottom: calc(env(safe-area-inset-bottom, 0) + 1rem);
+  right: calc(env(safe-area-inset-right, 0) + 1rem);
   z-index: 1100;
   background-color: var(--primary-color);
   color: #fff;
