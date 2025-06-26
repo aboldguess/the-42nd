@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import ImageSelector from '../components/ImageSelector';
 import {
   fetchClues,
   createClueAdmin,
@@ -120,13 +121,9 @@ export default function AdminCluesPage() {
                   </td>
                   <td>
                     {/* allow uploading a replacement image when editing */}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) =>
-                        setEditData({ ...editData, image: e.target.files[0] })
-                      }
-                    />
+                    <ImageSelector onSelect={(file) =>
+                      setEditData({ ...editData, image: file })
+                    } />
                   </td>
                   <td>
                     <input
@@ -200,13 +197,9 @@ export default function AdminCluesPage() {
             </td>
             <td>
               {/* file input for the clue image */}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) =>
-                  setNewClue({ ...newClue, image: e.target.files[0] })
-                }
-              />
+              <ImageSelector onSelect={(file) =>
+                setNewClue({ ...newClue, image: file })
+              } />
             </td>
             <td>
               <input

@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import ImageSelector from './ImageSelector';
 
+// Widget allowing players to attach media to side quest submissions.
+// For photo quests we let the user either capture a new image or upload one.
 function PhotoUploader({ label, requiredMediaType, onUpload }) {
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState('');
+  const [file, setFile] = useState(null);   // selected File object
+  const [preview, setPreview] = useState(''); // preview URL or filename
 
-  const handleFileChange = (e) => {
-    const f = e.target.files[0];
+  // Reads the chosen file and sets up a preview
+  const handleFileSelect = (f) => {
     if (!f) return;
     setFile(f);
 
@@ -20,6 +23,7 @@ function PhotoUploader({ label, requiredMediaType, onUpload }) {
     }
   };
 
+  // Send the selected file to the parent component as FormData
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!file) return alert('Please select a file');
@@ -32,11 +36,17 @@ function PhotoUploader({ label, requiredMediaType, onUpload }) {
     <div className="card">
       <h3>{label}</h3>
       <form onSubmit={handleSubmit}>
-        <input
-          type="file"
-          accept={requiredMediaType === 'photo' ? 'image/*' : 'video/*'}
-          onChange={handleFileChange}
-        />
+        {requiredMediaType === 'photo' ? (
+          // Allow users to take a new photo or upload an existing one
+          <ImageSelector onSelect={handleFileSelect} />
+        ) : (
+          // For video quests we just need a regular file input
+          <input
+            type="file"
+            accept="video/*"
+            onChange={(e) => handleFileSelect(e.target.files[0])}
+          />
+        )}
         {preview && requiredMediaType === 'photo' && (
           <img
             src={preview}

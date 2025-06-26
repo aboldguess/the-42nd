@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import ImageSelector from '../components/ImageSelector';
 import {
   fetchSideQuestsAdmin,
   createSideQuestAdmin,
@@ -126,14 +127,10 @@ export default function AdminSideQuestsPage() {
                     />
                   </td>
                   <td>
-                    {/* upload a new picture for the quest */}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) =>
-                        setEditData({ ...editData, image: e.target.files[0] })
-                      }
-                    />
+                  {/* upload a new picture for the quest */}
+                  <ImageSelector onSelect={(file) =>
+                    setEditData({ ...editData, image: file })
+                  } />
                   </td>
                   <td>
                     <input
@@ -207,13 +204,9 @@ export default function AdminSideQuestsPage() {
             </td>
             <td>
               {/* optional quest illustration */}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) =>
-                  setNewQuest({ ...newQuest, image: e.target.files[0] })
-                }
-              />
+              <ImageSelector onSelect={(file) =>
+                setNewQuest({ ...newQuest, image: file })
+              } />
             </td>
             <td>
               <input
