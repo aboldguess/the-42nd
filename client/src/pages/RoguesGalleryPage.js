@@ -6,16 +6,18 @@ export default function RoguesGalleryPage() {
   // Gallery items returned from the server
   const [media, setMedia] = useState([]);
   const [loading, setLoading] = useState(true);
+  // How gallery items should be sorted
+  const [sortOrder, setSortOrder] = useState('newest');
   // Selected filters for team, player and type
   const [teamFilter, setTeamFilter] = useState('');
   const [playerFilter, setPlayerFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
 
   useEffect(() => {
-    // Load all uploaded media on mount
+    // Load media whenever the sort order changes
     const load = async () => {
       try {
-        const { data } = await fetchRoguesGallery();
+        const { data } = await fetchRoguesGallery(sortOrder);
         setMedia(data);
       } catch (err) {
         console.error(err);
@@ -24,7 +26,7 @@ export default function RoguesGalleryPage() {
       }
     };
     load();
-  }, []);
+  }, [sortOrder]);
 
   // Build dropdown options from the loaded media
   const teamOptions = Array.from(
@@ -86,6 +88,11 @@ export default function RoguesGalleryPage() {
           <option value="selfies">Selfies</option>
           <option value="usies">Usies</option>
           <option value="tasks">Tasks</option>
+        </select>{' '}
+        <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+          <option value="newest">Newest</option>
+          <option value="hottest">Hottest</option>
+          <option value="best">Best</option>
         </select>{' '}
         <button
           onClick={() => {
