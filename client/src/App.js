@@ -83,7 +83,9 @@ export default function App() {
               <Route
                 path="/question/:id"
                 element={
-                  <QuestionPlayPage />
+                  <AuthRoute>
+                    <QuestionPlayPage />
+                  </AuthRoute>
                 }
               />
               <Route
@@ -102,7 +104,14 @@ export default function App() {
                   </AuthRoute>
                 }
               />
-              <Route path="/sidequest/:id" element={<SideQuestDetailPage />} />
+              <Route
+                path="/sidequest/:id"
+                element={
+                  <AuthRoute>
+                    <SideQuestDetailPage />
+                  </AuthRoute>
+                }
+              />
               <Route
                 path="/roguery"
                 element={

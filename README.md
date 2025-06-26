@@ -11,6 +11,7 @@ This project contains a React client and an Express/MongoDB server for running a
 - Team colour schemes and profile management
 - Admin settings include a **master reset** to wipe all game data after typing
   `definitely` as confirmation
+- Scanning QR codes requires login; unauthenticated scans redirect to the sign-in page
 
 ## Player Onboarding and Login
 Players still enter only their first and last name, but a selfie must be
