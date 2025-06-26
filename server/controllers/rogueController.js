@@ -1,6 +1,8 @@
 const Media = require('../models/Media');
 const Settings = require('../models/Settings');
 const Reaction = require('../models/Reaction');
+const fs = require('fs');
+const path = require('path');
 
 exports.getAllMedia = async (req, res) => {
   try {
@@ -139,5 +141,33 @@ exports.updateMediaVisibility = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error updating media' });
+  }
+};
+
+// Remove a media item and any related reactions
+exports.deleteMedia = async (req, res) => {
+  try {
+    const media = await Media.findById(req.params.id);
+    if (!media) return res.status(404).json({ message: 'Media not found' });
+
+    // Delete file from disk when the path points to the uploads folder
+    if (media.url && media.url.startsWith('/uploads/')) {
+      const filePath = path.join(__dirname, '..', media.url);
+      if (fs.existsSync(filePath)) {
+        try {
+          fs.unlinkSync(filePath);
+        } catch (err) {
+          // Log but continue so the DB record is removed
+          console.error('Error deleting media file:', err);
+        }
+      }
+    }
+
+    await Reaction.deleteMany({ media: media._id }); // clean up reactions
+    await Media.deleteOne({ _id: media._id });
+    res.json({ message: 'Media deleted' });
+  } catch (err) {
+    console.error('Error deleting media:', err);
+    res.status(500).json({ message: 'Error deleting media' });
   }
 };
