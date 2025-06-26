@@ -60,6 +60,8 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/teams', require('./routes/teams'));
 app.use('/api/sidequests', require('./routes/sidequests'));
 app.use('/api/roguery', require('./routes/roguery'));
+// Players can react to rogues gallery items with emojis
+app.use('/api/reactions', require('./routes/reactions'));
 app.use('/api', require('./routes/question'));
 app.use('/api', require('./routes/sidequest'));
 
