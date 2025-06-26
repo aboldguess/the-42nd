@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import ImageSelector from '../components/ImageSelector';
 import {
   fetchQuestions,
   createQuestion,
@@ -217,11 +218,7 @@ export default function AdminQuestionsPage() {
             </td>
             <td>
               {/* optional question image */}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setNewImage(e.target.files[0])}
-              />
+              <ImageSelector onSelect={(file) => setNewImage(file)} />
             </td>
             <td>-</td>
             <td>

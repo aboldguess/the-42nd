@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import ImageSelector from '../components/ImageSelector';
 // Pull in theme helpers so new colours update instantly
 import { ThemeContext } from '../context/ThemeContext';
 import { fetchSettingsAdmin, updateSettingsAdmin } from '../services/api';
@@ -101,17 +102,18 @@ export default function AdminSettingsPage() {
       </select>
 
       <label>Logo:</label>
-      <input type="file" accept="image/*" onChange={(e) => setLogoFile(e.target.files[0])} />
+      {/* Allow taking a new photo or uploading one for the logo */}
+      <ImageSelector onSelect={(file) => setLogoFile(file)} />
       {settings.logoUrl && (
         <img src={settings.logoUrl} alt="Current logo" style={{ height: '40px', marginTop: '0.5rem' }} />
       )}
       <label>Favicon:</label>
-      <input type="file" accept="image/*" onChange={(e) => setFaviconFile(e.target.files[0])} />
+      <ImageSelector onSelect={(file) => setFaviconFile(file)} />
       {settings.faviconUrl && (
         <img src={settings.faviconUrl} alt="Current favicon" style={{ height: '16px', marginTop: '0.5rem' }} />
       )}
       <label>Gallery Placeholder:</label>
-      <input type="file" accept="image/*" onChange={(e) => setPlaceholderFile(e.target.files[0])} />
+      <ImageSelector onSelect={(file) => setPlaceholderFile(file)} />
       {settings.placeholderUrl && (
         <img src={settings.placeholderUrl} alt="Current placeholder" style={{ height: '40px', marginTop: '0.5rem' }} />
       )}

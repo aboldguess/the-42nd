@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
+import ImageSelector from './ImageSelector';
 
 export default function ProfilePic({ avatarUrl, onFileSelect }) {
   const [preview, setPreview] = useState(avatarUrl || '');
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  // When a file is chosen via ImageSelector, update preview and inform parent
+  const handleFileSelect = (file) => {
     onFileSelect(file);
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -23,7 +23,8 @@ export default function ProfilePic({ avatarUrl, onFileSelect }) {
           style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }}
         />
       )}
-      <input type="file" accept="image/*" onChange={handleFileChange} />
+      {/* Use ImageSelector so the user can take or upload a photo */}
+      <ImageSelector onSelect={handleFileSelect} />
     </div>
   );
 }
