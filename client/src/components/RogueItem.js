@@ -5,7 +5,7 @@ import { addReaction, fetchReactions } from '../services/api';
 const EMOJIS = ['👍', '😂', '😮', '😢', '❤️'];
 
 function RogueItem({ media }) {
-  const { url, uploadedBy, team, sideQuest, createdAt } = media;
+  const { url, uploadedBy, team, sideQuest, createdAt, emojiCounts = {} } = media;
   const isVideo = url.match(/\.(mp4|mov|avi)$/i);
   const [show, setShow] = useState(false); // modal visibility
   const [reactions, setReactions] = useState([]); // fetched reactions
@@ -65,12 +65,25 @@ function RogueItem({ media }) {
           )}
           <small style={{ color: '#666' }}>{new Date(createdAt).toLocaleString()}</small>
         </div>
+        <div style={{ marginTop: '0.25rem' }}>
+          {EMOJIS.map((e) => (
+            <span key={e} style={{ marginRight: '0.5rem' }}>
+              {e} {emojiCounts[e] || 0}
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* Modal displayed when an item is clicked */}
       {show && (
         <div className="modal-overlay" onClick={() => setShow(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setShow(false)}
+              style={{ position: 'absolute', top: 8, right: 8, fontSize: '1.5rem', background: 'none', border: 'none', cursor: 'pointer' }}
+            >
+              ×
+            </button>
             {isVideo ? (
               <video controls style={{ maxWidth: '100%' }}>
                 <source src={url} />

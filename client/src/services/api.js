@@ -64,7 +64,10 @@ export const submitSideQuest = (id, data) =>
   axios.post(`/api/sidequests/${id}/submit`, data, {
     headers: { 'Content-Type': 'multipart/form-data' }
   });
-export const fetchRoguesGallery = () => axios.get('/api/roguery');
+// Retrieve rogues gallery items with optional sorting.
+// sort can be 'newest', 'hottest' or 'best'.
+export const fetchRoguesGallery = (sort = 'newest') =>
+  axios.get(`/api/roguery?sort=${sort}`);
 // Emoji reactions on gallery items
 export const addReaction = (mediaId, emoji) =>
   axios.post('/api/reactions', { mediaId, emoji });
