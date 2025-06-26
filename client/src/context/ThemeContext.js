@@ -64,6 +64,10 @@ export const ThemeProvider = ({ children }) => {
     root.style.setProperty('--primary-color', theme.primary);
     root.style.setProperty('--secondary-color', theme.secondary);
     root.style.setProperty('--font-family', theme.fontFamily);
+
+    // Keep the browser UI (address bar etc) in sync with the chosen theme
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) metaTheme.setAttribute('content', theme.primary);
   }, [theme]);
 
   // Apply favicon whenever it changes
