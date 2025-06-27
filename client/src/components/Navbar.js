@@ -6,19 +6,26 @@ import { fetchMe } from '../services/api';
 export default function Navbar() {
   const navigate = useNavigate();
   const { theme } = useContext(ThemeContext);
+  // URL of the logged in user's avatar shown in the navbar
   const [avatarUrl, setAvatarUrl] = useState('');
+  // ID of the logged in user so the profile link can be built
+  const [userId, setUserId] = useState('');
+  // Whether the avatar dropdown is visible
+  const [showMenu, setShowMenu] = useState(false);
 
   // Tokens for player and admin
   const token = localStorage.getItem('token');
   const adminToken = localStorage.getItem('adminToken');
 
-  // Fetch the logged in player's avatar to display it in the navbar
+  // Fetch the logged in player's basic info so we can show their
+  // avatar and link to their public profile page.
   useEffect(() => {
     if (!token) return;
     const load = async () => {
       try {
         const res = await fetchMe();
         setAvatarUrl(res.data.photoUrl);
+        setUserId(res.data._id);
       } catch (err) {
         console.error('Failed to load profile', err);
       }
@@ -81,7 +88,7 @@ export default function Navbar() {
         {/* Player shortcut */}
         {token && (
           <li>
-            <Link to="/dashboard">My Dashboard</Link>
+            <Link to="/dashboard">Dashboard</Link>
           </li>
         )}
 
@@ -94,19 +101,26 @@ export default function Navbar() {
           </li>
         )}
         {token && avatarUrl && (
-          <li>
-            <Link to="/profile">
-              <img
-                src={avatarUrl}
-                alt="Profile"
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  objectFit: 'cover'
-                }}
-              />
-            </Link>
+          <li style={{ position: 'relative' }}>
+            {/* Clicking the avatar toggles the dropdown menu */}
+            <img
+              src={avatarUrl}
+              alt="Profile"
+              onClick={() => setShowMenu((v) => !v)}
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                cursor: 'pointer'
+              }}
+            />
+            {showMenu && (
+              <div className="profile-dropdown">
+                <Link onClick={() => setShowMenu(false)} to={`/player/${userId}`}>View Profile</Link>
+                <Link onClick={() => setShowMenu(false)} to="/profile">Player Settings</Link>
+              </div>
+            )}
           </li>
         )}
       </ul>

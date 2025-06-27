@@ -39,7 +39,7 @@ export default function Sidebar() {
           {renderLink('/players', 'Players')}
           {renderLink('/teams', 'Teams')}
           {renderLink('/scoreboard', 'Scoreboard')}
-          {renderLink('/profile', 'My Profile')}
+          {renderLink('/profile', 'Player Settings')}
         </>
       )}
 
