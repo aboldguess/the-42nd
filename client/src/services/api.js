@@ -57,6 +57,10 @@ export const fetchClue = (clueId) => axios.get(`/api/clues/${clueId}`);
 export const submitAnswer = (clueId, answer) =>
   axios.post(`/api/clues/${clueId}/answer`, { answer });
 export const fetchQuestion = (id) => axios.get(`/api/questions/${id}`);
+export const fetchTeamQuestionAnswer = (id) =>
+  axios.get(`/api/questions/${id}/answer`);
+export const submitTeamQuestionAnswer = (id, answer) =>
+  axios.post(`/api/questions/${id}/answer`, { answer });
 export const fetchSideQuest = (id) => axios.get(`/api/sidequests/${id}`);
 
 // Retrieve all clues for the logged-in player. The list is ordered by creation

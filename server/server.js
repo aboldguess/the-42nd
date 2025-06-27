@@ -37,7 +37,12 @@ const Settings = require('./models/Settings');
   try {
     const count = await Settings.countDocuments();
     if (count === 0) {
-      await Settings.create({ fontFamily: 'Arial, sans-serif', placeholderUrl: '' });
+      await Settings.create({
+        fontFamily: 'Arial, sans-serif',
+        placeholderUrl: '',
+        // Default cooldown for changing trivia answers (in minutes)
+        questionAnswerCooldown: 5
+      });
       console.log('Seeded default settings');
     }
   } catch (err) {
