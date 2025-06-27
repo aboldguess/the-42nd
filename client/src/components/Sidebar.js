@@ -1,13 +1,21 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
+// Sidebar navigation shown on the left. Links are displayed differently
+// depending on whether the user is a regular player or an admin.
+
 export default function Sidebar() {
   const location = useLocation();
 
-  const token = localStorage.getItem('token');        // player token
+  // Presence of tokens tells us what role the user has. Only
+  // logged-in players can see the player menu, while admins see
+  // the admin links below.
+  const token = localStorage.getItem('token'); // player token
   const adminToken = localStorage.getItem('adminToken'); // admin token
 
-  // Helper to render a menu link and bold it when active
+  // Helper to render a menu link. The link is bold when the
+  // current URL starts with the "to" path, making it clear
+  // which section is currently viewed.
   const renderLink = (to, label) => (
     <Link
       to={to}
@@ -24,7 +32,8 @@ export default function Sidebar() {
   );
 
   return (
-    // "mobile-hide" class is hidden under 600 px (see index.css note below)
+    // "mobile-hide" class hides this sidebar on small screens. Users
+    // can toggle it with the hamburger menu in the navbar.
     <aside className="sidebar mobile-hide">
       {/* Always‑visible home */}
       {renderLink('/', 'Home')}
@@ -32,18 +41,25 @@ export default function Sidebar() {
       {/* Player‑only links */}
       {token && (
         <>
+          {/* Progress overview for the current team */}
           {renderLink('/dashboard', 'Dashboard')}
+          {/* Lists of discovered tasks */}
           {renderLink('/questions', 'Questions')}
           {renderLink('/clues', 'Clues')}
           {renderLink('/sidequests', 'Sidequests')}
+          {/* Rosters */}
           {renderLink('/players', 'Players')}
           {renderLink('/teams', 'Teams')}
+          {/* Current standings */}
           {renderLink('/scoreboard', 'Scoreboard')}
-          {renderLink('/profile', 'My Profile')}
+          {/* Photo gallery where players can see uploads */}
+          {renderLink('/roguery', 'Gallery')}
+          {/* Edit your profile and preferences */}
+          {renderLink('/profile', 'Player Settings')}
         </>
       )}
 
-      {/* Admin‑only links */}
+      {/* Admin‑only links used for managing the game */}
       {adminToken && (
         <>
           {renderLink('/admin/dashboard', 'Admin Home')}
