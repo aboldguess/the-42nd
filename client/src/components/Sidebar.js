@@ -39,6 +39,8 @@ export default function Sidebar() {
           {renderLink('/players', 'Players')}
           {renderLink('/teams', 'Teams')}
           {renderLink('/scoreboard', 'Scoreboard')}
+          {/* Photo gallery where players can see uploads */}
+          {renderLink('/roguery', 'Gallery')}
           {renderLink('/profile', 'Player Settings')}
         </>
       )}

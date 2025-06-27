@@ -61,7 +61,8 @@ export default function RoguesGalleryPage() {
 
   return (
     <div>
-      <h2>Rogues Gallery</h2>
+      {/* Gallery heading */}
+      <h2>Gallery</h2>
       {/* Filter controls */}
       <div style={{ marginBottom: '1rem' }}>
         <select value={teamFilter} onChange={(e) => setTeamFilter(e.target.value)}>
