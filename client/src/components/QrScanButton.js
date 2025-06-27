@@ -68,6 +68,10 @@ export default function QrScanButton() {
             });
             // Immediately stop the stream so `react-qr-scanner` can take over
             stream.getTracks().forEach((t) => t.stop());
+            // Reload the preferred camera each time the scanner opens so
+            // updates made in the profile page take effect without refresh.
+            const pref = localStorage.getItem('cameraFacingMode') || 'rear';
+            setFacingMode(pref);
             setErrorMsg('');
             setOpen(true);
           } catch (err) {
@@ -97,8 +101,9 @@ export default function QrScanButton() {
                 right: 8,
                 background: 'none',
                 border: 'none',
-                fontSize: '1.5rem',
-                cursor: 'pointer'
+                fontSize: '2rem',
+                cursor: 'pointer',
+                zIndex: 1
               }}
               aria-label="Close scanner"
             >
@@ -117,8 +122,9 @@ export default function QrScanButton() {
                 left: 8,
                 background: 'none',
                 border: 'none',
-                fontSize: '1.5rem',
-                cursor: 'pointer'
+                fontSize: '2rem',
+                cursor: 'pointer',
+                zIndex: 1
               }}
               aria-label="Switch camera"
             >
@@ -127,12 +133,13 @@ export default function QrScanButton() {
             {cameraAvailable ? (
               <>
                 <QrReader
+                  key={facingMode}
                   delay={300}
                   onError={handleError}
                   onScan={handleScan}
-                  // The facing mode determines which camera to use. When this
-                  // state changes the component re-renders, effectively
-                  // switching cameras.
+                  // The facing mode determines which camera to use. Remounting
+                  // the component when the mode changes ensures the library
+                  // picks up the new camera.
                   facingMode={facingMode}
                   style={{ width: '100%' }}
                 />
