@@ -171,8 +171,7 @@ export default function QrScanButton() {
                   onError={handleError}
                   onScan={handleScan}
                   // Pass `rear` or `front` as expected by the library while
-                  // maintaining the modern `environment`/`user` values
-                  // internally.
+                  // maintaining the modern `environment`/`user` values internally.
                   facingMode={facingMode === 'environment' ? 'rear' : 'front'}
                   chooseDeviceId={chooseDeviceId}
                   style={{ width: '100%' }}

@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { fetchAdminGallery, updateMediaVisibility, fetchSettingsAdmin } from '../services/api';
+import {
+  fetchAdminGallery,
+  updateMediaVisibility,
+  fetchSettingsAdmin,
+  deleteMediaAdmin
+} from '../services/api';
 import RogueItem from '../components/RogueItem';
 
 // Admin view of all uploaded media with filtering and hide controls
@@ -55,6 +60,17 @@ export default function AdminGalleryPage() {
     }
   };
 
+  const handleDelete = async (item) => {
+    if (!window.confirm('Delete this media item?')) return;
+    try {
+      await deleteMediaAdmin(item._id);
+      setMedia((prev) => prev.filter((m) => m._id !== item._id));
+    } catch (err) {
+      console.error(err);
+      alert('Error deleting media');
+    }
+  };
+
   if (loading) return <p>Loading…</p>;
 
   return (
@@ -93,7 +109,8 @@ export default function AdminGalleryPage() {
           return (
             <div key={m._id}>
               <RogueItem media={display} />
-              <button onClick={() => toggleHidden(m)}>{m.hidden ? 'Unhide' : 'Hide'}</button>
+              <button onClick={() => toggleHidden(m)}>{m.hidden ? 'Unhide' : 'Hide'}</button>{' '}
+              <button onClick={() => handleDelete(m)}>Delete</button>
             </div>
           );
         })}
