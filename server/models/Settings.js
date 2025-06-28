@@ -17,7 +17,9 @@ const settingsSchema = new mongoose.Schema({
   // Multipliers used by the scoreboard calculation
   scorePerCorrect: { type: Number, default: 10 },
   scorePerSideQuest: { type: Number, default: 5 },
-  scorePerCreatedQuest: { type: Number, default: 20 }
+  scorePerCreatedQuest: { type: Number, default: 20 },
+  // Number of minutes teams must wait before changing a trivia answer
+  questionAnswerCooldown: { type: Number, default: 0 }
 });
 
 module.exports = mongoose.model('Settings', settingsSchema);
