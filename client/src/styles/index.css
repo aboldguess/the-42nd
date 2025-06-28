@@ -170,6 +170,40 @@ form textarea {
   padding: 0.5rem;
   border: 1px solid #bbb;
   border-radius: 4px;
+  background-color: #fff;
+  color: var(--text-color);
+}
+
+/* Highlight inputs on focus so keyboard users can easily see
+   which field is active. The box-shadow creates a subtle glow
+   using the primary theme color. */
+form input:focus,
+form select:focus,
+form textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+}
+
+/* Consistent placeholder styling across browsers */
+form input::placeholder,
+form textarea::placeholder {
+  color: #888;
+}
+
+/* Labels sit directly above their fields so we give them
+   a small bottom margin and a bolder weight */
+form label {
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+/* Generic class for displaying error messages under form fields */
+.error-message {
+  color: #d33;
+  margin-top: -0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
 }
 
 .card {
@@ -258,10 +292,23 @@ table {
   border-collapse: collapse;
 }
 
+/* Header cells get a background using the secondary theme colour */
+th {
+  background-color: var(--secondary-color);
+  color: #fff;
+  text-align: left;
+}
+
 th,
 td {
-  padding: 0.5rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid #ddd;
   text-align: left;
+}
+
+/* Alternate row shading improves readability for long tables */
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
 
 @media (max-width: 600px) {
