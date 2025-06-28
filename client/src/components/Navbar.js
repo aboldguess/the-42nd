@@ -33,7 +33,9 @@ export default function Navbar() {
   const toggleSidebar = () => {
     const el = document.querySelector('.sidebar');
     if (el) {
+      // Slide the sidebar in/out on small screens
       el.classList.toggle('mobile-hide');
+      el.classList.toggle('show');
     }
   };
 

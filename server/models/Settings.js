@@ -4,8 +4,8 @@ const settingsSchema = new mongoose.Schema({
   gameName: { type: String, default: 'Treasure Hunt' },
   qrBaseUrl: { type: String, default: 'http://localhost:3000' },
   theme: {
-    primary: { type: String, default: '#2196F3' },
-    secondary: { type: String, default: '#FFC107' }
+    primary: { type: String, default: '#007AFF' },
+    secondary: { type: String, default: '#5856D6' }
   },
   // Optional logo and favicon paths served from /uploads
   logoUrl: String,
@@ -13,7 +13,11 @@ const settingsSchema = new mongoose.Schema({
   // Placeholder image shown in the admin gallery instead of selfies/usies
   placeholderUrl: String,
   // Global font family applied to the UI
-  fontFamily: { type: String, default: 'Arial, sans-serif' },
+  fontFamily: {
+    type: String,
+    default:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+  },
   // Multipliers used by the scoreboard calculation
   scorePerCorrect: { type: Number, default: 10 },
   scorePerSideQuest: { type: Number, default: 5 },
