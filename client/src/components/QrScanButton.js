@@ -11,28 +11,27 @@ export default function QrScanButton() {
   const [errorMsg, setErrorMsg] = useState(''); // display permission errors
   const navigate = useNavigate();
 
-  // Helper to normalise any persisted value from older versions of the app.
+  // Helper to normalise any persisted value from older versions of the app
+  // and default to the rear camera ("environment") when nothing is stored.
   const readStoredFacingMode = () => {
     const stored = localStorage.getItem('cameraFacingMode');
     if (stored === 'front' || stored === 'user') return 'user';
     if (stored === 'rear' || stored === 'environment') return 'environment';
-    return 'environment'; // default to the outward facing camera
+    return 'environment';
   };
 
-  // Keep track of which camera should be used. We default to the rear camera
-  // (labelled "environment" by most browsers) but persist the user's choice so
-  // it is reused next time.
+  // Track which camera should be active. Defaults to the rear camera but
+  // persists the user's last choice so it works across sessions.
   const [facingMode, setFacingMode] = useState(readStoredFacingMode);
 
-  // When multiple cameras are present choose the most likely rear-facing option
-  // based on device labels. This helper is used with the `chooseDeviceId` prop
-  // of `react-qr-scanner` to override its default camera selection logic.
+  // When multiple cameras exist, pick the most likely rear-facing option based
+  // on the device labels. This gives more reliable results on modern phones.
   const chooseDeviceId = (matching, all) => {
     if (facingMode === 'environment') {
       const rear = all.find((d) => /back|rear|environment/i.test(d.label));
       return (rear || matching[matching.length - 1] || all[0])?.deviceId;
     }
-    // For the user-facing camera fall back to the first matching device
+    // For the user-facing camera fall back to the first matching device.
     return (matching[0] || all[0])?.deviceId;
   };
 
@@ -145,6 +144,7 @@ export default function QrScanButton() {
             {/* Allow the user to swap between front and rear cameras */}
             <button
               onClick={() => {
+                // Toggle between front and rear cameras and remember the choice
                 const next = facingMode === 'environment' ? 'user' : 'environment';
                 setFacingMode(next);
                 localStorage.setItem('cameraFacingMode', next);
