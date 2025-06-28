@@ -25,6 +25,17 @@ export default function QrScanButton() {
     navigator.mediaDevices &&
     typeof navigator.mediaDevices.getUserMedia === 'function';
 
+  // Map our simple facingMode state to browser media constraints. The WebRTC
+  // API expects either `user` (front/selfie camera) or `environment` (rear
+  // camera). We use the more intuitive `front`/`rear` strings in state and
+  // localStorage and convert them here when requesting the camera.
+  const videoConstraints = {
+    facingMode:
+      facingMode === 'rear'
+        ? { ideal: 'environment' }
+        : { ideal: 'user' }
+  };
+
   // Called each time the scanner decodes a QR code
   const handleScan = (data) => {
     if (!data) return; // ignore empty scans
@@ -64,7 +75,8 @@ export default function QrScanButton() {
             // Request permission before opening the scanner so the browser
             // prompts the user to allow camera access on first use.
             const stream = await navigator.mediaDevices.getUserMedia({
-              video: true
+              audio: false,
+              video: videoConstraints
             });
             // Immediately stop the stream so `react-qr-scanner` can take over
             stream.getTracks().forEach((t) => t.stop());
@@ -130,10 +142,10 @@ export default function QrScanButton() {
                   delay={300}
                   onError={handleError}
                   onScan={handleScan}
-                  // The facing mode determines which camera to use. When this
-                  // state changes the component re-renders, effectively
-                  // switching cameras.
-                  facingMode={facingMode}
+                  // Pass explicit constraints so the library opens the correct
+                  // camera. The `facingMode` state is converted earlier into
+                  // a standard WebRTC constraint object.
+                  constraints={{ audio: false, video: videoConstraints }}
                   style={{ width: '100%' }}
                 />
                 <p style={{ textAlign: 'center' }}>Align QR code within frame</p>
