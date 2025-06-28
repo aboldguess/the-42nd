@@ -15,7 +15,10 @@ export default function AdminSettingsPage() {
     logoUrl: '',
     faviconUrl: '',
     placeholderUrl: '',
-    questionAnswerCooldown: 0
+    questionAnswerCooldown: 0,
+    scorePerCorrect: 10,
+    scorePerSideQuest: 5,
+    scorePerCreatedQuest: 20
   });
   // Local file objects for uploads
   const [logoFile, setLogoFile] = useState(null);
@@ -43,6 +46,9 @@ export default function AdminSettingsPage() {
       formData.append('fontFamily', settings.fontFamily);
       formData.append('theme', JSON.stringify(settings.theme));
       formData.append('questionAnswerCooldown', settings.questionAnswerCooldown);
+      formData.append('scorePerCorrect', settings.scorePerCorrect);
+      formData.append('scorePerSideQuest', settings.scorePerSideQuest);
+      formData.append('scorePerCreatedQuest', settings.scorePerCreatedQuest);
       if (logoFile) formData.append('logo', logoFile);
       if (faviconFile) formData.append('favicon', faviconFile);
       if (placeholderFile) formData.append('placeholder', placeholderFile);
@@ -77,6 +83,41 @@ export default function AdminSettingsPage() {
           setSettings({
             ...settings,
             questionAnswerCooldown: parseInt(e.target.value, 10)
+          })
+        }
+      />
+
+      <h3>Scoring</h3>
+      <label>Points per Correct Answer:</label>
+      <input
+        type="number"
+        value={settings.scorePerCorrect}
+        onChange={(e) =>
+          setSettings({
+            ...settings,
+            scorePerCorrect: parseInt(e.target.value, 10)
+          })
+        }
+      />
+      <label>Points per Side Quest Completed:</label>
+      <input
+        type="number"
+        value={settings.scorePerSideQuest}
+        onChange={(e) =>
+          setSettings({
+            ...settings,
+            scorePerSideQuest: parseInt(e.target.value, 10)
+          })
+        }
+      />
+      <label>Points per Side Quest Created:</label>
+      <input
+        type="number"
+        value={settings.scorePerCreatedQuest}
+        onChange={(e) =>
+          setSettings({
+            ...settings,
+            scorePerCreatedQuest: parseInt(e.target.value, 10)
           })
         }
       />
