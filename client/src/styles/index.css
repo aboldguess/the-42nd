@@ -381,3 +381,28 @@ tbody tr:nth-child(even) {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   transition: opacity 0.2s;
 }
+
+/* Prompt banner offering PWA installation */
+.install-banner {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0) + 1rem);
+  left: calc(env(safe-area-inset-left, 0) + 1rem);
+  z-index: 1100;
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.install-banner button {
+  margin-left: 0.5rem;
+  background: #fff;
+  color: var(--primary-color);
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}

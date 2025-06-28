@@ -33,6 +33,7 @@ import AdminSettingsPage from './pages/AdminSettingsPage';
 import AdminLoginPage from './pages/AdminLoginPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import QrScanButton from './components/QrScanButton';
+import InstallPrompt from './components/InstallPrompt';
 
 // Guard for regular users
 const AuthRoute = ({ children }) => {
@@ -282,6 +283,8 @@ export default function App() {
             </Routes>
           </div>
         </div>
+        {/* Floating utilities shown on all pages */}
+        <InstallPrompt />
         <QrScanButton />
       </BrowserRouter>
     </div>
