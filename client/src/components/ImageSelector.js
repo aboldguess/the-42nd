@@ -39,7 +39,12 @@ export default function ImageSelector({ onSelect }) {
         onChange={handleChange}
       />
       <button type="button" onClick={() => captureRef.current.click()}>Take Photo</button>
-      <button type="button" onClick={() => uploadRef.current.click()} style={{ marginLeft: '0.5rem' }}>
+      {/* Left margin keeps the upload button separated */}
+      <button
+        type="button"
+        onClick={() => uploadRef.current.click()}
+        className="btn-ml"
+      >
         Upload Photo
       </button>
     </div>

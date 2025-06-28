@@ -46,7 +46,8 @@ export default function WelcomePage() {
         onChange={(e) => setLastName(e.target.value)}
       />
       <div style={{ marginTop: '1rem' }}>
-        <button onClick={handleLogin} style={{ marginRight: '0.5rem' }}>
+        {/* Spaced buttons for the login/signup actions */}
+        <button className="btn-mr" onClick={handleLogin}>
           Log In
         </button>
         <button onClick={handleSignup}>Sign Up</button>

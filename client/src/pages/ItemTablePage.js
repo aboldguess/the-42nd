@@ -23,8 +23,9 @@ export default function ItemTablePage({ type, titlePrefix }) {
 
   if (loading) return <p>Loading…</p>;
 
+  // List of all game items in a card
   return (
-    <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
+    <div className="card spaced-card">
       <h2>{titlePrefix}</h2>
       <table>
         <thead>

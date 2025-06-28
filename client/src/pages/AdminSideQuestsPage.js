@@ -91,8 +91,9 @@ export default function AdminSideQuestsPage() {
     }
   };
 
+  // Admin CRUD interface for side quests
   return (
-    <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
+    <div className="card spaced-card">
       <h2>Side Quests</h2>
       <table>
         <thead>

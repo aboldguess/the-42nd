@@ -23,8 +23,9 @@ export default function PlayerProfilePage() {
 
   if (!player) return <p>Loading…</p>;
 
+  // Profile card for the selected player
   return (
-    <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
+    <div className="card spaced-card">
       <h2>{player.name}</h2>
       {player.photoUrl && (
         <img

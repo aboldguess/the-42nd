@@ -33,8 +33,9 @@ export default function TeamsPage() {
   const playersForTeam = (teamId) =>
     players.filter((p) => p.team && p.team._id === teamId);
 
+  // Main card container with consistent spacing
   return (
-    <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
+    <div className="card spaced-card">
       <h2>Teams</h2>
       <table>
         <thead>

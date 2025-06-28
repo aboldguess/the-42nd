@@ -83,16 +83,12 @@ function RogueItem({ media }) {
         </div>
         <div style={{ marginTop: '0.25rem' }}>
           {EMOJIS.map((e) => (
+            // Emoji reaction buttons with inline counts
             <button
               key={e}
               onClick={(evt) => handleReact(e, evt)}
-              style={{
-                marginRight: '0.5rem',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '1rem'
-              }}
+              className="btn-mr"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem' }}
             >
               {e} {counts[e] || 0}
             </button>
@@ -127,10 +123,12 @@ function RogueItem({ media }) {
             )}
             <div style={{ marginTop: '1rem' }}>
               {EMOJIS.map((e) => (
+                // Same buttons shown again inside the modal
                 <button
                   key={e}
                   onClick={() => handleReact(e)}
-                  style={{ fontSize: '1.5rem', marginRight: '0.5rem' }}
+                  className="btn-mr"
+                  style={{ fontSize: '1.5rem' }}
                 >
                   {e} {grouped[e] ? grouped[e].length : ''}
                 </button>

@@ -24,8 +24,9 @@ export default function PlayersPage() {
 
   if (loading) return <p>Loading…</p>;
 
+  // List of all players with basic details
   return (
-    <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
+    <div className="card spaced-card">
       <h2>Players</h2>
       <table>
         <thead>

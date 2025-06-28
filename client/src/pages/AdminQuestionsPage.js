@@ -87,8 +87,9 @@ export default function AdminQuestionsPage() {
     }
   };
 
+  // Table of all quiz questions
   return (
-    <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
+    <div className="card spaced-card">
       <h2>Questions</h2>
       <table>
         <thead>

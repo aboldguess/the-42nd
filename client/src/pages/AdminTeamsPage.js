@@ -114,8 +114,9 @@ export default function AdminTeamsPage() {
     }
   };
 
+  // Manage teams in a single table
   return (
-    <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
+    <div className="card spaced-card">
       <h2>Teams</h2>
       <table>
         <thead>
