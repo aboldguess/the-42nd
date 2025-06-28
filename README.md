@@ -10,7 +10,8 @@ This project contains a React client and an Express/MongoDB server for running a
 - Admin authentication and dashboard endpoints
 - Team colour schemes and profile management
 - Installable Progressive Web App with offline support
-- Admins can tweak the base font size for better mobile readability
+- Mobile-first design with a sticky navbar and slide-in sidebar
+- Admins can tweak the base font size and font family for better readability
 - Admin settings include a **master reset** to wipe all game data after typing
   `definitely` as confirmation
 - Scanning QR codes requires login; unauthenticated scans redirect to the sign-in page

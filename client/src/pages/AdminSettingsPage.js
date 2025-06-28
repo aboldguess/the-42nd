@@ -97,6 +97,9 @@ export default function AdminSettingsPage() {
         value={settings.fontFamily}
         onChange={(e) => setSettings({ ...settings, fontFamily: e.target.value })}
       >
+        <option value="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+          System Default
+        </option>
         <option value="Arial, sans-serif">Arial</option>
         <option value="Georgia, serif">Georgia</option>
         <option value="'Times New Roman', serif">Times New Roman</option>

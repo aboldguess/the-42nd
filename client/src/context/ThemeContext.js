@@ -7,7 +7,9 @@ export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState({
     primary: '#2196F3',
     secondary: '#FFC107',
-    fontFamily: 'Arial, sans-serif',
+    // Use the system default font stack for a modern look
+    fontFamily:
+      "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     baseFontSize: 16, // px
     logoUrl: '',
     faviconUrl: ''
@@ -28,7 +30,8 @@ export const ThemeProvider = ({ children }) => {
       let th = {
         primary: '#2196F3',
         secondary: '#FFC107',
-        fontFamily: 'Arial, sans-serif',
+        fontFamily:
+          "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
         baseFontSize: 16,
         logoUrl: '',
         faviconUrl: ''
