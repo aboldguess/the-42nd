@@ -7,9 +7,13 @@ export default function ProfilePage() {
   const [newName, setNewName] = useState('');
   const [selfieFile, setSelfieFile] = useState(null);
   // Persist the user's preferred camera for QR scanning.
-  const [cameraPref, setCameraPref] = useState(
-    localStorage.getItem('cameraFacingMode') || 'rear'
-  );
+  const getCameraPref = () => {
+    const stored = localStorage.getItem('cameraFacingMode');
+    if (stored === 'front' || stored === 'user') return 'user';
+    if (stored === 'rear' || stored === 'environment') return 'environment';
+    return 'environment';
+  };
+  const [cameraPref, setCameraPref] = useState(getCameraPref);
 
   // Store the preference whenever it changes so the
   // scanner component can read it from localStorage.
@@ -67,8 +71,8 @@ export default function ProfilePage() {
             value={cameraPref}
             onChange={(e) => setCameraPref(e.target.value)}
           >
-            <option value="rear">Rear (default)</option>
-            <option value="front">Front</option>
+            <option value="environment">Rear (default)</option>
+            <option value="user">Front</option>
           </select>
 
           <button type="submit">Save Changes</button>
