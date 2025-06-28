@@ -71,7 +71,7 @@ img {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1100; /* keep above sidebar on phones */
 }
 
 .navbar a,
@@ -101,6 +101,10 @@ img {
 @media (max-width: 600px) {
   .nav-right li {
     margin-left: 0.5rem;
+  }
+  /* hide secondary links on small screens to keep layout tidy */
+  .nav-right li.hide-mobile {
+    display: none;
   }
 }
 
@@ -214,7 +218,7 @@ form textarea {
     padding: 0.5rem;
   }
   .sidebar a {
-    font-size: 0.85rem;
+    font-size: 1rem; /* better legibility on small screens */
   }
 }
 /* Hamburger menu toggles the sidebar on phones */

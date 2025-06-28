@@ -73,33 +73,33 @@ export default function Navbar() {
       <ul className="nav-right">
         {/* Admin links */}
         {!adminToken && (
-          <li>
+          <li className="hide-mobile">
             <Link to="/admin/login">Admin</Link>
           </li>
         )}
         {adminToken && (
-          <li>
+          <li className="hide-mobile">
             <Link to="/admin/dashboard">Admin Dashboard</Link>
           </li>
         )}
 
         {/* Player shortcut */}
         {token && (
-          <li>
+          <li className="hide-mobile">
             <Link to="/dashboard">My Dashboard</Link>
           </li>
         )}
 
         {/* Logout button if logged in as player or admin */}
         {(token || adminToken) && (
-          <li>
+          <li className="hide-mobile">
             <button onClick={handleLogout} className="btn-link">
               Log Out
             </button>
           </li>
         )}
         {token && avatarUrl && (
-          <li style={{ position: 'relative' }}>
+          <li className="nav-avatar" style={{ position: 'relative' }}>
             <button
               onClick={() => setShowMenu(!showMenu)}
               style={{ background: 'none', border: 'none', padding: 0 }}
