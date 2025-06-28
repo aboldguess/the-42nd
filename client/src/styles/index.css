@@ -60,6 +60,29 @@ html,
   margin-left: 1rem;
 }
 
+/* Small dropdown that appears when clicking the avatar */
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 40px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.profile-dropdown a {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.profile-dropdown a:hover {
+  background: var(--background-color);
+}
+
 /* ───────────────── LAYOUT ───────────────── */
 .main-layout {
   display: flex;

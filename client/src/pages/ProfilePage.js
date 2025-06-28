@@ -49,7 +49,7 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <h2>Your Profile</h2>
+      <h2>Player Settings</h2>
       <div className="card" style={{ maxWidth: '450px' }}>
         <form onSubmit={handleSubmit}>
           <label>Name:</label>

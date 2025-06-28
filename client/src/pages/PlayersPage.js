@@ -39,6 +39,13 @@ export default function PlayersPage() {
             <tr key={p._id}>
               {/* Name links to the player's profile */}
               <td data-label="Name">
+                {p.photoUrl && (
+                  <img
+                    src={p.photoUrl}
+                    alt="avatar"
+                    style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '0.5rem' }}
+                  />
+                )}
                 <Link to={`/player/${p._id}`}>{p.name}</Link>
               </td>
               <td data-label="Team">{p.team?.name || '-'}</td>
