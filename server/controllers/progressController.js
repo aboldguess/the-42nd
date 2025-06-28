@@ -21,14 +21,30 @@ exports.getScoreboard = async (req, res) => {
 
     const board = await Promise.all(
       teams.map(async (t) => {
-        // Count solved clues stored directly on the team
-        const correctAnswers = t.completedClues ? t.completedClues.length : 0;
+        // Count how many trivia questions the team answered correctly
+        const answerIds = t.questionAnswers.map((qa) => qa.question);
+        const questions = await Question.find({
+          _id: { $in: answerIds }
+        }).select('correctAnswer');
+        const questionMap = new Map();
+        questions.forEach((q) => {
+          questionMap.set(q._id.toString(), q.correctAnswer);
+        });
+        const correctAnswers = t.questionAnswers.filter((qa) => {
+          const correct = questionMap.get(qa.question.toString());
+          return (
+            correct &&
+            qa.answer.trim().toLowerCase() === correct.trim().toLowerCase()
+          );
+        }).length;
+
+        // Completed side quests stored directly on the team
         const sideQuestsCompleted = t.sideQuestProgress
           ? t.sideQuestProgress.length
           : 0;
 
         // Distinct scanned question and side quest IDs for this team
-        const [questionIds, sqScanIds] = await Promise.all([
+        const [scannedQuestionIds, sqScanIds] = await Promise.all([
           Scan.distinct('itemId', { team: t._id, itemType: 'question' }),
           Scan.distinct('itemId', { team: t._id, itemType: 'sidequest' })
         ]);
@@ -47,7 +63,7 @@ exports.getScoreboard = async (req, res) => {
           teamId: t._id,
           name: t.name,
           photoUrl: t.photoUrl,
-          questionsFound: questionIds.length,
+          questionsFound: scannedQuestionIds.length,
           correctAnswers,
           sideQuestsFound: sqScanIds.length,
           sideQuestsCompleted,
