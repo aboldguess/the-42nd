@@ -68,8 +68,9 @@ export default function AdminSettingsPage() {
     }
   };
 
+  // Form for editing global settings
   return (
-    <div className="card" style={{ padding: '1rem', margin: '1rem', maxWidth: '500px' }}>
+    <div className="card spaced-card" style={{ maxWidth: '500px' }}>
       <h2>Game Settings</h2>
       <label>Game Name:</label>
       <input value={settings.gameName} onChange={(e) => setSettings({ ...settings, gameName: e.target.value })} />

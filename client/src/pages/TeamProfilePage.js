@@ -23,8 +23,9 @@ export default function TeamProfilePage() {
 
   if (!team) return <p>Loading…</p>;
 
+  // Team info along with their gallery wall
   return (
-    <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
+    <div className="card spaced-card">
       <h2>{team.name}</h2>
       {team.photoUrl && (
         <img

@@ -63,8 +63,9 @@ export default function AdminPlayersPage() {
     }
   };
 
+  // Admin view listing all registered players
   return (
-    <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
+    <div className="card spaced-card">
       <h2>Players</h2>
       <table>
         <thead>

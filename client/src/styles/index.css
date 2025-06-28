@@ -186,6 +186,20 @@ form textarea {
   gap: 1rem;
 }
 
+/* Utility class to add margin around card elements */
+.spaced-card {
+  margin: 1rem;
+}
+
+/* Utility classes for horizontal button spacing */
+.btn-mr {
+  margin-right: 0.5rem;
+}
+
+.btn-ml {
+  margin-left: 0.5rem;
+}
+
 /* ───────────────── RESPONSIVE ───────────────── */
 
 /* 1) Completely hide sidebar on phones to maximise screen real estate */

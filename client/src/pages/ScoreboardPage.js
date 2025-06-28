@@ -21,8 +21,9 @@ export default function ScoreboardPage() {
 
   if (loading) return <p>Loading…</p>;
 
+  // Card wrapper used across admin lists
   return (
-    <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
+    <div className="card spaced-card">
       <h2>Scoreboard</h2>
       <table>
         <thead>

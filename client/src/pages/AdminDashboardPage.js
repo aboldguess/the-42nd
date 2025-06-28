@@ -16,8 +16,9 @@ export default function AdminDashboardPage() {
     load();
   }, []);
 
+  // Summary table of team scores
   return (
-    <div className="card" style={{ padding: '1rem', margin: '1rem' }}>
+    <div className="card spaced-card">
       <h2>Admin Dashboard</h2>
       <p>Welcome, Admin! Use the menu to manage clues, side quests and players.</p>
       <h3>Scoreboard</h3>
