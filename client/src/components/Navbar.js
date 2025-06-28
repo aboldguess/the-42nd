@@ -8,7 +8,7 @@ export default function Navbar() {
   const { theme } = useContext(ThemeContext);
   const [avatarUrl, setAvatarUrl] = useState('');
   const [userId, setUserId] = useState('');
-  const [showMenu, setShowMenu] = useState(false);
+  const [showMenu, setShowMenu] = useState(false); // toggle avatar dropdown menu
 
   // Tokens for player and admin
   const token = localStorage.getItem('token');
@@ -38,6 +38,28 @@ export default function Navbar() {
       el.classList.toggle('show');
     }
   };
+
+  // Close sidebar when clicking outside of it or on a menu item
+  useEffect(() => {
+    const handleClick = (e) => {
+      const sidebar = document.querySelector('.sidebar');
+      const hamburger = document.querySelector('.hamburger');
+      if (!sidebar || !sidebar.classList.contains('show')) return;
+
+      // Close if the click target is outside the sidebar and not the hamburger
+      if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+        toggleSidebar();
+        return;
+      }
+
+      // Close if a link within the sidebar was clicked
+      if (sidebar.contains(e.target) && e.target.closest('a')) {
+        toggleSidebar();
+      }
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -75,27 +97,6 @@ export default function Navbar() {
         {!adminToken && (
           <li className="hide-mobile">
             <Link to="/admin/login">Admin</Link>
-          </li>
-        )}
-        {adminToken && (
-          <li className="hide-mobile">
-            <Link to="/admin/dashboard">Admin Dashboard</Link>
-          </li>
-        )}
-
-        {/* Player shortcut */}
-        {token && (
-          <li className="hide-mobile">
-            <Link to="/dashboard">My Dashboard</Link>
-          </li>
-        )}
-
-        {/* Logout button if logged in as player or admin */}
-        {(token || adminToken) && (
-          <li className="hide-mobile">
-            <button onClick={handleLogout} className="btn-link">
-              Log Out
-            </button>
           </li>
         )}
         {token && avatarUrl && (
@@ -139,6 +140,29 @@ export default function Navbar() {
                     View Profile
                   </Link>
                 </li>
+                {adminToken && (
+                  <li>
+                    <Link
+                      to="/admin/dashboard"
+                      onClick={() => setShowMenu(false)}
+                    >
+                      Admin Dashboard
+                    </Link>
+                  </li>
+                )}
+                {(token || adminToken) && (
+                  <li>
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        handleLogout();
+                      }}
+                      className="btn-link"
+                    >
+                      Log Out
+                    </button>
+                  </li>
+                )}
               </ul>
             )}
           </li>
