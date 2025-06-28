@@ -77,3 +77,21 @@ Once both services are running you can visit `http://localhost:3000` to use the 
 
 **Note:** The QR scanner requires camera access, which is only permitted in secure contexts. When testing on a mobile device, open the site over `https://` or via `localhost`; otherwise the browser will block camera access and scanning will fail.
 By default the QR scanner opens the rear camera. This can be changed from the **Profile** page if your device chooses the wrong camera.
+
+### Building for production
+After development you can host the entire webapp from the Express server.
+
+1. Build the React client to generate the static assets:
+   ```bash
+   cd client
+   npm run build
+   ```
+2. Start the server in production mode so it serves the build:
+   ```bash
+   cd ../server
+   NODE_ENV=production node server.js
+   ```
+
+The application will now be available at `http://localhost:5000` and modern
+browsers will allow it to be installed as a Progressive Web App with offline
+support.
