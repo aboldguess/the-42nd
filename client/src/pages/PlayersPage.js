@@ -30,15 +30,27 @@ export default function PlayersPage() {
       <table>
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Player</th>
             <th>Team</th>
           </tr>
         </thead>
         <tbody>
           {players.map((p) => (
             <tr key={p._id}>
-              {/* Name links to the player's profile */}
-              <td data-label="Name">
+              <td data-label="Player">
+                {p.photoUrl && (
+                  <img
+                    src={p.photoUrl}
+                    alt={p.name}
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                      marginRight: '0.5rem'
+                    }}
+                  />
+                )}
                 <Link to={`/player/${p._id}`}>{p.name}</Link>
               </td>
               <td data-label="Team">{p.team?.name || '-'}</td>

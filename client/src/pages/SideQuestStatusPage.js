@@ -2,5 +2,14 @@ import React from 'react';
 import ItemTablePage from './ItemTablePage';
 
 export default function SideQuestStatusPage() {
-  return <ItemTablePage type="sidequest" titlePrefix="Side Quests" />;
+  return (
+    <div>
+      <ItemTablePage type="sidequest" titlePrefix="Side Quests" />
+      <div style={{ margin: '1rem' }}>
+        <a href="/sidequests/new">
+          <button>Create New Sidequest</button>
+        </a>
+      </div>
+    </div>
+  );
 }

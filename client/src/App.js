@@ -21,6 +21,7 @@ import ScoreboardPage from './pages/ScoreboardPage';
 import ClueStatusPage from './pages/ClueStatusPage';
 import QuestionStatusPage from './pages/QuestionStatusPage';
 import SideQuestStatusPage from './pages/SideQuestStatusPage';
+import NewSideQuestPage from './pages/NewSideQuestPage';
 import AdminCluesPage from './pages/AdminCluesPage';
 import AdminQuestionsPage from './pages/AdminQuestionsPage';
 import AdminSideQuestsPage from './pages/AdminSideQuestsPage';
@@ -186,6 +187,14 @@ export default function App() {
                 element={
                   <AuthRoute>
                     <SideQuestStatusPage />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/sidequests/new"
+                element={
+                  <AuthRoute>
+                    <NewSideQuestPage />
                   </AuthRoute>
                 }
               />
