@@ -10,8 +10,9 @@ export default function AdminSettingsPage() {
   const [settings, setSettings] = useState({
     gameName: '',
     qrBaseUrl: '',
-    theme: { primary: '#2196F3', secondary: '#FFC107' },
-    fontFamily: 'Arial, sans-serif',
+    theme: { primary: '#007AFF', secondary: '#5856D6' },
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     logoUrl: '',
     faviconUrl: '',
     placeholderUrl: '',

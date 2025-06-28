@@ -5,9 +5,10 @@ export const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState({
-    primary: '#2196F3',
-    secondary: '#FFC107',
-    fontFamily: 'Arial, sans-serif',
+    primary: '#007AFF',
+    secondary: '#5856D6',
+    fontFamily:
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     logoUrl: '',
     faviconUrl: ''
   });
@@ -25,9 +26,10 @@ export const ThemeProvider = ({ children }) => {
   const fetchTheme = async (opts = {}) => {
     try {
       let th = {
-        primary: '#2196F3',
-        secondary: '#FFC107',
-        fontFamily: 'Arial, sans-serif',
+        primary: '#007AFF',
+        secondary: '#5856D6',
+        fontFamily:
+          "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
         logoUrl: '',
         faviconUrl: ''
       };

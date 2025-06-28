@@ -38,7 +38,9 @@ const Settings = require('./models/Settings');
     const count = await Settings.countDocuments();
     if (count === 0) {
       await Settings.create({
-        fontFamily: 'Arial, sans-serif',
+        fontFamily:
+          "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        theme: { primary: '#007AFF', secondary: '#5856D6' },
         placeholderUrl: '',
         scorePerCorrect: 10,
         scorePerSideQuest: 5,

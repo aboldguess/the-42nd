@@ -23,8 +23,8 @@ const teamSchema = new mongoose.Schema(
       default: []
     },
     colourScheme: {
-      primary: { type: String, default: '#2196F3' },
-      secondary: { type: String, default: '#FFC107' }
+      primary: { type: String, default: '#007AFF' },
+      secondary: { type: String, default: '#5856D6' }
     },
     // Log when a team completes each side quest. Defaults to an empty array so
     // new teams won't cause runtime errors when counting completed quests.
