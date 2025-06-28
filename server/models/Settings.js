@@ -13,7 +13,11 @@ const settingsSchema = new mongoose.Schema({
   // Placeholder image shown in the admin gallery instead of selfies/usies
   placeholderUrl: String,
   // Global font family applied to the UI
-  fontFamily: { type: String, default: 'Arial, sans-serif' }
+  fontFamily: { type: String, default: 'Arial, sans-serif' },
+  // Minutes players must wait before changing a previously submitted question
+  // answer. This value is configurable by admins and used by both the client
+  // and server when enforcing the cooldown period.
+  questionAnswerCooldown: { type: Number, default: 5 }
 });
 
 module.exports = mongoose.model('Settings', settingsSchema);

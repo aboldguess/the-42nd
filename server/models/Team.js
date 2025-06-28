@@ -36,6 +36,19 @@ const teamSchema = new mongoose.Schema(
         }
       ],
       default: []
+    },
+    // Record each trivia question answer chosen by the team along with the
+    // timestamp it was selected. Used for enforcing the cooldown between
+    // changes and to pre-fill answers when revisiting a question.
+    questionAnswers: {
+      type: [
+        {
+          question: { type: mongoose.Schema.Types.ObjectId, ref: 'Question' },
+          answer: String,
+          chosenAt: Date
+        }
+      ],
+      default: []
     }
   },
   { timestamps: true }

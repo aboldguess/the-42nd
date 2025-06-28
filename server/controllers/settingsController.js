@@ -37,6 +37,11 @@ exports.updateSettings = async (req, res) => {
       }
     }
 
+    // Cast cooldown value to a number when provided
+    if (updates.questionAnswerCooldown !== undefined) {
+      updates.questionAnswerCooldown = parseInt(updates.questionAnswerCooldown, 10);
+    }
+
     // Attach uploaded files if present
     if (req.files && req.files.logo && req.files.logo[0]) {
       updates.logoUrl = '/uploads/' + req.files.logo[0].filename;
