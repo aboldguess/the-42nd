@@ -4,27 +4,60 @@ const Clue = require('../models/Clue');
 const Question = require('../models/Question');
 const SideQuest = require('../models/SideQuest');
 const User = require('../models/User');
+const Settings = require('../models/Settings');
 
 // Build a simple scoreboard summarizing each team's progress.
 exports.getScoreboard = async (req, res) => {
   try {
-    // Fetch all teams with their side quest progress populated for counts
-    const teams = await Team.find().populate('sideQuestProgress.sideQuest', 'title');
+    // Load teams along with progress logs and global scoring settings
+    const [teams, settings] = await Promise.all([
+      Team.find().populate('sideQuestProgress.sideQuest', 'title'),
+      Settings.findOne()
+    ]);
 
-    // Map to a summary object for easier consumption by the client
-    const board = teams.map(t => {
-      // completedClues holds ObjectIds, so length gives total solved clue count
-      const clues = t.completedClues ? t.completedClues.length : 0;
-      const quests = t.sideQuestProgress ? t.sideQuestProgress.length : 0;
-      return {
-        teamId: t._id,
-        name: t.name,
-        completedClues: clues,
-        completedSideQuests: quests,
-        score: clues + quests
-      };
-    });
-    // Highest score first then return
+    const x = settings?.scorePerCorrect || 1;
+    const y = settings?.scorePerSideQuest || 1;
+    const z = settings?.scorePerCreatedQuest || 1;
+
+    const board = await Promise.all(
+      teams.map(async (t) => {
+        // Count solved clues stored directly on the team
+        const correctAnswers = t.completedClues ? t.completedClues.length : 0;
+        const sideQuestsCompleted = t.sideQuestProgress
+          ? t.sideQuestProgress.length
+          : 0;
+
+        // Distinct scanned question and side quest IDs for this team
+        const [questionIds, sqScanIds] = await Promise.all([
+          Scan.distinct('itemId', { team: t._id, itemType: 'question' }),
+          Scan.distinct('itemId', { team: t._id, itemType: 'sidequest' })
+        ]);
+
+        // Side quests created by any member of the team
+        const users = await User.find({ team: t._id }).select('_id');
+        const createdCount = await SideQuest.countDocuments({
+          createdBy: { $in: users.map((u) => u._id) },
+          createdByType: 'User'
+        });
+
+        const score =
+          x * correctAnswers + y * sideQuestsCompleted + z * createdCount;
+
+        return {
+          teamId: t._id,
+          name: t.name,
+          photoUrl: t.photoUrl,
+          questionsFound: questionIds.length,
+          correctAnswers,
+          sideQuestsFound: sqScanIds.length,
+          sideQuestsCompleted,
+          sideQuestsCreated: createdCount,
+          score
+        };
+      })
+    );
+
+    // Order by score descending
     const sorted = board.sort((a, b) => b.score - a.score);
 
     res.json(sorted);

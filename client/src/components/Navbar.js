@@ -7,6 +7,8 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { theme } = useContext(ThemeContext);
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [userId, setUserId] = useState('');
+  const [showMenu, setShowMenu] = useState(false);
 
   // Tokens for player and admin
   const token = localStorage.getItem('token');
@@ -19,6 +21,7 @@ export default function Navbar() {
       try {
         const res = await fetchMe();
         setAvatarUrl(res.data.photoUrl);
+        setUserId(res.data._id);
       } catch (err) {
         console.error('Failed to load profile', err);
       }
@@ -94,8 +97,11 @@ export default function Navbar() {
           </li>
         )}
         {token && avatarUrl && (
-          <li>
-            <Link to="/profile">
+          <li style={{ position: 'relative' }}>
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              style={{ background: 'none', border: 'none', padding: 0 }}
+            >
               <img
                 src={avatarUrl}
                 alt="Profile"
@@ -106,7 +112,33 @@ export default function Navbar() {
                   objectFit: 'cover'
                 }}
               />
-            </Link>
+            </button>
+            {showMenu && (
+              <ul
+                style={{
+                  position: 'absolute',
+                  right: 0,
+                  top: '100%',
+                  background: '#333',
+                  padding: '0.5rem',
+                  listStyle: 'none'
+                }}
+              >
+                <li>
+                  <Link to="/profile" onClick={() => setShowMenu(false)}>
+                    Player Settings
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to={`/player/${userId}`}
+                    onClick={() => setShowMenu(false)}
+                  >
+                    View Profile
+                  </Link>
+                </li>
+              </ul>
+            )}
           </li>
         )}
       </ul>

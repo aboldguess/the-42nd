@@ -3,7 +3,9 @@ import {
   fetchMe,
   fetchTeam,
   addTeamMember,
-  fetchCluesPlayer
+  fetchCluesPlayer,
+  fetchProgress,
+  fetchScoreboard
 } from '../services/api';
 import TeamMemberForm from '../components/TeamMemberForm';
 
@@ -13,6 +15,13 @@ export default function Dashboard() {
   const [currentClue, setCurrentClue] = useState(null);
   const [currentClueId, setCurrentClueId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState({
+    questionsFound: 0,
+    correctAnswers: 0,
+    sideQuestsFound: 0,
+    sideQuestsCreated: 0,
+    photosUploaded: 0
+  });
 
   useEffect(() => {
     const load = async () => {
@@ -21,6 +30,7 @@ export default function Dashboard() {
         setUser(meRes.data);
         const teamRes = await fetchTeam(meRes.data.team._id);
         setTeam(teamRes.data);
+
         if (teamRes.data.currentClue) {
           setCurrentClue(teamRes.data.currentClue);
 
@@ -32,6 +42,23 @@ export default function Dashboard() {
             setCurrentClueId(cluesRes.data[idx]._id);
           }
         }
+
+        // Fetch progress details
+        const [qProg, cProg, sqProg, board] = await Promise.all([
+          fetchProgress('question'),
+          fetchProgress('clue'),
+          fetchProgress('sidequest'),
+          fetchScoreboard()
+        ]);
+        const teamStats = board.data.find((b) => b.teamId === teamRes.data._id);
+        setProgress({
+          questionsFound: qProg.data.filter((i) => i.scanned).length,
+          correctAnswers: cProg.data.filter((i) => i.status === 'SOLVED!').length,
+          sideQuestsFound: sqProg.data.filter((i) => i.scanned).length,
+          sideQuestsCreated: teamStats?.sideQuestsCreated || 0,
+          photosUploaded: teamRes.data.members.filter((m) => m.avatarUrl).length
+        });
+
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -84,6 +111,16 @@ export default function Dashboard() {
               {m.name}
             </li>
           ))}
+        </ul>
+        <p>
+          <strong>Progress:</strong>
+        </p>
+        <ul>
+          <li>Questions Found: {progress.questionsFound}</li>
+          <li>Correct Answers: {progress.correctAnswers}</li>
+          <li>Sidequests Found: {progress.sideQuestsFound}</li>
+          <li>Sidequests Created: {progress.sideQuestsCreated}</li>
+          <li>Photos Uploaded: {progress.photosUploaded}</li>
         </ul>
       </div>
 

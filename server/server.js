@@ -41,7 +41,11 @@ const Settings = require('./models/Settings');
         fontFamily: 'Arial, sans-serif',
         placeholderUrl: '',
         // Default cooldown for changing trivia answers (in minutes)
-        questionAnswerCooldown: 5
+        questionAnswerCooldown: 5,
+        // Default scoreboard multipliers
+        scorePerCorrect: 10,
+        scorePerSideQuest: 5,
+        scorePerCreatedQuest: 20
       });
       console.log('Seeded default settings');
     }

@@ -17,7 +17,11 @@ const settingsSchema = new mongoose.Schema({
   // Minutes players must wait before changing a previously submitted question
   // answer. This value is configurable by admins and used by both the client
   // and server when enforcing the cooldown period.
-  questionAnswerCooldown: { type: Number, default: 5 }
+  questionAnswerCooldown: { type: Number, default: 5 },
+  // Multipliers used by the scoreboard calculation
+  scorePerCorrect: { type: Number, default: 10 },
+  scorePerSideQuest: { type: Number, default: 5 },
+  scorePerCreatedQuest: { type: Number, default: 20 }
 });
 
 module.exports = mongoose.model('Settings', settingsSchema);
