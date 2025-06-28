@@ -21,8 +21,12 @@ export default function InstallPrompt() {
     };
     window.addEventListener('beforeinstallprompt', onBeforeInstall);
 
-    // Detect iOS devices which do not support the event
-    const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    // Detect iOS devices which do not support the event. Newer iPads use a
+    // desktop-class user agent string, so we also check for touch support when
+    // running on Mac platforms.
+    const isIos =
+      /iphone|ipad|ipod/i.test(window.navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       window.navigator.standalone;
