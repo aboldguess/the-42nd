@@ -40,11 +40,22 @@ html,
   color: var(--text-color);
 }
 
+/*
+ * Make all images responsive by default. Without these rules, large images can
+ * overflow the viewport on phones, causing horizontal scrolling. Setting a
+ * max-width prevents that and keeps aspect ratios intact.
+ */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 .app-container {
   /* Mobile-first vertical layout; sidebar and content stack on small screens */
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 100%; /* ensure app spans the full viewport width */
 }
 
 /* ───────────────── NAVBAR ───────────────── */
