@@ -8,31 +8,48 @@ import React, { useEffect, useState } from 'react';
  * instructions instead.
  */
 export default function InstallPrompt() {
-  const [deferred, setDeferred] = useState(null); // event saved for later
-  const [showPrompt, setShowPrompt] = useState(false); // toggle banner visibility
-  const [showIos, setShowIos] = useState(false); // whether to show iOS text
+  // Save the install event so it can be triggered later
+  const [deferred, setDeferred] = useState(null);
+  // Controls whether the banner is visible at all
+  const [showPrompt, setShowPrompt] = useState(false);
+  // `true` when we should show the iOS instructions instead of a button
+  const [showIos, setShowIos] = useState(false);
 
   useEffect(() => {
-    // Handler for modern browsers (Chrome, Edge, etc.)
+    // Determine if we're on a mobile device
+    const ua = window.navigator.userAgent;
+    const isIos = /iphone|ipad|ipod/i.test(ua);
+    const isAndroid = /android/i.test(ua);
+    const isMobile = isIos || isAndroid;
+
+    // Track if the app is already installed in standalone mode
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone;
+    let fallback;
+
+    // Handler for modern browsers (mostly Android Chrome)
     const onBeforeInstall = (e) => {
+      // Only intercept on mobile so desktops keep the default behaviour
+      if (!isMobile) return;
       e.preventDefault();
+      clearTimeout(fallback); // do not trigger the fallback instructions
       setDeferred(e); // stash the event so it can be triggered later
       setShowPrompt(true);
     };
     window.addEventListener('beforeinstallprompt', onBeforeInstall);
 
-    // Detect iOS devices which do not support the event
-    const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
-    const isStandalone =
-      window.matchMedia('(display-mode: standalone)').matches ||
-      window.navigator.standalone;
-    if (isIos && !isStandalone) {
-      setShowIos(true);
-      setShowPrompt(true);
+    if (isMobile && !isStandalone) {
+      // If the event never fires (e.g. iOS Safari), show instructions
+      fallback = setTimeout(() => {
+        setShowIos(isIos);
+        setShowPrompt(true);
+      }, 3000);
     }
 
     return () => {
       window.removeEventListener('beforeinstallprompt', onBeforeInstall);
+      if (fallback) clearTimeout(fallback);
     };
   }, []);
 
@@ -49,9 +66,9 @@ export default function InstallPrompt() {
 
   return (
     <div className="install-banner">
-      {showIos ? (
-        // iOS users must manually use the browser's Share menu
-        <span>Install this app via Share &gt; Add to Home Screen</span>
+      {showIos || !deferred ? (
+        // When no install event is available we show plain instructions
+        <span>Install this app via your browser's menu</span>
       ) : (
         <>
           <span>Install this app for quick access</span>

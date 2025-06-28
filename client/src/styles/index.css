@@ -397,6 +397,13 @@ tbody tr:nth-child(even) {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
+@media (min-width: 768px) {
+  /* Hide install banner on desktop screens */
+  .install-banner {
+    display: none;
+  }
+}
+
 .install-banner button {
   margin-left: 0.5rem;
   background: #fff;
