@@ -1,23 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { fetchQuestion, submitQuestionAnswer } from '../services/api';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { fetchQuestion, submitQuestionAnswer } from "../services/api";
 
 // Display a single trivia question for players
 export default function QuestionPlayPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [question, setQuestion] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [answer, setAnswer] = useState('');
+  const [answer, setAnswer] = useState("");
   const [lockedUntil, setLockedUntil] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0); // seconds remaining on cooldown
 
   useEffect(() => {
     const load = async () => {
       try {
         const { data } = await fetchQuestion(id);
         setQuestion(data);
-        setAnswer(data.selectedAnswer || '');
-        setLockedUntil(data.lockExpiresAt ? new Date(data.lockExpiresAt) : null);
+        setAnswer(data.selectedAnswer || "");
+        setLockedUntil(
+          data.lockExpiresAt ? new Date(data.lockExpiresAt) : null,
+        );
       } catch (err) {
         console.error(err);
       } finally {
@@ -27,10 +31,27 @@ export default function QuestionPlayPage() {
     if (id) load();
   }, [id]);
 
+  // Update countdown timer whenever the lock expiry changes
+  useEffect(() => {
+    if (!lockedUntil) {
+      setTimeLeft(0);
+      return;
+    }
+
+    const update = () => {
+      const diff = Math.ceil((new Date(lockedUntil) - new Date()) / 1000);
+      setTimeLeft(diff > 0 ? diff : 0);
+    };
+
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, [lockedUntil]);
+
   if (loading) return <p>Loading question…</p>;
   if (!question) return <p>Question not found.</p>;
 
-  const isLocked = lockedUntil && new Date() < new Date(lockedUntil);
+  const isLocked = timeLeft > 0;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,8 +60,10 @@ export default function QuestionPlayPage() {
       setSaving(true);
       const { data } = await submitQuestionAnswer(id, answer);
       setLockedUntil(data.lockExpiresAt ? new Date(data.lockExpiresAt) : null);
+      // After submitting an answer navigate straight to the scoreboard
+      navigate("/scoreboard");
     } catch (err) {
-      alert(err.response?.data?.message || 'Error saving answer');
+      alert(err.response?.data?.message || "Error saving answer");
     } finally {
       setSaving(false);
     }
@@ -55,11 +78,11 @@ export default function QuestionPlayPage() {
           <img
             src={question.imageUrl}
             alt={question.title}
-            style={{ maxWidth: '100%', marginTop: '1rem' }}
+            style={{ maxWidth: "100%", marginTop: "1rem" }}
           />
         )}
         {question.options && question.options.length > 0 && (
-          <form onSubmit={handleSubmit} style={{ marginTop: '1rem' }}>
+          <form onSubmit={handleSubmit} style={{ marginTop: "1rem" }}>
             {question.options.map((o, idx) => (
               <div key={idx}>
                 <label>
@@ -69,17 +92,20 @@ export default function QuestionPlayPage() {
                     checked={answer === o}
                     onChange={() => setAnswer(o)}
                     disabled={isLocked}
-                  />{' '}
+                  />{" "}
                   {o}
                 </label>
               </div>
             ))}
             <button type="submit" disabled={isLocked || saving}>
-              {answer ? 'Update Answer' : 'Submit Answer'}
+              {answer ? "Update Answer" : "Submit Answer"}
             </button>
             {isLocked && (
-              <p style={{ color: 'red' }}>
-                Answer locked until {new Date(lockedUntil).toLocaleTimeString()}
+              <p style={{ color: "red" }}>
+                {`You can update your answer in ${Math.floor(timeLeft / 60)}:${(
+                  "0" +
+                  (timeLeft % 60)
+                ).slice(-2)}`}
               </p>
             )}
           </form>
