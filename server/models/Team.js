@@ -36,6 +36,18 @@ const teamSchema = new mongoose.Schema(
         }
       ],
       default: []
+    },
+    // Persist each team's selected answers for trivia questions so the choice
+    // is shared across players and subject to cooldown restrictions.
+    questionAnswers: {
+      type: [
+        {
+          question: { type: mongoose.Schema.Types.ObjectId, ref: 'Question' },
+          answer: String,
+          updatedAt: Date
+        }
+      ],
+      default: []
     }
   },
   { timestamps: true }

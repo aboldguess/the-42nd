@@ -4,6 +4,7 @@ const Question = require('../models/Question');
 const Media = require('../models/Media');
 const QRCode = require('qrcode');
 const Settings = require('../models/Settings');
+const Team = require('../models/Team');
 const mongoose = require('mongoose');
 const { recordScan } = require('../utils/scan');
 
@@ -114,13 +115,97 @@ exports.getQuestion = async (req, res) => {
     if (!question) {
       return res.status(404).json({ message: 'Question not found' });
     }
+
     // Keep QR code data in sync with current settings/base URL
     await ensureQrCode(question);
+
+    // Load team info so we can include any previously selected answer
+    const team = await Team.findById(req.user.team);
+
+    const settings = await Settings.findOne();
+    const cooldown = settings?.questionAnswerCooldown || 0;
+
+    let selectedAnswer = null;
+    let lockExpiresAt = null;
+    if (team) {
+      const entry = team.questionAnswers.find(
+        (q) => q.question.toString() === question._id.toString()
+      );
+      if (entry) {
+        selectedAnswer = entry.answer;
+        lockExpiresAt = new Date(entry.updatedAt.getTime() + cooldown * 60000);
+      }
+    }
+
     // Record that this question was scanned if player is logged in
     await recordScan('question', question._id, req.user, 'NEW');
-    res.json(question);
+
+    // Respond with the question plus answer state
+    res.json({
+      ...question.toObject(),
+      selectedAnswer,
+      lockExpiresAt
+    });
   } catch (err) {
     console.error('Error fetching question:', err);
     res.status(500).json({ message: 'Error fetching question' });
+  }
+};
+
+/**
+ * Store the answer chosen by the player's team for a question. If a previous
+ * answer exists and the cooldown period has not elapsed, the update is rejected.
+ */
+exports.submitTeamAnswer = async (req, res) => {
+  const { id } = req.params;
+  const { answer } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ message: 'Question not found' });
+  }
+
+  try {
+    const question = await Question.findById(id);
+    if (!question) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+
+    const team = await Team.findById(req.user.team);
+    if (!team) {
+      return res.status(404).json({ message: 'Team not found' });
+    }
+
+    const settings = await Settings.findOne();
+    const cooldown = settings?.questionAnswerCooldown || 0;
+
+    let entry = team.questionAnswers.find(
+      (q) => q.question.toString() === question._id.toString()
+    );
+
+    const now = new Date();
+    if (entry) {
+      const nextAllowed = new Date(entry.updatedAt.getTime() + cooldown * 60000);
+      if (now < nextAllowed) {
+        return res.status(400).json({
+          message: 'Answer locked',
+          lockExpiresAt: nextAllowed
+        });
+      }
+      entry.answer = answer;
+      entry.updatedAt = now;
+    } else {
+      entry = { question: question._id, answer, updatedAt: now };
+      team.questionAnswers.push(entry);
+    }
+
+    await team.save();
+
+    res.json({
+      selectedAnswer: entry.answer,
+      lockExpiresAt: new Date(entry.updatedAt.getTime() + cooldown * 60000)
+    });
+  } catch (err) {
+    console.error('Error saving team answer:', err);
+    res.status(500).json({ message: 'Error saving answer' });
   }
 };

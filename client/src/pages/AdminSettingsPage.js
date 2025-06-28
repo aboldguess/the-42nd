@@ -14,7 +14,8 @@ export default function AdminSettingsPage() {
     fontFamily: 'Arial, sans-serif',
     logoUrl: '',
     faviconUrl: '',
-    placeholderUrl: ''
+    placeholderUrl: '',
+    questionAnswerCooldown: 0
   });
   // Local file objects for uploads
   const [logoFile, setLogoFile] = useState(null);
@@ -41,6 +42,7 @@ export default function AdminSettingsPage() {
       formData.append('qrBaseUrl', settings.qrBaseUrl);
       formData.append('fontFamily', settings.fontFamily);
       formData.append('theme', JSON.stringify(settings.theme));
+      formData.append('questionAnswerCooldown', settings.questionAnswerCooldown);
       if (logoFile) formData.append('logo', logoFile);
       if (faviconFile) formData.append('favicon', faviconFile);
       if (placeholderFile) formData.append('placeholder', placeholderFile);
@@ -66,6 +68,18 @@ export default function AdminSettingsPage() {
       <input value={settings.gameName} onChange={(e) => setSettings({ ...settings, gameName: e.target.value })} />
       <label>QR Base URL:</label>
       <input value={settings.qrBaseUrl} onChange={(e) => setSettings({ ...settings, qrBaseUrl: e.target.value })} />
+      <label>Answer Cooldown (minutes):</label>
+      <input
+        type="number"
+        min="0"
+        value={settings.questionAnswerCooldown}
+        onChange={(e) =>
+          setSettings({
+            ...settings,
+            questionAnswerCooldown: parseInt(e.target.value, 10)
+          })
+        }
+      />
 
       <h3>Appearance</h3>
       <label>Primary Colour:</label>
