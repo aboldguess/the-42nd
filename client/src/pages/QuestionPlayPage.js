@@ -14,6 +14,16 @@ export default function QuestionPlayPage() {
   const [selected, setSelected] = useState('');
   const [cooldown, setCooldown] = useState(0);
 
+  // Decrease the cooldown timer every second so the UI updates as time passes.
+  // When the countdown reaches zero the interval clears itself.
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const interval = setInterval(() => {
+      setCooldown((c) => (c - 1000 > 0 ? c - 1000 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [cooldown]);
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -43,6 +53,7 @@ export default function QuestionPlayPage() {
       // On success, request the saved answer again so we know how long until it
       // can be changed. The server returns the remaining cooldown in ms.
       const res = await fetchTeamQuestionAnswer(id);
+      setSelected(res.data.answer || selected);
       setCooldown(res.data.cooldownRemaining || 0);
     } catch (err) {
       alert(err.response?.data?.message || 'Error saving answer');

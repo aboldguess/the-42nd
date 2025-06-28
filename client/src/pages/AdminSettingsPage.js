@@ -131,7 +131,8 @@ export default function AdminSettingsPage() {
         onChange={(e) =>
           setSettings({
             ...settings,
-            questionAnswerCooldown: e.target.value
+            // Store as a number so the server receives the correct type
+            questionAnswerCooldown: parseInt(e.target.value, 10)
           })
         }
       />
