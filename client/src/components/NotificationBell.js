@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchNotifications, markNotificationRead } from '../services/api';
 
@@ -10,6 +10,7 @@ import { fetchNotifications, markNotificationRead } from '../services/api';
 export default function NotificationBell() {
   const [notes, setNotes] = useState([]);
   const [open, setOpen] = useState(false);
+  const containerRef = useRef(null); // wrapper used for outside click detection
 
   useEffect(() => {
     // Load the latest notifications when the component mounts
@@ -29,6 +30,20 @@ export default function NotificationBell() {
   // Toggle dropdown visibility
   const toggle = () => setOpen((v) => !v);
 
+  // Close dropdown when clicking outside or selecting an item
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target)
+      ) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, []);
+
   // Mark a single notification as read and update state
   const handleMark = async (id) => {
     try {
@@ -39,6 +54,18 @@ export default function NotificationBell() {
     }
   };
 
+  // Helper to build a link that includes the notification id as a query param
+  const buildLink = (note) => {
+    if (!note.link) return '';
+    try {
+      const url = new URL(note.link, window.location.origin);
+      url.searchParams.set('note', note._id);
+      return url.pathname + url.search + url.hash;
+    } catch {
+      return note.link;
+    }
+  };
+
   return (
     <div className="notification-bell" style={{ position: 'relative' }}>
       <button onClick={toggle} aria-label="Notifications" style={{ background: 'none', border: 'none' }}>
@@ -46,11 +73,19 @@ export default function NotificationBell() {
         {unread && <span className="notification-dot" />}
       </button>
       {open && (
-        <ul className="notification-dropdown">
+        <ul className="notification-dropdown" ref={containerRef}>
           {notes.length === 0 && <li>No notifications</li>}
           {notes.map((n) => (
-            <li key={n._id} onClick={() => handleMark(n._id)}>
-              {n.link ? <Link to={n.link}>{n.message}</Link> : n.message}
+            <li
+              key={n._id}
+              onClick={() => {
+                // Non-linked items are marked read immediately
+                if (!n.link) handleMark(n._id);
+                // Hide the dropdown after any selection
+                setOpen(false);
+              }}
+            >
+              {n.link ? <Link to={buildLink(n)}>{n.message}</Link> : n.message}
             </li>
           ))}
         </ul>

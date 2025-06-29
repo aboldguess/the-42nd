@@ -62,6 +62,18 @@ export default function Navbar() {
     return () => document.removeEventListener('click', handleClick);
   }, []);
 
+  // Hide the avatar dropdown when clicking anywhere outside of it
+  useEffect(() => {
+    const handleAvatar = (e) => {
+      const menu = document.querySelector('.nav-avatar');
+      if (showMenu && menu && !menu.contains(e.target)) {
+        setShowMenu(false);
+      }
+    };
+    document.addEventListener('click', handleAvatar);
+    return () => document.removeEventListener('click', handleAvatar);
+  }, [showMenu]);
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('adminToken');
