@@ -30,10 +30,9 @@ export default function QrScanButton() {
   // camera). We use the more intuitive `front`/`rear` strings in state and
   // localStorage and convert them here when requesting the camera.
   const videoConstraints = {
-    facingMode:
-      facingMode === 'rear'
-        ? { ideal: 'environment' }
-        : { ideal: 'user' }
+    // Use simple string values so browsers honour the chosen camera.
+    // "environment" = rear camera, "user" = front/selfie camera.
+    facingMode: facingMode === 'rear' ? 'environment' : 'user'
   };
 
   // Called each time the scanner decodes a QR code
@@ -109,8 +108,9 @@ export default function QrScanButton() {
                 right: 8,
                 background: 'none',
                 border: 'none',
-                fontSize: '1.5rem',
-                cursor: 'pointer'
+                fontSize: '2rem', // larger touch target
+                cursor: 'pointer',
+                zIndex: 2 // ensure button sits above the video element
               }}
               aria-label="Close scanner"
             >
@@ -129,8 +129,9 @@ export default function QrScanButton() {
                 left: 8,
                 background: 'none',
                 border: 'none',
-                fontSize: '1.5rem',
-                cursor: 'pointer'
+                fontSize: '2rem', // match close button size
+                cursor: 'pointer',
+                zIndex: 2 // ensure button is clickable over the video
               }}
               aria-label="Switch camera"
             >
