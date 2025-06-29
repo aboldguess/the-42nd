@@ -118,4 +118,12 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Export the Express app so integration tests can mount it without starting
+// an actual HTTP server. When this file is executed directly we start
+// listening on the configured port.
+if (require.main === module) {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+module.exports = app;
