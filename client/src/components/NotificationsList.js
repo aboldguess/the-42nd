@@ -10,6 +10,19 @@ export default function NotificationsList({ teamOnly = false }) {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Append the notification id to any provided link so the destination page
+  // can mark it as read when visited
+  const buildLink = (note) => {
+    if (!note.link) return '';
+    try {
+      const url = new URL(note.link, window.location.origin);
+      url.searchParams.set('note', note._id);
+      return url.pathname + url.search + url.hash;
+    } catch {
+      return note.link;
+    }
+  };
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -33,7 +46,7 @@ export default function NotificationsList({ teamOnly = false }) {
     <ul>
       {notes.map((n) => (
         <li key={n._id} style={{ marginBottom: '0.25rem' }}>
-          {n.link ? <Link to={n.link}>{n.message}</Link> : n.message}
+          {n.link ? <Link to={buildLink(n)}>{n.message}</Link> : n.message}
           {!n.read && ' (unread)'}
         </li>
       ))}

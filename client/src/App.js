@@ -34,6 +34,7 @@ import AdminLoginPage from './pages/AdminLoginPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import QrScanButton from './components/QrScanButton';
 import InstallPrompt from './components/InstallPrompt';
+import NotificationHandler from './components/NotificationHandler';
 
 // Guard for regular users
 const AuthRoute = ({ children }) => {
@@ -298,6 +299,8 @@ export default function App() {
         {/* Floating utilities shown on all pages */}
         <InstallPrompt />
         <QrScanButton />
+        {/* Mark notifications as read based on the URL */}
+        <NotificationHandler />
       </BrowserRouter>
     </div>
   );
