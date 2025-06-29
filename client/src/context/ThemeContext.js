@@ -13,6 +13,40 @@ export const ThemeProvider = ({ children }) => {
     faviconUrl: ''
   });
 
+  // ────────────────────────────────────────────────────────────────────────────
+  // Colour helpers
+  // ────────────────────────────────────────────────────────────────────────────
+
+  /** Lighten a hex colour by mixing it with white. `amount` ranges 0-1. */
+  const lighten = (hex, amount) => {
+    let col = hex.replace('#', '');
+    if (col.length === 3) col = col.split('').map((c) => c + c).join('');
+    const num = parseInt(col, 16);
+    const r = (num >> 16) + Math.round((255 - (num >> 16)) * amount);
+    const g = ((num >> 8) & 0xff) + Math.round((255 - ((num >> 8) & 0xff)) * amount);
+    const b = (num & 0xff) + Math.round((255 - (num & 0xff)) * amount);
+    return (
+      '#' +
+      [r, g, b]
+        .map((v) => {
+          const clamped = Math.max(0, Math.min(255, v));
+          return clamped.toString(16).padStart(2, '0');
+        })
+        .join('')
+    );
+  };
+
+  /** Choose black or white text for best contrast with the given background. */
+  const contrastText = (bg) => {
+    const col = bg.replace('#', '');
+    const r = parseInt(col.substr(0, 2), 16);
+    const g = parseInt(col.substr(2, 2), 16);
+    const b = parseInt(col.substr(4, 2), 16);
+    // Standard luminance formula
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 125 ? '#000' : '#fff';
+  };
+
   /**
    * Fetch the current theme from the server and update state. Team colours
    * override the global settings if a player is logged in.
@@ -59,6 +93,14 @@ export const ThemeProvider = ({ children }) => {
     root.style.setProperty('--secondary-color', theme.secondary);
     root.style.setProperty('--font-family', theme.fontFamily);
 
+    // Derive a lighter shade from the primary colour for general backgrounds
+    const bg = lighten(theme.primary, 0.9);
+    root.style.setProperty('--background-color', bg);
+
+    // Choose text colour that contrasts with the primary/background colour
+    const text = contrastText(bg);
+    root.style.setProperty('--text-color', text);
+
     // Keep the browser UI (address bar etc) in sync with the chosen theme
     const metaTheme = document.querySelector('meta[name="theme-color"]');
     if (metaTheme) metaTheme.setAttribute('content', theme.primary);
@@ -83,6 +125,7 @@ export const ThemeProvider = ({ children }) => {
    * new colours.
    */
   const updateTheme = (primary, secondary) => {
+    // Immediately apply new colours locally so the UI reflects changes
     setTheme((t) => ({ ...t, primary, secondary }));
   };
 
