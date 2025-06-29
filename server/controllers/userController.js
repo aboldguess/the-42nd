@@ -20,6 +20,35 @@ exports.updateMe = async (req, res) => {
       updates.firstName = firstName;
       updates.lastName = rest.join(' ');
     }
+    // Persist any notification preference changes
+    if (req.body.notificationPrefs) {
+      let prefs = req.body.notificationPrefs;
+      // When sent via multipart/form-data, the object may be a JSON string
+      if (typeof prefs === 'string') {
+        try {
+          prefs = JSON.parse(prefs);
+        } catch (e) {
+          console.error('Invalid notificationPrefs JSON');
+          prefs = null;
+        }
+      }
+      if (prefs) {
+        const keys = [
+          'scans',
+          'leaderboard',
+          'wallPosts',
+          'teamWallPosts',
+          'photoInteractions',
+          'sideQuestCompleted'
+        ];
+        // Use MongoDB dot notation to update individual fields
+        keys.forEach(key => {
+          if (typeof prefs[key] === 'boolean') {
+            updates[`notificationPrefs.${key}`] = prefs[key];
+          }
+        });
+      }
+    }
     if (req.files && req.files.selfie) {
       const avatarPath = '/uploads/' + req.files.selfie[0].filename;
       updates.photoUrl = avatarPath;
