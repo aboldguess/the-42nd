@@ -5,6 +5,7 @@ const Question = require('../models/Question');
 const SideQuest = require('../models/SideQuest');
 const User = require('../models/User');
 const Settings = require('../models/Settings');
+const { createNotification } = require('../utils/notifications');
 
 // Build a simple scoreboard summarizing each team's progress.
 exports.getScoreboard = async (req, res) => {
@@ -50,7 +51,7 @@ exports.getScoreboard = async (req, res) => {
         ]);
 
         // Side quests created by any member of the team
-        const users = await User.find({ team: t._id }).select('_id');
+        const users = await User.find({ team: t._id }).select('_id notificationPrefs');
         const createdCount = await SideQuest.countDocuments({
           createdBy: { $in: users.map((u) => u._id) },
           createdByType: 'User'
@@ -60,23 +61,50 @@ exports.getScoreboard = async (req, res) => {
           x * correctAnswers + y * sideQuestsCompleted + z * createdCount;
 
         return {
-          teamId: t._id,
-          name: t.name,
-          photoUrl: t.photoUrl,
-          questionsFound: scannedQuestionIds.length,
-          correctAnswers,
-          sideQuestsFound: sqScanIds.length,
-          sideQuestsCompleted,
-          sideQuestsCreated: createdCount,
-          score
+          // Keep the full team doc for rank updates and notifications
+          team: t,
+          users,
+          // Data returned to the client
+          entry: {
+            teamId: t._id,
+            name: t.name,
+            photoUrl: t.photoUrl,
+            questionsFound: scannedQuestionIds.length,
+            correctAnswers,
+            sideQuestsFound: sqScanIds.length,
+            sideQuestsCompleted,
+            sideQuestsCreated: createdCount,
+            score
+          }
         };
       })
     );
 
     // Order by score descending
-    const sorted = board.sort((a, b) => b.score - a.score);
+    const sorted = board.sort((a, b) => b.entry.score - a.entry.score);
 
-    res.json(sorted);
+    // Compare each team's rank to their last stored rank and notify on changes
+    for (let i = 0; i < sorted.length; i++) {
+      const rank = i + 1;
+      const { team, users } = sorted[i];
+      if (team.lastRank !== rank) {
+        // Send a notification to all members who opted in
+        for (const u of users) {
+          if (u.notificationPrefs?.leaderboard) {
+            await createNotification({
+              user: u._id,
+              actor: team,
+              message: `Your team is now ranked #${rank} on the leaderboard!`
+            });
+          }
+        }
+        team.lastRank = rank;
+        await team.save();
+      }
+    }
+
+    // Return only the scoreboard entries to the client
+    res.json(sorted.map((b) => b.entry));
   } catch (err) {
     console.error('Error building scoreboard:', err);
     res.status(500).json({ message: 'Error building scoreboard' });
