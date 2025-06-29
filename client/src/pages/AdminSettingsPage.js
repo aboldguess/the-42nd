@@ -4,9 +4,26 @@ import ImageSelector from '../components/ImageSelector';
 import { ThemeContext } from '../context/ThemeContext';
 import { fetchSettingsAdmin, updateSettingsAdmin } from '../services/api';
 
+// Pre-defined colour palettes used by the admin to theme the game
+// Each palette consists of a primary and secondary colour
+export const COLOUR_PALETTES = [
+  { name: 'Ocean', primary: '#007AFF', secondary: '#5856D6' },
+  { name: 'Sunset', primary: '#FF4500', secondary: '#FFA500' },
+  { name: 'Forest', primary: '#228B22', secondary: '#2E8B57' },
+  { name: 'Rose', primary: '#C71585', secondary: '#FF69B4' },
+  { name: 'Aqua', primary: '#20B2AA', secondary: '#40E0D0' },
+  { name: 'Slate', primary: '#708090', secondary: '#2F4F4F' },
+  { name: 'Berry', primary: '#8A2BE2', secondary: '#BA55D3' },
+  { name: 'Citrus', primary: '#FF8C00', secondary: '#FFD700' },
+  { name: 'Lime', primary: '#9ACD32', secondary: '#6B8E23' },
+  { name: 'Steel', primary: '#4682B4', secondary: '#5F9EA0' }
+];
+
 // Page allowing admin users to configure global game settings
 export default function AdminSettingsPage() {
   const { refreshTheme, updateTheme } = useContext(ThemeContext);
+  // Track which palette is selected in the UI
+  const [paletteIndex, setPaletteIndex] = useState(0);
   const [settings, setSettings] = useState({
     gameName: '',
     qrBaseUrl: '',
@@ -32,6 +49,13 @@ export default function AdminSettingsPage() {
       try {
         const { data } = await fetchSettingsAdmin();
         setSettings(data);
+        // Determine which palette matches the saved theme
+        const idx = COLOUR_PALETTES.findIndex(
+          (p) =>
+            p.primary === data.theme.primary &&
+            p.secondary === data.theme.secondary
+        );
+        if (idx >= 0) setPaletteIndex(idx);
       } catch (err) {
         console.error(err);
       }
@@ -125,28 +149,29 @@ export default function AdminSettingsPage() {
       />
 
       <h3>Appearance</h3>
-      <label>Primary Colour:</label>
-      <input
-        type="color"
-        value={settings.theme.primary}
-        onChange={(e) =>
+      <label>Colour Palette:</label>
+      {/* Choose from ten predefined palettes so colours are consistent */}
+      <select
+        value={paletteIndex}
+        onChange={(e) => {
+          const idx = parseInt(e.target.value, 10);
+          setPaletteIndex(idx);
+          const pal = COLOUR_PALETTES[idx];
+          // Immediately update local settings so the preview refreshes
           setSettings({
             ...settings,
-            theme: { ...settings.theme, primary: e.target.value }
-          })
-        }
-      />
-      <label>Secondary Colour:</label>
-      <input
-        type="color"
-        value={settings.theme.secondary}
-        onChange={(e) =>
-          setSettings({
-            ...settings,
-            theme: { ...settings.theme, secondary: e.target.value }
-          })
-        }
-      />
+            theme: { primary: pal.primary, secondary: pal.secondary }
+          });
+          // Update the applied theme colours right away
+          updateTheme(pal.primary, pal.secondary);
+        }}
+      >
+        {COLOUR_PALETTES.map((p, i) => (
+          <option key={p.name} value={i}>
+            {p.name}
+          </option>
+        ))}
+      </select>
       <label>Font:</label>
       <select
         value={settings.fontFamily}

@@ -39,15 +39,7 @@ export const ThemeProvider = ({ children }) => {
       if (globalRes.data.logoUrl) th.logoUrl = globalRes.data.logoUrl;
       if (globalRes.data.faviconUrl) th.faviconUrl = globalRes.data.faviconUrl;
 
-      const token = localStorage.getItem('token');
-      // Only apply team-specific colours when not explicitly ignored
-      if (token && !opts.ignoreTeam) {
-        const userRes = await axios.get('/api/users/me');
-        const teamId = userRes.data.team._id;
-        const teamRes = await axios.get(`/api/teams/${teamId}`);
-        const cs = teamRes.data.colourScheme;
-        th = { ...th, primary: cs.primary, secondary: cs.secondary };
-      }
+      // Team colours are no longer applied so everyone shares the admin palette
       setTheme(th);
     } catch (err) {
       console.error('Error fetching theme:', err);

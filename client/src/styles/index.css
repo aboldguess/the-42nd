@@ -2,8 +2,10 @@
   /* CSS variables allow dynamic theming via admin settings */
   --primary-color: #007AFF;
   --secondary-color: #5856D6;
-  --background-color: #ffffff;
-  --text-color: #333;
+  /* Slightly off-white background so white elements stand out */
+  --background-color: #f9f9f9;
+  /* Darker text for better contrast */
+  --text-color: #222;
   /* Shadows used for a soft neumorphic look */
   --shadow-light: rgba(255, 255, 255, 0.7);
   --shadow-dark: rgba(0, 0, 0, 0.1);
@@ -320,7 +322,8 @@ form label {
 .hamburger {
   background: none;
   border: none;
-  color: #fff;
+  /* Use text colour so the icon contrasts with the navbar */
+  color: var(--text-color);
   font-size: 1.75rem;
   cursor: pointer;
   margin-right: 0.75rem;
@@ -457,7 +460,8 @@ tbody tr:nth-child(even) {
 /* Notification bell in the navbar */
 .notification-bell button {
   position: relative;
-  color: #fff;
+  /* Match regular text colour so it's visible on light backgrounds */
+  color: var(--text-color);
 }
 
 .notification-dot {
