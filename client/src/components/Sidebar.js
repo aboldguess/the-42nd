@@ -13,7 +13,7 @@ export default function Sidebar() {
       to={to}
       style={{
         fontWeight: location.pathname.startsWith(to) ? 'bold' : 'normal',
-        color: '#fff',
+        color: 'var(--text-color)',
         display: 'block',
         marginBottom: '0.75rem',
         textDecoration: 'none'

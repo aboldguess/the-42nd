@@ -66,7 +66,7 @@ img {
 /* ───────────────── NAVBAR ───────────────── */
 .navbar {
   /* Sticky top bar for branding and navigation */
-  background-color: var(--background-color);
+  background-color: var(--primary-color);
   padding: 0.75rem 1rem;
   color: var(--text-color);
   display: flex;
@@ -125,7 +125,7 @@ img {
 .sidebar {
   /* Collapsible navigation on the left */
   width: var(--sidebar-width);
-  background-color: var(--background-color);
+  background-color: var(--primary-color);
   padding: 1rem;
   color: var(--text-color);
   height: 100vh;
@@ -345,7 +345,7 @@ table {
 /* Header cells get a background using the secondary theme colour */
 th {
   background-color: var(--secondary-color);
-  color: #fff;
+  color: var(--text-color);
   text-align: left;
 }
 
@@ -403,7 +403,8 @@ tbody tr:nth-child(even) {
 }
 
 .modal-content {
-  background: #fff;
+  background: var(--background-color);
+  color: var(--text-color);
   padding: 1rem;
   max-width: 90%;
   max-height: 90%;
@@ -418,7 +419,7 @@ tbody tr:nth-child(even) {
   right: calc(env(safe-area-inset-right, 0) + 1rem);
   z-index: 1100;
   background-color: var(--primary-color);
-  color: #fff;
+  color: var(--text-color);
   border: none;
   border-radius: 50%;
   width: 56px;
@@ -439,7 +440,7 @@ tbody tr:nth-child(even) {
   left: calc(env(safe-area-inset-left, 0) + 1rem);
   z-index: 1100;
   background-color: var(--primary-color);
-  color: #fff;
+  color: var(--text-color);
   padding: 0.5rem 0.75rem;
   border-radius: 4px;
   display: flex;
@@ -478,8 +479,8 @@ tbody tr:nth-child(even) {
   position: absolute;
   right: 0;
   top: 100%;
-  background: #333;
-  color: #fff;
+  background: var(--primary-color);
+  color: var(--text-color);
   padding: 0.5rem;
   list-style: none;
   min-width: 200px;
@@ -491,6 +492,6 @@ tbody tr:nth-child(even) {
 }
 
 .notification-dropdown a {
-  color: #fff;
+  color: var(--text-color);
   text-decoration: underline;
 }

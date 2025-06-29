@@ -136,7 +136,8 @@ export default function Navbar() {
                   position: 'absolute',
                   right: 0,
                   top: '100%',
-                  background: '#333',
+                  background: 'var(--primary-color)',
+                  color: 'var(--text-color)',
                   padding: '0.5rem',
                   listStyle: 'none'
                 }}
