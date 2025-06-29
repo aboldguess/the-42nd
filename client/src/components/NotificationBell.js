@@ -10,7 +10,8 @@ import { fetchNotifications, markNotificationRead } from '../services/api';
 export default function NotificationBell() {
   const [notes, setNotes] = useState([]);
   const [open, setOpen] = useState(false);
-  const containerRef = useRef(null); // wrapper used for outside click detection
+  // Reference to the bell wrapper so we can detect outside clicks
+  const containerRef = useRef(null);
 
   useEffect(() => {
     // Load the latest notifications when the component mounts
@@ -67,13 +68,21 @@ export default function NotificationBell() {
   };
 
   return (
-    <div className="notification-bell" style={{ position: 'relative' }}>
-      <button onClick={toggle} aria-label="Notifications" style={{ background: 'none', border: 'none' }}>
+    <div
+      className="notification-bell"
+      style={{ position: 'relative' }}
+      ref={containerRef}
+    >
+      <button
+        onClick={toggle}
+        aria-label="Notifications"
+        style={{ background: 'none', border: 'none' }}
+      >
         🔔
         {unread && <span className="notification-dot" />}
       </button>
       {open && (
-        <ul className="notification-dropdown" ref={containerRef}>
+        <ul className="notification-dropdown">
           {notes.length === 0 && <li>No notifications</li>}
           {notes.map((n) => (
             <li
