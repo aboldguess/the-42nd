@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeContext } from './context/ThemeContext';
 import Navbar from './components/Navbar';
@@ -50,6 +50,18 @@ const AdminRoute = ({ children }) => {
 
 export default function App() {
   const { theme } = useContext(ThemeContext);
+
+  useEffect(() => {
+    // Request Notification permission once at startup if not already granted
+    if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+      const allow = window.confirm(
+        'Enable notifications to be alerted when new clues arrive?'
+      );
+      if (allow) {
+        Notification.requestPermission();
+      }
+    }
+  }, []);
 
   return (
     <div

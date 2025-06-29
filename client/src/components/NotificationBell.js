@@ -4,20 +4,15 @@ import { fetchNotifications, markNotificationRead } from '../services/api';
 
 /**
  * Small bell icon used in the navbar.
- * Requests Notification API permission on mount and displays a dropdown
- * showing the five most recent notifications. A red dot indicates any
- * unread items.
+ * Displays a dropdown showing the five most recent notifications.
+ * A red dot indicates any unread items.
  */
 export default function NotificationBell() {
   const [notes, setNotes] = useState([]);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // Ask the browser for permission to display notifications
-    if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-    // Load the latest notifications
+    // Load the latest notifications when the component mounts
     const load = async () => {
       try {
         const res = await fetchNotifications(5);
