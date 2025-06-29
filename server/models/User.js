@@ -10,7 +10,16 @@ const userSchema = new mongoose.Schema(
     photoUrl: { type: String, required: true },
     // Every player must be assigned to exactly one team
     team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true },
-    isAdmin: { type: Boolean, default: false }          // true if this user created the team
+    isAdmin: { type: Boolean, default: false },         // true if this user created the team
+    // Each player can toggle which events generate notifications
+    notificationPrefs: {
+      scans: { type: Boolean, default: true },
+      leaderboard: { type: Boolean, default: true },
+      wallPosts: { type: Boolean, default: true },
+      teamWallPosts: { type: Boolean, default: true },
+      photoInteractions: { type: Boolean, default: true },
+      sideQuestCompleted: { type: Boolean, default: true }
+    }
   },
   { timestamps: true }
 );
