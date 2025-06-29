@@ -62,18 +62,13 @@ npm start        # plain node
 ```
 Start the React client (from `client`):
 ```bash
-# Use HTTPS so mobile browsers allow camera access
-# Option 1: run with an environment variable
-HTTPS=true npm start
-
-# Option 2: create a `.env` file in `client/` containing:
-#   HTTPS=true
-# Then simply run:
-# npm start
+npm start
 ```
-The client will automatically proxy requests to the server on port `5000`.
+The `start` script automatically enables HTTPS via `cross-env` so mobile
+browsers can register the service worker. The client will proxy requests to the
+server on port `5000`.
 
-Once both services are running you can visit `http://localhost:3000` to use the app. Modern browsers will offer an "Add to Home Screen" prompt because the client is now a Progressive Web App. The site also displays a small banner on mobile to remind users they can install the app for offline access.
+Once both services are running you can visit `https://localhost:3000` to use the app. Modern browsers will offer an "Add to Home Screen" prompt because the client is now a Progressive Web App. The site also displays a small banner on mobile to remind users they can install the app for offline access.
 
 **Note:** The QR scanner requires camera access, which is only permitted in secure contexts. When testing on a mobile device, open the site over `https://` or via `localhost`; otherwise the browser will block camera access and scanning will fail.
 By default the QR scanner opens the rear camera. This can be changed from the **Profile** page if your device chooses the wrong camera.
