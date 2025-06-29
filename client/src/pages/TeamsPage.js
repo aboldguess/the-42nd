@@ -37,45 +37,26 @@ export default function TeamsPage() {
   return (
     <div className="card spaced-card">
       <h2>Teams</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Team</th>
-            <th>Members</th>
-          </tr>
-        </thead>
-        <tbody>
-          {teams.map((team) => (
-            <tr key={team._id}>
-              <td data-label="Team">
-                {team.photoUrl && (
-                  <img
-                    src={team.photoUrl}
-                    alt={team.name}
-                    style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                      marginRight: '0.5rem'
-                    }}
-                  />
-                )}
-                <Link to={`/team/${team._id}`}>{team.name}</Link>
-              </td>
-              <td data-label="Members">
-                <ul style={{ margin: 0, paddingLeft: '1rem' }}>
-                  {playersForTeam(team._id).map((p) => (
-                    <li key={p._id}>
-                      <Link to={`/player/${p._id}`}>{p.name}</Link>
-                    </li>
-                  ))}
-                </ul>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* New flex-based layout; each team row lists members underneath */}
+      <div className="list">
+        {teams.map((team) => (
+          <div key={team._id} className="list-row">
+            {team.photoUrl && (
+              <img src={team.photoUrl} alt={team.name} />
+            )}
+            <div>
+              <Link to={`/team/${team._id}`}>{team.name}</Link>
+              <ul className="sub" style={{ margin: 0, paddingLeft: '1rem' }}>
+                {playersForTeam(team._id).map((p) => (
+                  <li key={p._id}>
+                    <Link to={`/player/${p._id}`}>{p.name}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
