@@ -1,5 +1,8 @@
 const Comment = require('../models/Comment');
 const Media = require('../models/Media');
+const User = require('../models/User');
+const Team = require('../models/Team');
+const { createNotification } = require('../utils/notifications');
 
 // Helper to map URL param to model name
 function modelFromType(type) {
@@ -54,6 +57,38 @@ exports.postComment = async (req, res) => {
     });
 
     const populated = await comment.populate('author', 'name photoUrl');
+
+    // Notify the wall owner or team members about the new comment
+    if (model === 'User') {
+      const targetUser = await User.findById(req.params.id);
+      if (
+        targetUser &&
+        !targetUser._id.equals(req.user._id) &&
+        targetUser.notificationPrefs?.wallPosts
+      ) {
+        await createNotification({
+          user: targetUser._id,
+          actor: req.user,
+          message: `${req.user.name} posted on your wall.`
+        });
+      }
+    } else if (model === 'Team') {
+      const team = await Team.findById(req.params.id);
+      if (team) {
+        // Notify each teammate except the poster
+        const members = await User.find({ team: team._id, _id: { $ne: req.user._id } });
+        for (const m of members) {
+          if (m.notificationPrefs?.teamWallPosts) {
+            await createNotification({
+              user: m._id,
+              actor: req.user,
+              message: `${req.user.name} posted on your team wall.`
+            });
+          }
+        }
+      }
+    }
+
     res.status(201).json(populated);
   } catch (err) {
     console.error(err);

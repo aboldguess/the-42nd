@@ -5,6 +5,8 @@ const Team = require('../models/Team');
 const { getQrBase } = require('../utils/qr');
 const mongoose = require('mongoose');
 const { recordScan } = require('../utils/scan');
+const { createNotification } = require('../utils/notifications');
+const User = require('../models/User');
 
 // Ensure a side quest has a QR code stored
 // Ensure the QR code for a side quest reflects the current base URL
@@ -126,7 +128,7 @@ exports.getSideQuest = async (req, res) => {
     // Ensure QR codes remain current for scans
     await ensureQrCode(sq);
     // Record that this side quest QR was scanned
-    await recordScan('sidequest', sq._id, req.user, 'NEW');
+    await recordScan('sidequest', sq._id, req.user, 'NEW', sq.title);
     res.json(sq);
   } catch (err) {
     console.error('Error fetching side quest:', err);
@@ -179,7 +181,29 @@ exports.submitSideQuestProof = async (req, res) => {
     await team.save();
 
     // Record completion to update scan status
-    await recordScan('sidequest', sq._id, req.user, 'SOLVED!');
+    await recordScan('sidequest', sq._id, req.user, 'SOLVED!', sq.title);
+
+    // Notify the quest creator's team when another team completes it
+    if (sq.createdByType === 'User') {
+      const creator = await User.findById(sq.createdBy);
+      if (creator && creator.team && !creator.team.equals(team._id)) {
+        // Look up all members of the creator's team
+        const creatorTeam = await Team.findById(creator.team);
+        if (creatorTeam) {
+          const members = await User.find({ team: creatorTeam._id });
+          // Send a notification to each member who opted in
+          for (const m of members) {
+            if (m.notificationPrefs?.sideQuestCompleted) {
+              await createNotification({
+                user: m._id,
+                actor: team,
+                message: `${team.name} completed your side quest "${sq.title}".`
+              });
+            }
+          }
+        }
+      }
+    }
 
     res.json({ message: 'Side quest completed', mediaUrl });
   } catch (err) {

@@ -35,7 +35,7 @@ exports.getClue = async (req, res) => {
     }
     await ensureQrCode(clue);
     // Log that this player viewed/scanned the clue
-    await recordScan('clue', clue._id, req.user, 'NEW');
+    await recordScan('clue', clue._id, req.user, 'NEW', clue.title);
     res.json(clue);
   } catch (err) {
     console.error('Error fetching clue:', err);
@@ -135,14 +135,14 @@ exports.submitAnswer = async (req, res) => {
 
       // Respond with the ObjectId of the next clue (or null if none)
       // Mark this scan as solved for progress tracking
-      await recordScan('clue', clue._id, req.user, 'SOLVED!');
+      await recordScan('clue', clue._id, req.user, 'SOLVED!', clue.title);
       return res.json({
         correct: true,
         nextClue: next ? next._id : null
       });
     } else {
       // Record the incorrect attempt so status can show INCORRECT
-      await recordScan('clue', clue._id, req.user, 'INCORRECT');
+      await recordScan('clue', clue._id, req.user, 'INCORRECT', clue.title);
       return res.json({ correct: false });
     }
   } catch (err) {
