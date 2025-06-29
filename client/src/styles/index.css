@@ -406,3 +406,40 @@ tbody tr:nth-child(even) {
   border-radius: 4px;
   cursor: pointer;
 }
+
+/* Notification bell in the navbar */
+.notification-bell button {
+  position: relative;
+  color: #fff;
+}
+
+.notification-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background: red;
+  border-radius: 50%;
+}
+
+.notification-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: #333;
+  color: #fff;
+  padding: 0.5rem;
+  list-style: none;
+  min-width: 200px;
+  z-index: 1000;
+}
+
+.notification-dropdown li {
+  padding: 0.25rem 0;
+}
+
+.notification-dropdown a {
+  color: #fff;
+  text-decoration: underline;
+}

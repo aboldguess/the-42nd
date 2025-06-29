@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ThemeContext } from '../context/ThemeContext';
 import { fetchMe } from '../services/api';
+import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -99,6 +100,7 @@ export default function Navbar() {
             <Link to="/admin/login">Admin</Link>
           </li>
         )}
+        {token && <li><NotificationBell /></li>}
         {token && avatarUrl && (
           <li className="nav-avatar" style={{ position: 'relative' }}>
             <button

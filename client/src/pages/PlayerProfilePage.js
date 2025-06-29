@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchPlayerById } from '../services/api';
+import { fetchPlayerById, fetchMe } from '../services/api';
 import Wall from '../components/Wall';
+import NotificationsList from '../components/NotificationsList';
 
 // Read-only profile for any player
 export default function PlayerProfilePage() {
   const { id } = useParams(); // player id from the route
   const [player, setPlayer] = useState(null);
+  const [me, setMe] = useState(null); // logged in player
 
   useEffect(() => {
     // Load player data when id changes
@@ -14,6 +16,9 @@ export default function PlayerProfilePage() {
       try {
         const { data } = await fetchPlayerById(id);
         setPlayer(data);
+        // Also fetch current user to check if this is their profile
+        const meRes = await fetchMe();
+        setMe(meRes.data);
       } catch (err) {
         console.error(err);
       }
@@ -36,6 +41,13 @@ export default function PlayerProfilePage() {
       )}
       <p>Team: {player.team ? player.team.name : '-'}</p>
       <Wall type="user" id={id} />
+      {/* Show personal notifications when viewing your own profile */}
+      {me && me._id === id && (
+        <div style={{ marginTop: '1rem' }}>
+          <h3>Notifications</h3>
+          <NotificationsList />
+        </div>
+      )}
     </div>
   );
 }
