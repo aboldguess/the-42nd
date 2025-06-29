@@ -171,3 +171,16 @@ export const updateSettingsAdmin = (data) =>
     headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
   });
 
+// Notification endpoints
+// Retrieve recent notifications for the logged in player (and optionally team)
+export const fetchNotifications = (limit = 5) =>
+  axios.get(`/api/notifications?limit=${limit}`);
+
+// Retrieve only team notifications (excludes personal ones)
+export const fetchTeamNotifications = (limit = 5) =>
+  axios.get(`/api/notifications/team?limit=${limit}`);
+
+// Mark a notification as read
+export const markNotificationRead = (id) =>
+  axios.put(`/api/notifications/${id}/read`);
+

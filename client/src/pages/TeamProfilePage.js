@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchTeam } from '../services/api';
+import { fetchTeam, fetchMe } from '../services/api';
 import Wall from '../components/Wall';
+import NotificationsList from '../components/NotificationsList';
 
 // Displays a single team's details along with its comment wall
 export default function TeamProfilePage() {
   const { id } = useParams();
   const [team, setTeam] = useState(null);
+  const [me, setMe] = useState(null); // logged in player
 
   // Load team info on mount and when id changes
   useEffect(() => {
@@ -14,6 +16,9 @@ export default function TeamProfilePage() {
       try {
         const res = await fetchTeam(id);
         setTeam(res.data);
+        // Fetch logged in player for permission check
+        const meRes = await fetchMe();
+        setMe(meRes.data);
       } catch (err) {
         console.error(err);
       }
@@ -35,6 +40,13 @@ export default function TeamProfilePage() {
         />
       )}
       <Wall type="team" id={team._id} />
+      {/* Team-wide notifications shown only to members */}
+      {me && me.team && me.team._id === id && (
+        <div style={{ marginTop: '1rem' }}>
+          <h3>Team Notifications</h3>
+          <NotificationsList teamOnly />
+        </div>
+      )}
     </div>
   );
 }
