@@ -54,24 +54,31 @@ export default function Wall({ type, id }) {
         <button type="submit">Post</button>
       </form>
       <div>
-        {comments.map((c) => (
-          <div key={c._id} className="card" style={{ marginBottom: '0.5rem' }}>
-            <p>
-              <strong>{c.author.name}</strong>{' '}
-              <span style={{ fontSize: '0.8em' }}>
-                {new Date(c.createdAt).toLocaleString()}
-              </span>
-            </p>
-            {c.content && <p>{c.content}</p>}
-            {c.imageUrl && (
-              <img
-                src={c.imageUrl}
-                alt="wall"
-                style={{ maxWidth: '100%', borderRadius: '4px' }}
-              />
-            )}
-          </div>
-        ))}
+        {comments.map((c) => {
+          // Some comments may have a missing author if the user
+          // who wrote the comment was deleted. Guard against null
+          // so we don't crash when accessing name or photoUrl.
+          const authorName = c.author?.name || 'Unknown';
+
+          return (
+            <div key={c._id} className="card" style={{ marginBottom: '0.5rem' }}>
+              <p>
+                <strong>{authorName}</strong>{' '}
+                <span style={{ fontSize: '0.8em' }}>
+                  {new Date(c.createdAt).toLocaleString()}
+                </span>
+              </p>
+              {c.content && <p>{c.content}</p>}
+              {c.imageUrl && (
+                <img
+                  src={c.imageUrl}
+                  alt="wall"
+                  style={{ maxWidth: '100%', borderRadius: '4px' }}
+                />
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
