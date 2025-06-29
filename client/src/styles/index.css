@@ -4,6 +4,9 @@
   --secondary-color: #5856D6;
   --background-color: #ffffff;
   --text-color: #333;
+  /* Shadows used for a soft neumorphic look */
+  --shadow-light: rgba(255, 255, 255, 0.7);
+  --shadow-dark: rgba(0, 0, 0, 0.1);
   /* Use modern system fonts so text renders cleanly on mobile */
   --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
     Arial, sans-serif;
@@ -61,14 +64,16 @@ img {
 /* ───────────────── NAVBAR ───────────────── */
 .navbar {
   /* Sticky top bar for branding and navigation */
-  background-color: var(--primary-color);
+  background-color: var(--background-color);
   padding: 0.75rem 1rem;
-  color: #fff;
+  color: var(--text-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 4px 4px 8px var(--shadow-dark),
+    -4px -4px 8px var(--shadow-light);
+  border-radius: 12px;
   position: sticky;
   top: 0;
   z-index: 1100; /* keep above sidebar on phones */
@@ -76,7 +81,7 @@ img {
 
 .navbar a,
 .navbar button {
-  color: #fff;
+  color: var(--text-color);
   margin-left: 1rem;
   text-decoration: none;
   background: none;
@@ -118,17 +123,19 @@ img {
 .sidebar {
   /* Collapsible navigation on the left */
   width: var(--sidebar-width);
-  background-color: var(--secondary-color);
+  background-color: var(--background-color);
   padding: 1rem;
-  color: #fff;
+  color: var(--text-color);
   height: 100vh;
   box-sizing: border-box;
   overflow-y: auto;
+  box-shadow: inset -4px 0 8px var(--shadow-dark),
+    inset 4px 0 8px var(--shadow-light);
 }
 
 .sidebar a {
   display: block;
-  color: #fff;
+  color: var(--text-color);
   margin-bottom: 0.75rem;
   text-decoration: none;
 }
@@ -145,17 +152,22 @@ img {
 
 /* ───────────────── GENERIC UI ───────────────── */
 button {
-  background-color: var(--primary-color);
+  /* Buttons share the same soft shadow aesthetic */
+  background: var(--background-color);
   border: none;
-  color: #fff;
+  color: var(--text-color);
   padding: 0.5rem 1rem;
   margin: 0.5rem 0;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 8px;
+  box-shadow: 4px 4px 8px var(--shadow-dark),
+    -4px -4px 8px var(--shadow-light);
+  transition: box-shadow 0.2s;
 }
 
 button:hover {
-  opacity: 0.9;
+  box-shadow: inset 2px 2px 4px var(--shadow-dark),
+    inset -2px -2px 4px var(--shadow-light);
 }
 
 form {
@@ -207,11 +219,13 @@ form label {
 }
 
 .card {
-  background-color: #fff;
+  /* Base container using neumorphic shadows */
+  background-color: var(--background-color);
   padding: 1rem;
   margin-bottom: 1rem;
-  border-radius: 4px;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 8px 8px 16px var(--shadow-dark),
+    -8px -8px 16px var(--shadow-light);
 }
 
 .rogue-grid {
@@ -232,6 +246,39 @@ form label {
 
 .btn-ml {
   margin-left: 0.5rem;
+}
+
+/*
+ * Generic vertical list layout used for player and team profiles.
+ * Each row is flex-based so content stacks nicely on small screens.
+ */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.list-row {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 12px;
+  box-shadow: 4px 4px 8px var(--shadow-dark),
+    -4px -4px 8px var(--shadow-light);
+}
+
+.list-row img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.75rem;
+}
+
+.list-row .sub {
+  display: block;
+  font-size: 0.875rem;
+  color: #666;
 }
 
 /* ───────────────── RESPONSIVE ───────────────── */

@@ -28,37 +28,20 @@ export default function PlayersPage() {
   return (
     <div className="card spaced-card">
       <h2>Players</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Player</th>
-            <th>Team</th>
-          </tr>
-        </thead>
-        <tbody>
-          {players.map((p) => (
-            <tr key={p._id}>
-              <td data-label="Player">
-                {p.photoUrl && (
-                  <img
-                    src={p.photoUrl}
-                    alt={p.name}
-                    style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                      marginRight: '0.5rem'
-                    }}
-                  />
-                )}
-                <Link to={`/player/${p._id}`}>{p.name}</Link>
-              </td>
-              <td data-label="Team">{p.team?.name || '-'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* Replaces the old table with a flex-based list for better mobile layout */}
+      <div className="list">
+        {players.map((p) => (
+          <div key={p._id} className="list-row">
+            {p.photoUrl && (
+              <img src={p.photoUrl} alt={p.name} />
+            )}
+            <div>
+              <Link to={`/player/${p._id}`}>{p.name}</Link>
+              <span className="sub">{p.team?.name || '-'}</span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
