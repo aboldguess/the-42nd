@@ -138,7 +138,7 @@ exports.getQuestion = async (req, res) => {
     }
 
     // Record that this question was scanned if player is logged in
-    await recordScan('question', question._id, req.user, 'NEW');
+    await recordScan('question', question._id, req.user, 'NEW', question.title);
 
     // Respond with the question plus answer state
     res.json({
