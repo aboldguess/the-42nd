@@ -48,7 +48,9 @@ const teamSchema = new mongoose.Schema(
         }
       ],
       default: []
-    }
+    },
+    // Previous rank on the scoreboard used to detect changes between requests
+    lastRank: { type: Number, default: 0 }
   },
   { timestamps: true }
 );
