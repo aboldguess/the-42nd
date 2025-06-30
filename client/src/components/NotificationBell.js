@@ -34,16 +34,8 @@ export default function NotificationBell() {
           const prevIds = new Set(prevNotesRef.current.map((n) => n._id));
           newNotes.forEach((note) => {
             if (!prevIds.has(note._id)) {
-              // Fire a native browser notification for the new item
-              const pop = new Notification(note.message);
-              // Navigate to the linked page when the notification is clicked
-              if (note.link) {
-                const dest = buildLink(note);
-                pop.onclick = () => {
-                  window.focus();
-                  window.location.href = dest;
-                };
-              }
+              // Prefer system-level notifications via the service worker
+              showNotification(note);
             }
           });
         }
@@ -103,6 +95,40 @@ export default function NotificationBell() {
       return url.pathname + url.search + url.hash;
     } catch {
       return note.link;
+    }
+  };
+
+  /**
+   * Send a message to the service worker so it can display a
+   * system-level notification. If the service worker isn't ready
+   * or notifications aren't supported, fall back to the basic
+   * Notification constructor.
+   */
+  const showNotification = async (note) => {
+    try {
+      if ('serviceWorker' in navigator) {
+        const reg = await navigator.serviceWorker.ready;
+        reg.active?.postMessage({
+          type: 'SHOW_NOTIFICATION',
+          payload: {
+            title: note.message,
+            options: { data: { link: note.link ? buildLink(note) : null } }
+          }
+        });
+        return;
+      }
+    } catch (err) {
+      console.error('Failed to notify via service worker', err);
+    }
+
+    // Fallback for older browsers or if the service worker failed
+    const pop = new Notification(note.message);
+    if (note.link) {
+      const dest = buildLink(note);
+      pop.onclick = () => {
+        window.focus();
+        window.location.href = dest;
+      };
     }
   };
 
