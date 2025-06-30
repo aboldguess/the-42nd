@@ -6,7 +6,7 @@ export default function SideQuestStatusPage() {
     <div>
       <ItemTablePage type="sidequest" titlePrefix="Side Quests" />
       <div style={{ margin: '1rem' }}>
-        <a href="/sidequests/new">
+        <a href="/sidequests/create">
           <button>Create New Sidequest</button>
         </a>
       </div>
