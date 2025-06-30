@@ -22,14 +22,72 @@ export default function SideQuestPage() {
     load();
   }, []);
 
-  // Upload media proof for a quest
-  const handleUpload = async (id, formData) => {
+  // Upload media proof for a quest with optional passcode/answer fields
+  const handleUpload = async (quest, formData, passcode = '', answer = '') => {
     try {
-      await submitSideQuest(id, formData);
+      if (quest.questType === 'passcode') {
+        formData.append('passcode', passcode);
+      }
+      if (quest.questType === 'trivia') {
+        formData.append('answer', answer);
+      }
+      await submitSideQuest(quest._id, formData);
       alert('Submission received!');
     } catch (err) {
       alert(err.response?.data?.message || 'Upload failed');
     }
+  };
+
+  // Render a single quest card with relevant inputs
+  const QuestItem = ({ quest }) => {
+    const [code, setCode] = useState('');
+    const [ans, setAns] = useState('');
+
+    return (
+      <div key={quest._id} style={{ marginBottom: '1rem' }}>
+        <div className="card" style={{ marginBottom: '0.5rem' }}>
+          <h3>{quest.title}</h3>
+          <p>{quest.text}</p>
+          {quest.imageUrl && (
+            <img
+              src={quest.imageUrl}
+              alt={quest.title}
+              style={{ width: '100%', borderRadius: '4px' }}
+            />
+          )}
+          {quest.questType === 'passcode' && (
+            <input
+              type="text"
+              placeholder="Enter passcode"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              style={{ marginTop: '0.5rem' }}
+            />
+          )}
+          {quest.questType === 'trivia' && (
+            <div style={{ marginTop: '0.5rem' }}>
+              {quest.options.map((o) => (
+                <label key={o} style={{ display: 'block' }}>
+                  <input
+                    type="radio"
+                    name={`ans-${quest._id}`}
+                    value={o}
+                    checked={ans === o}
+                    onChange={(e) => setAns(e.target.value)}
+                  />
+                  {o}
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+        <PhotoUploader
+          label="Upload Proof"
+          requiredMediaType={quest.requiredMediaType}
+          onUpload={(formData) => handleUpload(quest, formData, code, ans)}
+        />
+      </div>
+    );
   };
 
   if (loading) return <p>Loading…</p>;
@@ -38,24 +96,7 @@ export default function SideQuestPage() {
     <div>
       <h2>Side Quests</h2>
       {quests.map((q) => (
-        <div key={q._id} style={{ marginBottom: '1rem' }}>
-          <div className="card" style={{ marginBottom: '0.5rem' }}>
-            <h3>{q.title}</h3>
-            <p>{q.text}</p>
-            {q.imageUrl && (
-              <img
-                src={q.imageUrl}
-                alt={q.title}
-                style={{ width: '100%', borderRadius: '4px' }}
-              />
-            )}
-          </div>
-          <PhotoUploader
-            label="Upload Proof"
-            requiredMediaType={q.requiredMediaType}
-            onUpload={(formData) => handleUpload(q._id, formData)}
-          />
-        </div>
+        <QuestItem key={q._id} quest={q} />
       ))}
     </div>
   );

@@ -8,6 +8,8 @@ export default function SideQuestDetailPage() {
   const { id } = useParams();
   const [quest, setQuest] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [passcode, setPasscode] = useState(''); // passcode input for secret quests
+  const [answer, setAnswer] = useState(''); // selected answer for trivia quests
 
   useEffect(() => {
     const load = async () => {
@@ -25,6 +27,13 @@ export default function SideQuestDetailPage() {
 
   const handleUpload = async (formData) => {
     try {
+      // Include passcode or trivia answer when applicable
+      if (quest.questType === 'passcode') {
+        formData.append('passcode', passcode);
+      }
+      if (quest.questType === 'trivia') {
+        formData.append('answer', answer);
+      }
       await submitSideQuest(id, formData);
       alert('Submission received!');
     } catch (err) {
@@ -47,6 +56,32 @@ export default function SideQuestDetailPage() {
             alt={quest.title}
             style={{ width: '100%', borderRadius: '4px', marginTop: '1rem' }}
           />
+        )}
+        {/* Extra fields for special quest types */}
+        {quest.questType === 'passcode' && (
+          <input
+            type="text"
+            placeholder="Enter passcode"
+            value={passcode}
+            onChange={(e) => setPasscode(e.target.value)}
+            style={{ marginTop: '0.5rem' }}
+          />
+        )}
+        {quest.questType === 'trivia' && (
+          <div style={{ marginTop: '0.5rem' }}>
+            {quest.options.map((o) => (
+              <label key={o} style={{ display: 'block' }}>
+                <input
+                  type="radio"
+                  name="answer"
+                  value={o}
+                  checked={answer === o}
+                  onChange={(e) => setAnswer(e.target.value)}
+                />
+                {o}
+              </label>
+            ))}
+          </div>
         )}
         <div style={{ marginTop: '1rem' }}>
           <PhotoUploader

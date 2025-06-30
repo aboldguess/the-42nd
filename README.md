@@ -7,6 +7,7 @@ This project contains a React client and an Express/MongoDB server for running a
 - Simplified signup using only first and last name
 - Sequential clues with answer submission
 - Side quests and a rogues gallery for uploaded media
+- New "passcode" and "trivia" side quest types with in-app validation
 - Admin authentication and dashboard endpoints
 - Team colour schemes and profile management
 - Installable Progressive Web App with offline support
@@ -14,6 +15,7 @@ This project contains a React client and an Express/MongoDB server for running a
   `definitely` as confirmation
 - Send a real-time **alert to all players** from the admin settings page to test notifications
 - Scanning QR codes requires login; unauthenticated scans redirect to the sign-in page
+- Some quests ask for a passcode or trivia answer before your proof is accepted
 
 ## Player Onboarding and Login
 Players still enter only their first and last name, but a selfie must be
