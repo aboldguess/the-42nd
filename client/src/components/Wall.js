@@ -4,7 +4,7 @@ import { fetchWall, postComment } from '../services/api';
 
 // Displays comments for a profile and allows posting new ones.
 // type must be either 'user' or 'team'.
-export default function Wall({ type, id }) {
+export default function Wall({ type, id, onNewComment }) {
   const [comments, setComments] = useState([]);
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
@@ -32,6 +32,7 @@ export default function Wall({ type, id }) {
       const res = await postComment(type, id, data);
       // Prepend new comment to the list
       setComments([res.data, ...comments]);
+      if (onNewComment) onNewComment();
       setText('');
       setFile(null);
     } catch (err) {

@@ -1,18 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { addReaction, fetchReactions } from '../services/api';
+import Wall from './Wall';
 
 // Set of emojis available for players to react with
 const EMOJIS = ['👍', '😂', '😮', '😢', '❤️'];
 
 // showInfo determines whether uploader and team details are displayed
 function RogueItem({ media, showInfo = true }) {
-  const { url, uploadedBy, team, sideQuest, createdAt, emojiCounts = {} } = media;
+  const {
+    url,
+    uploadedBy,
+    team,
+    sideQuest,
+    createdAt,
+    emojiCounts = {},
+    commentCount = 0
+  } = media;
   const isVideo = url.match(/\.(mp4|mov|avi)$/i);
   const [show, setShow] = useState(false); // modal visibility
   const [pickerOpen, setPickerOpen] = useState(false); // inline reaction picker
   const [reactions, setReactions] = useState([]); // fetched reactions for modal view
   // Track emoji counts on the card so they can update after reacting inline
   const [counts, setCounts] = useState(emojiCounts);
+  const [comments, setComments] = useState(commentCount);
 
   // Fetch existing reactions when the modal is opened
   useEffect(() => {
@@ -73,18 +83,24 @@ function RogueItem({ media, showInfo = true }) {
         ) : (
           <img src={url} alt="Media" className="gallery-image" />
         )}
-        <div className="reaction-bar" onClick={(e) => e.stopPropagation()}>
-          {Object.entries(counts).map(([emoji, count]) => (
-            <span key={emoji}>{emoji} {count}</span>
-          ))}
+        <div className="tile-icons">
           <button
-            className="react-toggle"
+            className="tile-icon"
             onClick={(e) => {
               e.stopPropagation();
               setPickerOpen((p) => !p);
             }}
           >
-            +
+            👍 {Object.values(counts).reduce((a, b) => a + b, 0)}
+          </button>
+          <button
+            className="tile-icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShow(true);
+            }}
+          >
+            💬 {comments}
           </button>
         </div>
         {pickerOpen && (
@@ -157,6 +173,11 @@ function RogueItem({ media, showInfo = true }) {
                 </div>
               ))}
             </div>
+            <Wall
+              type="media"
+              id={media._id}
+              onNewComment={() => setComments((c) => c + 1)}
+            />
           </div>
         </div>
       )}
