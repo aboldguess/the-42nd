@@ -12,18 +12,54 @@ export default function NotificationBell() {
   const [open, setOpen] = useState(false);
   // Reference to the bell wrapper so we can detect outside clicks
   const containerRef = useRef(null);
+  // Store the previous set of notifications so we can detect new ones
+  const prevNotesRef = useRef([]);
+  // ID of the polling timer so we can clean it up
+  const pollIdRef = useRef(null);
 
   useEffect(() => {
-    // Load the latest notifications when the component mounts
-    const load = async () => {
+    /**
+     * Fetch the latest notifications from the API. When not an initial
+     * load, any newly arrived notifications will also trigger a browser
+     * notification if permission has been granted.
+     */
+    const load = async (initial = false) => {
       try {
         const res = await fetchNotifications(5);
-        setNotes(res.data);
+        const newNotes = res.data;
+
+        if (!initial && Notification.permission === 'granted') {
+          const prevIds = new Set(prevNotesRef.current.map((n) => n._id));
+          newNotes.forEach((note) => {
+            if (!prevIds.has(note._id)) {
+              // Fire a native browser notification for the new item
+              const pop = new Notification(note.message);
+              // Navigate to the linked page when the notification is clicked
+              if (note.link) {
+                const dest = buildLink(note);
+                pop.onclick = () => {
+                  window.focus();
+                  window.location.href = dest;
+                };
+              }
+            }
+          });
+        }
+
+        prevNotesRef.current = newNotes;
+        setNotes(newNotes);
       } catch (err) {
         console.error('Failed to load notifications', err);
       }
     };
-    load();
+
+    // Initial fetch on mount
+    load(true);
+    // Poll the server every 30 seconds for new notifications
+    pollIdRef.current = setInterval(() => load(false), 30000);
+
+    // Clean up polling interval when the component unmounts
+    return () => clearInterval(pollIdRef.current);
   }, []);
 
   const unread = notes.some((n) => !n.read);

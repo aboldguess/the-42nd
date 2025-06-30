@@ -56,14 +56,15 @@ export default function App() {
   const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
-    // Request Notification permission once at startup if not already granted
-    if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
-      const allow = window.confirm(
-        'Enable notifications to be alerted when new clues arrive?'
-      );
-      if (allow) {
-        Notification.requestPermission();
-      }
+    // Trigger the browser's native permission prompt for notifications
+    // the first time a user visits the app.
+    if (
+      typeof Notification !== 'undefined' &&
+      Notification.permission === 'default'
+    ) {
+      Notification.requestPermission().catch((err) => {
+        console.error('Notification permission request failed', err);
+      });
     }
   }, []);
 
