@@ -92,29 +92,48 @@ export default function AdminSettingsPage() {
     }
   };
 
-  // Form for editing global settings
+  // Form for editing global settings. Wrapping everything in a <form> lets us
+  // use the global form styles defined in index.css so labels and inputs stack
+  // vertically rather than sitting on the same line.
   return (
     <div className="card spaced-card" style={{ maxWidth: '500px' }}>
       <h2>Game Settings</h2>
-      <label>Game Name:</label>
-      <input value={settings.gameName} onChange={(e) => setSettings({ ...settings, gameName: e.target.value })} />
-      <label>QR Base URL:</label>
-      <input value={settings.qrBaseUrl} onChange={(e) => setSettings({ ...settings, qrBaseUrl: e.target.value })} />
-      <label>Answer Cooldown (minutes):</label>
-      <input
-        type="number"
-        min="0"
-        value={settings.questionAnswerCooldown}
-        onChange={(e) =>
-          setSettings({
-            ...settings,
-            questionAnswerCooldown: parseInt(e.target.value, 10)
-          })
-        }
-      />
+      {/* onSubmit prevents the page from reloading and calls handleSave */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSave();
+        }}
+      >
+        <label>Game Name:</label>
+        <input
+          value={settings.gameName}
+          onChange={(e) =>
+            setSettings({ ...settings, gameName: e.target.value })
+          }
+        />
+        <label>QR Base URL:</label>
+        <input
+          value={settings.qrBaseUrl}
+          onChange={(e) =>
+            setSettings({ ...settings, qrBaseUrl: e.target.value })
+          }
+        />
+        <label>Answer Cooldown (minutes):</label>
+        <input
+          type="number"
+          min="0"
+          value={settings.questionAnswerCooldown}
+          onChange={(e) =>
+            setSettings({
+              ...settings,
+              questionAnswerCooldown: parseInt(e.target.value, 10)
+            })
+          }
+        />
 
-      <h3>Scoring</h3>
-      <label>Points per Correct Answer:</label>
+        <h3>Scoring</h3>
+        <label>Points per Correct Answer:</label>
       <input
         type="number"
         value={settings.scorePerCorrect}
@@ -125,7 +144,7 @@ export default function AdminSettingsPage() {
           })
         }
       />
-      <label>Points per Side Quest Completed:</label>
+        <label>Points per Side Quest Completed:</label>
       <input
         type="number"
         value={settings.scorePerSideQuest}
@@ -136,7 +155,7 @@ export default function AdminSettingsPage() {
           })
         }
       />
-      <label>Points per Side Quest Created:</label>
+        <label>Points per Side Quest Created:</label>
       <input
         type="number"
         value={settings.scorePerCreatedQuest}
@@ -148,8 +167,8 @@ export default function AdminSettingsPage() {
         }
       />
 
-      <h3>Appearance</h3>
-      <label>Colour Palette:</label>
+        <h3>Appearance</h3>
+        <label>Colour Palette:</label>
       {/* Choose from ten predefined palettes so colours are consistent */}
       <select
         value={paletteIndex}
@@ -172,7 +191,7 @@ export default function AdminSettingsPage() {
           </option>
         ))}
       </select>
-      <label>Font:</label>
+        <label>Font:</label>
       <select
         value={settings.fontFamily}
         onChange={(e) => setSettings({ ...settings, fontFamily: e.target.value })}
@@ -183,24 +202,25 @@ export default function AdminSettingsPage() {
         <option value="'Courier New', monospace">Courier New</option>
       </select>
 
-      <label>Logo:</label>
+        <label>Logo:</label>
       {/* Allow taking a new photo or uploading one for the logo */}
       <ImageSelector onSelect={(file) => setLogoFile(file)} />
       {settings.logoUrl && (
         <img src={settings.logoUrl} alt="Current logo" style={{ height: '40px', marginTop: '0.5rem' }} />
       )}
-      <label>Favicon:</label>
+        <label>Favicon:</label>
       <ImageSelector onSelect={(file) => setFaviconFile(file)} />
       {settings.faviconUrl && (
         <img src={settings.faviconUrl} alt="Current favicon" style={{ height: '16px', marginTop: '0.5rem' }} />
       )}
-      <label>Gallery Placeholder:</label>
+        <label>Gallery Placeholder:</label>
       <ImageSelector onSelect={(file) => setPlaceholderFile(file)} />
       {settings.placeholderUrl && (
         <img src={settings.placeholderUrl} alt="Current placeholder" style={{ height: '40px', marginTop: '0.5rem' }} />
       )}
 
-      <button onClick={handleSave}>Save Changes</button>
+        <button type="submit">Save Changes</button>
+      </form>
     </div>
   );
 }
