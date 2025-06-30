@@ -41,3 +41,33 @@ self.addEventListener('fetch', event => {
     })
   );
 });
+
+// Listen for messages from the client to display system notifications
+self.addEventListener('message', (event) => {
+  // Only handle the custom notification messages we expect
+  if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
+    const { title, options } = event.data.payload || {};
+    // Display the notification through the service worker so it also
+    // appears when the PWA is in the background on mobile devices
+    self.registration.showNotification(title || '', options);
+  }
+});
+
+// Open a link when the notification itself is clicked
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const link = event.notification.data && event.notification.data.link;
+  if (!link) return;
+  // Focus an open client if possible, otherwise open a new window
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((wins) => {
+      for (const win of wins) {
+        if ('focus' in win) {
+          win.navigate(link);
+          return win.focus();
+        }
+      }
+      return clients.openWindow(link);
+    })
+  );
+});
