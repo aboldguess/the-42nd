@@ -84,6 +84,8 @@ export default function Navbar() {
   };
 
   return (
+    <>
+    {/* Fragment wraps navbar and QR modal */}
     <nav className="navbar">
       <div className="nav-left" style={{ display: 'flex', alignItems: 'center' }}>
         {/* Hamburger — only shows on <=600 px (CSS handles display) */}
@@ -197,6 +199,7 @@ export default function Navbar() {
         )}
       </ul>
     </nav>
+    {/* QR code modal for player */}
     {showQr && qrData && (
       <div className="modal-overlay" onClick={() => setShowQr(false)}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -204,5 +207,6 @@ export default function Navbar() {
         </div>
       </div>
     )}
+  </>
   );
 }
