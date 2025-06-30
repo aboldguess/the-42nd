@@ -12,13 +12,14 @@ const notificationSchema = new mongoose.Schema(
     // whether this ObjectId references a User or Team document.
     actor: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
+      // For system notifications this will be undefined
       refPath: 'actorModel'
     },
     actorModel: {
       type: String,
-      required: true,
-      enum: ['User', 'Team']
+      enum: ['User', 'Team', 'System'],
+      // Default to "System" when no actor document is supplied
+      default: 'System'
     },
     message: { type: String, required: true }, // text shown to the recipient
     link: { type: String, default: '' },       // optional URL for more details

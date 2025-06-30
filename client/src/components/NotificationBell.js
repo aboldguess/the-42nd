@@ -49,7 +49,8 @@ export default function NotificationBell() {
   const handleMark = async (id) => {
     try {
       await markNotificationRead(id);
-      setNotes((prev) => prev.map((n) => (n._id === id ? { ...n, read: true } : n)));
+      // Remove the notification from the dropdown once read
+      setNotes((prev) => prev.filter((n) => n._id !== id));
     } catch (err) {
       console.error('Failed to mark notification as read', err);
     }
@@ -88,8 +89,7 @@ export default function NotificationBell() {
             <li
               key={n._id}
               onClick={() => {
-                // Non-linked items are marked read immediately
-                if (!n.link) handleMark(n._id);
+                handleMark(n._id);
                 // Hide the dropdown after any selection
                 setOpen(false);
               }}

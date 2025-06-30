@@ -13,17 +13,23 @@ const Notification = require('../models/Notification');
  */
 async function createNotification({ user, team, actor, message, link = '' }) {
   try {
-    // Determine which model the actor document belongs to so Mongoose can
+    let actorId;
+    let actorModel = 'System';
+
+    // If an actor document is supplied determine its model so Mongoose can
     // populate references correctly when retrieving notifications later.
-    const actorModel = actor?.constructor?.modelName;
-    if (!actorModel || (actorModel !== 'User' && actorModel !== 'Team')) {
-      throw new Error('Actor must be a User or Team document');
+    if (actor) {
+      actorModel = actor.constructor?.modelName;
+      if (!['User', 'Team'].includes(actorModel)) {
+        throw new Error('Actor must be a User or Team document');
+      }
+      actorId = actor._id;
     }
 
     return await Notification.create({
       user,
       team,
-      actor: actor._id,
+      actor: actorId,
       actorModel,
       message,
       link
