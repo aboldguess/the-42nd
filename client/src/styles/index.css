@@ -175,17 +175,25 @@ button:hover {
 form {
   display: flex;
   flex-direction: column;
+  gap: 0.75rem; /* ensure fields stack with breathing room */
 }
 
 form input,
 form select,
 form textarea {
+  display: block;
+  width: 100%;
   margin-bottom: 0.75rem;
   padding: 0.5rem;
   border: 1px solid #bbb;
   border-radius: 4px;
   background-color: #fff;
   color: var(--text-color);
+}
+
+form button {
+  align-self: flex-start;
+  margin-bottom: 0.75rem;
 }
 
 /* Highlight inputs on focus so keyboard users can easily see
