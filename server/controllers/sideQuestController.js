@@ -169,6 +169,25 @@ exports.submitSideQuestProof = async (req, res) => {
       return res.status(400).json({ message: 'Quest already completed' });
     }
 
+    // If the quest requires a passcode or trivia answer validate it now
+    if (sq.questType === 'passcode') {
+      const pass = (req.body.passcode || '').trim().toLowerCase();
+      if (!pass || pass !== sq.passcode?.trim().toLowerCase()) {
+        return res.status(400).json({ message: 'Incorrect passcode' });
+      }
+    }
+
+    if (sq.questType === 'trivia') {
+      const ans = (req.body.answer || '').trim().toLowerCase();
+      if (!ans) {
+        return res.status(400).json({ message: 'Answer required' });
+      }
+      const correct = sq.correctOption?.trim().toLowerCase();
+      if (ans !== correct) {
+        return res.status(400).json({ message: 'Incorrect answer' });
+      }
+    }
+
     let mediaUrl = '';
     // Store uploaded photo/video if present
     if (
