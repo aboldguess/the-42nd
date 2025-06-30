@@ -35,12 +35,14 @@ exports.onboard = async (req, res) => {
     // The client now provides first and last names separately. Older
     // implementations sent a single `name` string.
     const { firstName, lastName, isNewTeam, leaderLastName, teamName } = req.body;
+    // Trim leader last name once so we can perform a case-insensitive exact match
+    const trimmedLeaderLastName = leaderLastName ? leaderLastName.trim() : '';
 
     // Basic validation
-    // Only the player's name is required. If joining an existing team the
-    // leader's first name must also be provided so we know which team to add
-    // them to.
-    if (!firstName || !lastName || (isNewTeam !== 'true' && !leaderLastName)) {
+    // Only the player's name is required. When joining a team we also need the
+    // leader's last name so we know which team to add them to.
+    // When joining an existing team the leader's last name must be supplied
+    if (!firstName || !lastName || (isNewTeam !== 'true' && !trimmedLeaderLastName)) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
@@ -80,9 +82,12 @@ exports.onboard = async (req, res) => {
     }
     // (B) Joining an existing team?
     else {
-      // Look up the leader by last name and then retrieve their team
+      // Look up the leader by last name and then retrieve their team.
+      // The comparison uses a case-insensitive regular expression so players
+      // can enter "Smith", "smith" or even "SMITH" and still match.
       const leader = await User.findOne({
-        lastName: leaderLastName,
+        // Use ^ and $ anchors to require an exact match
+        lastName: new RegExp(`^${trimmedLeaderLastName}$`, 'i'),
         isAdmin: true
       });
       if (!leader) {
