@@ -18,8 +18,12 @@ const userSchema = new mongoose.Schema(
       wallPosts: { type: Boolean, default: true },
       teamWallPosts: { type: Boolean, default: true },
       photoInteractions: { type: Boolean, default: true },
-      sideQuestCompleted: { type: Boolean, default: true }
-    }
+    sideQuestCompleted: { type: Boolean, default: true }
+    },
+    // Base64 QR code linking to the player's profile page
+    qrCodeData: String,
+    // Base URL used when generating qrCodeData
+    qrBaseUrl: String
   },
   { timestamps: true }
 );
