@@ -104,15 +104,9 @@ export default function RoguesGalleryPage() {
           Show All
         </button>
       </div>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-          gap: '1rem'
-        }}
-      >
+      <div className="rogue-grid">
         {filteredMedia.map((m) => (
-          <RogueItem key={m._id} media={m} />
+          <RogueItem key={m._id} media={m} showInfo={false} />
         ))}
       </div>
     </div>
