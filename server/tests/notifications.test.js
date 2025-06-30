@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
+// Integration tests spin up an in-memory MongoDB which can take a few seconds
+jest.setTimeout(30000);
+
 const Notification = require('../models/Notification');
 const User = require('../models/User');
 const Team = require('../models/Team');
@@ -89,6 +92,16 @@ describe('createNotification', () => {
     // Newly created note should reference the correct actor model
     expect(note.actorModel).toBe('User');
     expect(note.user.toString()).toBe(user1._id.toString());
+  });
+
+  test('creates a system notification when no actor provided', async () => {
+    const note = await createNotification({
+      user: user1._id,
+      message: 'System message'
+    });
+    expect(note).toBeTruthy();
+    expect(note.actor).toBeUndefined();
+    expect(note.actorModel).toBe('System');
   });
 
   test('returns null when actor is invalid', async () => {
