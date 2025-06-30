@@ -12,6 +12,7 @@ This project contains a React client and an Express/MongoDB server for running a
 - Installable Progressive Web App with offline support
 - Admin settings include a **master reset** to wipe all game data after typing
   `definitely` as confirmation
+- Send a real-time **alert to all players** from the admin settings page to test notifications
 - Scanning QR codes requires login; unauthenticated scans redirect to the sign-in page
 
 ## Player Onboarding and Login

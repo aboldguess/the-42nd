@@ -2,7 +2,11 @@ import React, { useEffect, useState, useContext } from 'react';
 import ImageSelector from '../components/ImageSelector';
 // Pull in theme helpers so new colours update instantly
 import { ThemeContext } from '../context/ThemeContext';
-import { fetchSettingsAdmin, updateSettingsAdmin } from '../services/api';
+import {
+  fetchSettingsAdmin,
+  updateSettingsAdmin,
+  broadcastNotification
+} from '../services/api';
 
 // Pre-defined colour palettes used by the admin to theme the game
 // Each palette consists of a primary and secondary colour
@@ -42,6 +46,8 @@ export default function AdminSettingsPage() {
   const [logoFile, setLogoFile] = useState(null);
   const [faviconFile, setFaviconFile] = useState(null);
   const [placeholderFile, setPlaceholderFile] = useState(null);
+  // Message used when broadcasting a system alert to all players
+  const [alertMessage, setAlertMessage] = useState('');
 
   // Load settings on mount
   useEffect(() => {
@@ -89,6 +95,17 @@ export default function AdminSettingsPage() {
       alert('Settings saved');
     } catch (err) {
       alert(err.response?.data?.message || 'Error saving settings');
+    }
+  };
+
+  // Send a system-wide alert to all players
+  const handleAlert = async () => {
+    try {
+      await broadcastNotification(alertMessage);
+      alert('Alert sent');
+      setAlertMessage('');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Error sending alert');
     }
   };
 
@@ -218,6 +235,14 @@ export default function AdminSettingsPage() {
       {settings.placeholderUrl && (
         <img src={settings.placeholderUrl} alt="Current placeholder" style={{ height: '40px', marginTop: '0.5rem' }} />
       )}
+
+        <h3>Alert All Players</h3>
+        <input
+          value={alertMessage}
+          onChange={(e) => setAlertMessage(e.target.value)}
+          placeholder="System message"
+        />
+        <button type="button" onClick={handleAlert}>Alert All</button>
 
         <button type="submit">Save Changes</button>
       </form>

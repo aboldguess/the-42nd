@@ -98,6 +98,8 @@ app.use('/api/admin/players',  require('./routes/admin/players'));
 app.use('/api/admin/teams',  require('./routes/admin/teams'));
 app.use('/api/admin/scoreboard', require('./routes/admin/scoreboard'));
 app.use('/api/admin/settings', require('./routes/admin/settings'));
+// Broadcast system notifications to all players
+app.use('/api/admin/notifications', require('./routes/admin/notifications'));
 // Route allowing admins to download all uploaded media as a zip
 app.use('/api/admin/media', require('./routes/admin/media'));
 // Admin gallery management
