@@ -17,6 +17,7 @@ import TeamsPage from './pages/TeamsPage';
 import SideQuestPage from './pages/SideQuestPage';
 import RoguesGalleryPage from './pages/RoguesGalleryPage';
 import InfoPage from './pages/InfoPage';
+import HelpPage from './pages/HelpPage';
 import ScoreboardPage from './pages/ScoreboardPage';
 import ClueStatusPage from './pages/ClueStatusPage';
 import QuestionStatusPage from './pages/QuestionStatusPage';
@@ -84,6 +85,8 @@ export default function App() {
               {/* Public routes */}
               <Route path="/" element={<WelcomePage />} />
               <Route path="/signup" element={<SignupPage />} />
+              {/* In-app documentation accessible without logging in */}
+              <Route path="/help" element={<HelpPage />} />
 
               {/* Player routes */}
               <Route
