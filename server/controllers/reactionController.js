@@ -40,7 +40,9 @@ exports.addReaction = async (req, res) => {
         await createNotification({
           user: uploader._id,
           actor: req.user,
-          message: `${req.user.name} reacted to your photo.`
+          message: `${req.user.name} reacted to your photo.`,
+          // Direct the uploader to the rogues gallery to view reactions
+          link: '/roguery'
         });
       }
     }

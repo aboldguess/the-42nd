@@ -29,9 +29,20 @@ async function recordScan(type, itemId, user, status = 'NEW', itemTitle = '') {
 
     const titlePart = itemTitle ? ` "${itemTitle}"` : '';
     const message = `${user.name} scanned ${type}${titlePart}.`;
+    // Determine a link to the scanned item so teammates can jump to it
+    let link = '';
+    if (type === 'clue') link = `/clue/${itemId}`;
+    if (type === 'question') link = `/question/${itemId}`;
+    if (type === 'sidequest') link = `/sidequest/${itemId}`;
+
     for (const mate of teammates) {
       if (mate.notificationPrefs?.scans) {
-        await createNotification({ user: mate._id, actor: user, message });
+        await createNotification({
+          user: mate._id,
+          actor: user,
+          message,
+          link
+        });
       }
     }
   } catch (err) {
