@@ -4,10 +4,12 @@ import { addReaction, fetchReactions } from '../services/api';
 // Set of emojis available for players to react with
 const EMOJIS = ['👍', '😂', '😮', '😢', '❤️'];
 
-function RogueItem({ media }) {
+// showInfo determines whether uploader and team details are displayed
+function RogueItem({ media, showInfo = true }) {
   const { url, uploadedBy, team, sideQuest, createdAt, emojiCounts = {} } = media;
   const isVideo = url.match(/\.(mp4|mov|avi)$/i);
   const [show, setShow] = useState(false); // modal visibility
+  const [pickerOpen, setPickerOpen] = useState(false); // inline reaction picker
   const [reactions, setReactions] = useState([]); // fetched reactions for modal view
   // Track emoji counts on the card so they can update after reacting inline
   const [counts, setCounts] = useState(emojiCounts);
@@ -53,6 +55,8 @@ function RogueItem({ media }) {
         return acc;
       }, {});
       setCounts(newCounts);
+      // Hide the picker after reacting
+      setPickerOpen(false);
     } catch (err) {
       console.error(err);
     }
@@ -60,15 +64,40 @@ function RogueItem({ media }) {
 
   return (
     <>
-      <div className="card" onClick={() => setShow(true)} style={{ cursor: 'pointer' }}>
+      <div className="gallery-tile" onClick={() => setShow(true)}>
         {isVideo ? (
-          <video width="100%" controls>
+          <video className="gallery-image" muted>
             <source src={url} />
             Your browser does not support the video tag.
           </video>
         ) : (
-          <img src={url} alt="Media" style={{ width: '100%', borderRadius: '4px' }} />
+          <img src={url} alt="Media" className="gallery-image" />
         )}
+        <div className="reaction-bar" onClick={(e) => e.stopPropagation()}>
+          {Object.entries(counts).map(([emoji, count]) => (
+            <span key={emoji}>{emoji} {count}</span>
+          ))}
+          <button
+            className="react-toggle"
+            onClick={(e) => {
+              e.stopPropagation();
+              setPickerOpen((p) => !p);
+            }}
+          >
+            +
+          </button>
+        </div>
+        {pickerOpen && (
+          <div className="reaction-picker" onClick={(e) => e.stopPropagation()}>
+            {EMOJIS.map((e) => (
+              <button key={e} onClick={(evt) => handleReact(e, evt)}>
+                {e}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      {showInfo && (
         <div style={{ marginTop: '0.5rem' }}>
           {/* uploadedBy can be a User or Admin. Display whichever name field exists */}
           <strong>By:</strong>{' '}
@@ -81,20 +110,7 @@ function RogueItem({ media }) {
           )}
           <small style={{ color: '#666' }}>{new Date(createdAt).toLocaleString()}</small>
         </div>
-        <div style={{ marginTop: '0.25rem' }}>
-          {EMOJIS.map((e) => (
-            // Emoji reaction buttons with inline counts
-            <button
-              key={e}
-              onClick={(evt) => handleReact(e, evt)}
-              className="btn-mr"
-              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem' }}
-            >
-              {e} {counts[e] || 0}
-            </button>
-          ))}
-        </div>
-      </div>
+      )}
 
       {/* Modal displayed when an item is clicked */}
       {show && (
