@@ -10,6 +10,7 @@ const Notification = require('../models/Notification');
 const User = require('../models/User');
 const Team = require('../models/Team');
 const { createNotification } = require('../utils/notifications');
+const Admin = require('../models/Admin');
 
 let mongoServer;
 let app;
@@ -18,6 +19,7 @@ let user2;
 let team;
 let token1;
 let token2;
+let adminToken;
 let personalNote;
 let teamNote;
 
@@ -55,6 +57,10 @@ beforeAll(async () => {
     photoUrl: 'two.jpg',
     team: team._id
   });
+
+  // Create an admin and corresponding JWT for admin routes
+  const admin = await Admin.create({ username: 'admin', password: 'pass' });
+  adminToken = jwt.sign({ id: admin._id, isAdmin: true }, process.env.JWT_SECRET);
 
   // JWTs used to authenticate requests
   token1 = jwt.sign({ id: user1._id }, process.env.JWT_SECRET);
@@ -151,5 +157,23 @@ describe('/api/notifications endpoints', () => {
       .set('Authorization', `Bearer ${token1}`);
 
     expect(res.statusCode).toBe(403);
+  });
+});
+
+// ----- Integration test for admin broadcast endpoint -----
+describe('/api/admin/notifications', () => {
+  test('POST /broadcast creates a notification for each user', async () => {
+    const res = await request(app)
+      .post('/api/admin/notifications/broadcast')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ message: 'Admin alert' });
+
+    expect(res.statusCode).toBe(200);
+
+    // Each user should receive the broadcast message
+    const notes1 = await Notification.find({ user: user1._id, message: 'Admin alert' });
+    const notes2 = await Notification.find({ user: user2._id, message: 'Admin alert' });
+    expect(notes1).toHaveLength(1);
+    expect(notes2).toHaveLength(1);
   });
 });

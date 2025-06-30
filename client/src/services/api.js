@@ -194,3 +194,7 @@ export const fetchTeamNotifications = (limit = 5) =>
 export const markNotificationRead = (id) =>
   axios.put(`/api/notifications/${id}/read`);
 
+// Admin endpoint to broadcast a system notification to all players
+export const broadcastNotification = (message) =>
+  axios.post('/api/admin/notifications/broadcast', { message });
+
