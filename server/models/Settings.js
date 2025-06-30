@@ -18,6 +18,8 @@ const settingsSchema = new mongoose.Schema({
     default:
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
   },
+  neumorphicShadows: { type: Boolean, default: true },
+  roundedCorners: { type: Boolean, default: true },
   // Multipliers used by the scoreboard calculation
   scorePerCorrect: { type: Number, default: 10 },
   scorePerSideQuest: { type: Number, default: 5 },

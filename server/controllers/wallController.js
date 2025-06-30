@@ -6,7 +6,10 @@ const { createNotification } = require('../utils/notifications');
 
 // Helper to map URL param to model name
 function modelFromType(type) {
-  return type === 'user' ? 'User' : type === 'team' ? 'Team' : null;
+  if (type === 'user') return 'User';
+  if (type === 'team') return 'Team';
+  if (type === 'media') return 'Media';
+  return null;
 }
 
 // List comments on a player or team wall
@@ -88,6 +91,7 @@ exports.postComment = async (req, res) => {
         }
       }
     }
+    // Media comments do not trigger notifications
 
     res.status(201).json(populated);
   } catch (err) {

@@ -49,6 +49,14 @@ exports.updateSettings = async (req, res) => {
       updates.placeholderUrl = '/uploads/' + req.files.placeholder[0].filename;
     }
 
+    // Convert checkbox string values to booleans
+    if (typeof updates.neumorphicShadows !== 'undefined') {
+      updates.neumorphicShadows = updates.neumorphicShadows === 'true' || updates.neumorphicShadows === true;
+    }
+    if (typeof updates.roundedCorners !== 'undefined') {
+      updates.roundedCorners = updates.roundedCorners === 'true' || updates.roundedCorners === true;
+    }
+
     // upsert: create document if none exists
     const settings = await Settings.findOneAndUpdate({}, updates, {
       new: true,

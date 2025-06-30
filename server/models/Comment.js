@@ -16,7 +16,7 @@ const commentSchema = new mongoose.Schema(
     targetModel: {
       type: String,
       required: true,
-      enum: ['User', 'Team']
+      enum: ['User', 'Team', 'Media']
     }
   },
   { timestamps: true }

@@ -10,7 +10,9 @@ export const ThemeProvider = ({ children }) => {
     fontFamily:
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     logoUrl: '',
-    faviconUrl: ''
+    faviconUrl: '',
+    neumorphicShadows: true,
+    roundedCorners: true
   });
 
   // ────────────────────────────────────────────────────────────────────────────
@@ -65,13 +67,17 @@ export const ThemeProvider = ({ children }) => {
         fontFamily:
           "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
         logoUrl: '',
-        faviconUrl: ''
+        faviconUrl: '',
+        neumorphicShadows: true,
+        roundedCorners: true
       };
       const globalRes = await axios.get('/api/settings');
       if (globalRes.data.theme) th = { ...th, ...globalRes.data.theme };
       if (globalRes.data.fontFamily) th.fontFamily = globalRes.data.fontFamily;
       if (globalRes.data.logoUrl) th.logoUrl = globalRes.data.logoUrl;
       if (globalRes.data.faviconUrl) th.faviconUrl = globalRes.data.faviconUrl;
+      if (typeof globalRes.data.neumorphicShadows !== 'undefined') th.neumorphicShadows = globalRes.data.neumorphicShadows;
+      if (typeof globalRes.data.roundedCorners !== 'undefined') th.roundedCorners = globalRes.data.roundedCorners;
 
       // Team colours are no longer applied so everyone shares the admin palette
       setTheme(th);
@@ -92,6 +98,13 @@ export const ThemeProvider = ({ children }) => {
     root.style.setProperty('--primary-color', theme.primary);
     root.style.setProperty('--secondary-color', theme.secondary);
     root.style.setProperty('--font-family', theme.fontFamily);
+
+    // Toggle soft shadows and rounded corners via CSS variables
+    const light = theme.neumorphicShadows ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255,255,255,0)';
+    const dark = theme.neumorphicShadows ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0,0,0,0)';
+    root.style.setProperty('--shadow-light', light);
+    root.style.setProperty('--shadow-dark', dark);
+    root.style.setProperty('--border-radius', theme.roundedCorners ? '12px' : '0');
 
     // Derive a lighter shade from the primary colour for general backgrounds
     const bg = lighten(theme.primary, 0.9);

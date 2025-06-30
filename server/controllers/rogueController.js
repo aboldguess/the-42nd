@@ -1,6 +1,7 @@
 const Media = require('../models/Media');
 const Settings = require('../models/Settings');
 const Reaction = require('../models/Reaction');
+const Comment = require('../models/Comment');
 const fs = require('fs');
 const path = require('path');
 
@@ -38,6 +39,12 @@ exports.getAllMedia = async (req, res) => {
       }
     ]);
 
+    // Comment totals per media
+    const commentAgg = await Comment.aggregate([
+      { $match: { target: { $in: ids }, targetModel: 'Media' } },
+      { $group: { _id: '$target', count: { $sum: 1 } } }
+    ]);
+
     // Per-emoji counts for displaying reaction breakdowns
     const emojiAgg = await Reaction.aggregate([
       { $match: { media: { $in: ids } } },
@@ -62,6 +69,11 @@ exports.getAllMedia = async (req, res) => {
       countMap[id].emojis[e._id.emoji] = e.count;
     }
 
+    const commentMap = {};
+    for (const c of commentAgg) {
+      commentMap[c._id.toString()] = c.count;
+    }
+
     // Build the final list respecting hidden flags and attach reaction counts
     const sanitized = [];
     for (const m of allMedia) {
@@ -72,7 +84,8 @@ exports.getAllMedia = async (req, res) => {
             url: placeholder,
             totalReactions: countMap[m._id.toString()]?.total || 0,
             recentReactions: countMap[m._id.toString()]?.recent || 0,
-            emojiCounts: countMap[m._id.toString()]?.emojis || {}
+            emojiCounts: countMap[m._id.toString()]?.emojis || {},
+            commentCount: commentMap[m._id.toString()] || 0
           });
         }
         continue; // skip hidden non-profile items entirely
@@ -83,7 +96,8 @@ exports.getAllMedia = async (req, res) => {
         ...m.toObject(),
         totalReactions: counts.total,
         recentReactions: counts.recent,
-        emojiCounts: counts.emojis
+        emojiCounts: counts.emojis,
+        commentCount: commentMap[m._id.toString()] || 0
       });
     }
 

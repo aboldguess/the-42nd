@@ -37,6 +37,8 @@ export default function AdminSettingsPage() {
     logoUrl: '',
     faviconUrl: '',
     placeholderUrl: '',
+    neumorphicShadows: true,
+    roundedCorners: true,
     questionAnswerCooldown: 0,
     scorePerCorrect: 10,
     scorePerSideQuest: 5,
@@ -80,6 +82,8 @@ export default function AdminSettingsPage() {
       formData.append('scorePerCorrect', settings.scorePerCorrect);
       formData.append('scorePerSideQuest', settings.scorePerSideQuest);
       formData.append('scorePerCreatedQuest', settings.scorePerCreatedQuest);
+      formData.append('neumorphicShadows', settings.neumorphicShadows);
+      formData.append('roundedCorners', settings.roundedCorners);
       if (logoFile) formData.append('logo', logoFile);
       if (faviconFile) formData.append('favicon', faviconFile);
       if (placeholderFile) formData.append('placeholder', placeholderFile);
@@ -235,6 +239,27 @@ export default function AdminSettingsPage() {
       {settings.placeholderUrl && (
         <img src={settings.placeholderUrl} alt="Current placeholder" style={{ height: '40px', marginTop: '0.5rem' }} />
       )}
+
+        <label>
+          <input
+            type="checkbox"
+            checked={settings.neumorphicShadows}
+            onChange={(e) =>
+              setSettings({ ...settings, neumorphicShadows: e.target.checked })
+            }
+          />
+          Use Soft Shadows
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={settings.roundedCorners}
+            onChange={(e) =>
+              setSettings({ ...settings, roundedCorners: e.target.checked })
+            }
+          />
+          Rounded Corners
+        </label>
 
         <h3>Alert All Players</h3>
         <input
