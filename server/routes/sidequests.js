@@ -5,7 +5,9 @@ const upload = require('../middleware/upload');
 const {
   getAllSideQuests,
   createSideQuest,
-  submitSideQuestProof
+  submitSideQuestProof,
+  updateSideQuest,
+  deleteSideQuest
 } = require('../controllers/sideQuestController');
 
 // Authenticated player endpoint for active quests
@@ -13,6 +15,8 @@ router.get('/', auth, getAllSideQuests);
 // Public listing of quests (no auth required)
 router.get('/public', getAllSideQuests);
 router.post('/', auth, upload.fields([{ name: 'image', maxCount: 1 }]), createSideQuest);
+router.put('/:id', auth, upload.fields([{ name: 'image', maxCount: 1 }]), updateSideQuest);
+router.delete('/:id', auth, deleteSideQuest);
 // Handle quest completion with optional media upload
 router.post(
   '/:id/submit',

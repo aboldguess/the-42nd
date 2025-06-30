@@ -87,9 +87,16 @@ exports.updateSideQuest = async (req, res) => {
       });
     }
 
-    const sq = await SideQuest.findByIdAndUpdate(req.params.id, updates, {
-      new: true
-    });
+    let sq = await SideQuest.findById(req.params.id);
+    if (!sq) return res.status(404).json({ message: 'Side quest not found' });
+    if (
+      req.user &&
+      sq.createdByType === 'User' &&
+      !sq.createdBy.equals(req.user._id)
+    ) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+    sq = await SideQuest.findByIdAndUpdate(req.params.id, updates, { new: true });
     if (!sq) return res.status(404).json({ message: 'Side quest not found' });
     await ensureQrCode(sq);
     res.json(sq);
@@ -102,8 +109,16 @@ exports.updateSideQuest = async (req, res) => {
 // Delete a side quest
 exports.deleteSideQuest = async (req, res) => {
   try {
-    const sq = await SideQuest.findByIdAndDelete(req.params.id);
+    const sq = await SideQuest.findById(req.params.id);
     if (!sq) return res.status(404).json({ message: 'Side quest not found' });
+    if (
+      req.user &&
+      sq.createdByType === 'User' &&
+      !sq.createdBy.equals(req.user._id)
+    ) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+    await sq.remove();
     res.json({ message: 'Side quest deleted' });
   } catch (err) {
     console.error(err);

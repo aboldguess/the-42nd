@@ -67,6 +67,16 @@ export const fetchCluesPlayer = () => axios.get('/api/clues');
 
 // Public/player side quest endpoints
 export const fetchSideQuests = () => axios.get('/api/sidequests/public');
+export const fetchMySideQuests = () => axios.get('/api/sidequests');
+export const createSideQuest = (data) =>
+  axios.post('/api/sidequests', data, {
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+  });
+export const updateSideQuest = (id, data) =>
+  axios.put(`/api/sidequests/${id}`, data, {
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+  });
+export const deleteSideQuest = (id) => axios.delete(`/api/sidequests/${id}`);
 export const submitSideQuest = (id, data) =>
   axios.post(`/api/sidequests/${id}/submit`, data, {
     headers: { 'Content-Type': 'multipart/form-data' }

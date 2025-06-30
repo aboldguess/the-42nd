@@ -8,6 +8,12 @@ const sideQuestSchema = new mongoose.Schema(
     text: String,
     // URL of an image illustrating the quest
     imageUrl: String,
+    // Type of side quest determines how it is completed
+    questType: {
+      type: String,
+      enum: ['bonus', 'meetup', 'photo', 'race', 'passcode', 'trivia'],
+      default: 'photo'
+    },
     qrCodeData: String,
     // Store the base URL used to generate qrCodeData so we know when to refresh
     qrBaseUrl: String,
@@ -23,7 +29,17 @@ const sideQuestSchema = new mongoose.Schema(
     // Reference to the creator (user or admin ID)
     createdBy: mongoose.Schema.Types.ObjectId,
     createdByType: { type: String, enum: ['User', 'Admin'] },
-    active: { type: Boolean, default: true }
+    active: { type: Boolean, default: true },
+    // ID of the QR target when questType is 'bonus'
+    targetId: mongoose.Schema.Types.ObjectId,
+    // Secret word for 'passcode' quests
+    passcode: String,
+    // Trivia details for 'trivia' quests
+    question: String,
+    options: [String],
+    correctOption: String,
+    // Number of photos required for 'race' quests
+    photoCount: { type: Number, default: 1 }
   },
   { timestamps: true }
 );

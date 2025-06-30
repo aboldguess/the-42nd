@@ -9,6 +9,8 @@ export default function Navbar() {
   const { theme } = useContext(ThemeContext);
   const [avatarUrl, setAvatarUrl] = useState('');
   const [userId, setUserId] = useState('');
+  const [qrData, setQrData] = useState('');
+  const [showQr, setShowQr] = useState(false);
   const [showMenu, setShowMenu] = useState(false); // toggle avatar dropdown menu
 
   // Tokens for player and admin
@@ -23,6 +25,7 @@ export default function Navbar() {
         const res = await fetchMe();
         setAvatarUrl(res.data.photoUrl);
         setUserId(res.data._id);
+        setQrData(res.data.qrCodeData || '');
       } catch (err) {
         console.error('Failed to load profile', err);
       }
@@ -113,6 +116,16 @@ export default function Navbar() {
           </li>
         )}
         {token && <li><NotificationBell /></li>}
+        {token && qrData && (
+          <li>
+            <img
+              src={qrData}
+              alt="My QR"
+              style={{ width: '32px', cursor: 'pointer' }}
+              onClick={() => setShowQr(true)}
+            />
+          </li>
+        )}
         {token && avatarUrl && (
           <li className="nav-avatar" style={{ position: 'relative' }}>
             <button
@@ -184,5 +197,12 @@ export default function Navbar() {
         )}
       </ul>
     </nav>
+    {showQr && qrData && (
+      <div className="modal-overlay" onClick={() => setShowQr(false)}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <img src={qrData} alt="QR Code" style={{ width: '80vw', maxWidth: 400 }} />
+        </div>
+      </div>
+    )}
   );
 }
