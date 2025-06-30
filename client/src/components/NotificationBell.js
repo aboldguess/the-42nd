@@ -26,7 +26,9 @@ export default function NotificationBell() {
     const load = async (initial = false) => {
       try {
         const res = await fetchNotifications(5);
-        const newNotes = res.data;
+        // Only keep unread notifications so the dropdown doesn't show items
+        // the player has already opened elsewhere
+        const newNotes = res.data.filter((n) => !n.read);
 
         if (!initial && Notification.permission === 'granted') {
           const prevIds = new Set(prevNotesRef.current.map((n) => n._id));

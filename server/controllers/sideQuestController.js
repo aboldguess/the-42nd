@@ -231,7 +231,9 @@ exports.submitSideQuestProof = async (req, res) => {
               await createNotification({
                 user: m._id,
                 actor: team,
-                message: `${team.name} completed your side quest "${sq.title}".`
+                message: `${team.name} completed your side quest "${sq.title}".`,
+                // Link to the side quest details for quick reference
+                link: `/sidequest/${sq._id}`
               });
             }
           }

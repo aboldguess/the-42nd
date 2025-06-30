@@ -72,7 +72,9 @@ exports.postComment = async (req, res) => {
         await createNotification({
           user: targetUser._id,
           actor: req.user,
-          message: `${req.user.name} posted on your wall.`
+          message: `${req.user.name} posted on your wall.`,
+          // Link directly to the player's profile page
+          link: `/player/${targetUser._id}`
         });
       }
     } else if (model === 'Team') {
@@ -85,7 +87,9 @@ exports.postComment = async (req, res) => {
             await createNotification({
               user: m._id,
               actor: req.user,
-              message: `${req.user.name} posted on your team wall.`
+              message: `${req.user.name} posted on your team wall.`,
+              // Link to the team profile so members can view the post
+              link: `/team/${team._id}`
             });
           }
         }

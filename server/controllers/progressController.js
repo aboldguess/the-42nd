@@ -94,7 +94,9 @@ exports.getScoreboard = async (req, res) => {
             await createNotification({
               user: u._id,
               actor: team,
-              message: `Your team is now ranked #${rank} on the leaderboard!`
+              message: `Your team is now ranked #${rank} on the leaderboard!`,
+              // Link players directly to the scoreboard
+              link: '/scoreboard'
             });
           }
         }
