@@ -50,14 +50,19 @@ exports.createSideQuest = async (req, res) => {
       });
     }
 
+    // Record who created the quest so it can be displayed later
     const creatorId = req.user ? req.user._id : req.admin?.id;
     const creatorType = req.user ? 'User' : 'Admin';
+    const setBy = req.user ? req.user.name : 'Admin';
+    const teamId = req.user ? req.user.team : null;
 
     const newSQ = new SideQuest({
       ...req.body,
       imageUrl,
       createdBy: creatorId,
-      createdByType: creatorType
+      createdByType: creatorType,
+      setBy,
+      team: teamId
     });
 
     await newSQ.save();
