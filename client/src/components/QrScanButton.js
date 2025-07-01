@@ -90,7 +90,16 @@ export default function QrScanButton() {
         }}
         aria-label="Scan QR Code"
       >
-        &#128247;
+        {/*
+          Display a custom SVG icon rather than the default camera emoji.
+          The image is served from the public folder so the path begins with
+          "/icons" which resolves correctly after bundling.
+        */}
+        <img
+          src="/icons/qr-code-scan-icon.svg"
+          alt=""
+          style={{ width: '1.5rem', height: '1.5rem' }}
+        />
       </button>
       {open && (
         <div className="modal-overlay" onClick={() => setOpen(false)}>
