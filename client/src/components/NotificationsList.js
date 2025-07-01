@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchNotifications, fetchTeamNotifications } from '../services/api';
+import {
+  fetchNotifications,
+  fetchTeamNotifications,
+  markNotificationViewed
+} from '../services/api';
 
 /**
  * Simple list of notifications. If `teamOnly` is true only team notifications
@@ -30,6 +34,14 @@ export default function NotificationsList({ teamOnly = false }) {
           ? await fetchTeamNotifications()
           : await fetchNotifications();
         setNotes(res.data);
+        // Mark any newly retrieved notifications as viewed
+        res.data.forEach((n) => {
+          if (!n.viewed) {
+            markNotificationViewed(n._id).catch((err) =>
+              console.error('Failed to mark notification as viewed', err)
+            );
+          }
+        });
       } catch (err) {
         console.error('Failed to load notifications', err);
       } finally {
@@ -46,8 +58,14 @@ export default function NotificationsList({ teamOnly = false }) {
     <ul>
       {notes.map((n) => (
         <li key={n._id} style={{ marginBottom: '0.25rem' }}>
-          {n.link ? <Link to={buildLink(n)}>{n.message}</Link> : n.message}
-          {!n.read && ' (unread)'}
+          {n.link ? (
+            <Link to={buildLink(n)} style={{ fontWeight: n.read ? 'normal' : 'bold' }}>
+              {n.message}
+            </Link>
+          ) : (
+            <span style={{ fontWeight: n.read ? 'normal' : 'bold' }}>{n.message}</span>
+          )}
+          {!n.viewed ? ' (new)' : !n.read ? ' (unread)' : ''}
         </li>
       ))}
     </ul>

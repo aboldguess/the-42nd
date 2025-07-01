@@ -59,3 +59,27 @@ exports.markRead = async (req, res) => {
     res.status(500).json({ message: 'Error updating notification' });
   }
 };
+
+/**
+ * Mark a notification as viewed the first time it is shown to the player.
+ */
+exports.markViewed = async (req, res) => {
+  try {
+    const note = await Notification.findById(req.params.id);
+    if (!note) return res.status(404).json({ message: 'Notification not found' });
+
+    const ownsNote =
+      (note.user && note.user.equals(req.user._id)) ||
+      (note.team && req.user.team && note.team.equals(req.user.team));
+    if (!ownsNote) {
+      return res.status(403).json({ message: 'Not authorized to modify' });
+    }
+
+    note.viewed = true;
+    await note.save();
+    res.json({ message: 'Notification marked as viewed' });
+  } catch (err) {
+    console.error('Error updating notification:', err);
+    res.status(500).json({ message: 'Error updating notification' });
+  }
+};

@@ -23,6 +23,8 @@ const notificationSchema = new mongoose.Schema(
     },
     message: { type: String, required: true }, // text shown to the recipient
     link: { type: String, default: '' },       // optional URL for more details
+    // Has the notification been shown to the player yet?
+    viewed: { type: Boolean, default: false },
     read: { type: Boolean, default: false }    // whether the recipient has read it
   },
   { timestamps: true }
