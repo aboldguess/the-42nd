@@ -56,6 +56,7 @@ export default function Sidebar() {
           {renderLink('/admin/teams', 'Teams')}
           {renderLink('/admin/gallery', 'Gallery')}
           {renderLink('/admin/settings', 'Settings')}
+          {renderLink('/admin/instructions', 'Instructions')}
         </>
       )}
     </aside>

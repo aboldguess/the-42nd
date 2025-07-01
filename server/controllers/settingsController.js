@@ -37,6 +37,16 @@ exports.updateSettings = async (req, res) => {
       }
     }
 
+    // sideQuestInstructions may be sent as a JSON string; parse it when needed
+    if (typeof updates.sideQuestInstructions === 'string') {
+      try {
+        updates.sideQuestInstructions = JSON.parse(updates.sideQuestInstructions);
+      } catch (e) {
+        console.error('Invalid sideQuestInstructions JSON');
+        delete updates.sideQuestInstructions;
+      }
+    }
+
     // Attach uploaded files if present
     if (req.files && req.files.logo && req.files.logo[0]) {
       updates.logoUrl = '/uploads/' + req.files.logo[0].filename;

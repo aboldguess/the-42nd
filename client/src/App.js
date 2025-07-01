@@ -32,6 +32,7 @@ import AdminPlayersPage from './pages/AdminPlayersPage';
 import AdminTeamsPage from './pages/AdminTeamsPage';
 import AdminGalleryPage from './pages/AdminGalleryPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
+import AdminInstructionsPage from './pages/AdminInstructionsPage';
 
 import AdminLoginPage from './pages/AdminLoginPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
@@ -309,6 +310,14 @@ export default function App() {
                 element={
                   <AdminRoute>
                     <AdminSettingsPage />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/instructions"
+                element={
+                  <AdminRoute>
+                    <AdminInstructionsPage />
                   </AdminRoute>
                 }
               />

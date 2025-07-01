@@ -1,18 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { fetchSideQuests, submitSideQuest } from '../services/api';
+import {
+  fetchSideQuests,
+  submitSideQuest,
+  fetchSettings
+} from '../services/api';
 import PhotoUploader from '../components/PhotoUploader';
 
 export default function SideQuestPage() {
   // List of available quests
   const [quests, setQuests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [defaults, setDefaults] = useState({});
 
   useEffect(() => {
     // Load quest data on mount
     const load = async () => {
       try {
-        const { data } = await fetchSideQuests();
-        setQuests(data);
+        const [qRes, sRes] = await Promise.all([
+          fetchSideQuests(),
+          fetchSettings()
+        ]);
+        setQuests(qRes.data);
+        setDefaults(sRes.data.sideQuestInstructions || {});
       } catch (err) {
         console.error(err);
       } finally {
@@ -42,12 +51,30 @@ export default function SideQuestPage() {
   const QuestItem = ({ quest }) => {
     const [code, setCode] = useState('');
     const [ans, setAns] = useState('');
+    const instructionsText = quest.instructions || defaults[quest.questType];
+    const [timeLeft, setTimeLeft] = useState(
+      quest.timeLimitSeconds ? quest.timeLimitSeconds : null
+    );
+
+    // Countdown timer when applicable
+    useEffect(() => {
+      if (timeLeft === null) return;
+      if (timeLeft <= 0) return;
+      const timer = setInterval(() => {
+        setTimeLeft((t) => (t > 0 ? t - 1 : 0));
+      }, 1000);
+      return () => clearInterval(timer);
+    }, [timeLeft]);
 
     return (
       <div key={quest._id} style={{ marginBottom: '1rem' }}>
         <div className="card" style={{ marginBottom: '0.5rem' }}>
           <h3>{quest.title}</h3>
           <p>{quest.text}</p>
+          {instructionsText && <p>{instructionsText}</p>}
+          {timeLeft !== null && (
+            <p style={{ fontWeight: 'bold' }}>Time remaining: {timeLeft}s</p>
+          )}
           {quest.imageUrl && (
             <img
               src={quest.imageUrl}

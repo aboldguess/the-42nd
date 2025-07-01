@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchSideQuest, submitSideQuest } from '../services/api';
+import { fetchSideQuest, submitSideQuest, fetchSettings } from '../services/api';
 import PhotoUploader from '../components/PhotoUploader';
 
 // Detailed view for a single side quest with upload option
@@ -10,12 +10,21 @@ export default function SideQuestDetailPage() {
   const [loading, setLoading] = useState(true);
   const [passcode, setPasscode] = useState(''); // passcode input for secret quests
   const [answer, setAnswer] = useState(''); // selected answer for trivia quests
+  const [defaults, setDefaults] = useState({}); // default instructions per type
+  const [timeLeft, setTimeLeft] = useState(null); // countdown for timed quests
 
   useEffect(() => {
     const load = async () => {
       try {
-        const { data } = await fetchSideQuest(id);
-        setQuest(data);
+        const [sqRes, settingsRes] = await Promise.all([
+          fetchSideQuest(id),
+          fetchSettings()
+        ]);
+        setQuest(sqRes.data);
+        setDefaults(settingsRes.data.sideQuestInstructions || {});
+        if (sqRes.data.timeLimitSeconds) {
+          setTimeLeft(sqRes.data.timeLimitSeconds);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -44,12 +53,29 @@ export default function SideQuestDetailPage() {
   if (loading) return <p>Loading…</p>;
   if (!quest) return <p>Side quest not found.</p>;
 
+  // Use quest specific instructions when provided, otherwise fall back to
+  // the defaults loaded from the settings document.
+  const instructionsText = quest.instructions || defaults[quest.questType];
+
+  // Start a simple countdown when timeLeft is set
+  useEffect(() => {
+    if (timeLeft === null) return;
+    if (timeLeft <= 0) return;
+    const timer = setInterval(() => {
+      setTimeLeft((t) => (t > 0 ? t - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
   return (
     <div>
       <h2>{quest.title}</h2>
       <div className="card">
         <p>{quest.text}</p>
-        {quest.instructions && <p>{quest.instructions}</p>}
+        {instructionsText && <p>{instructionsText}</p>}
+        {timeLeft !== null && (
+          <p style={{ fontWeight: 'bold' }}>Time remaining: {timeLeft}s</p>
+        )}
         {quest.imageUrl && (
           <img
             src={quest.imageUrl}
