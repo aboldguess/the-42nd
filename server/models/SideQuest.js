@@ -29,6 +29,10 @@ const sideQuestSchema = new mongoose.Schema(
     // Reference to the creator (user or admin ID)
     createdBy: mongoose.Schema.Types.ObjectId,
     createdByType: { type: String, enum: ['User', 'Admin'] },
+    // Store the display name of the creator for quick reference
+    setBy: String,
+    // Reference to the creator's team when a player sets the quest
+    team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
     active: { type: Boolean, default: true },
     // ID of the QR target when questType is 'bonus'
     targetId: mongoose.Schema.Types.ObjectId,

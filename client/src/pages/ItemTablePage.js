@@ -35,6 +35,12 @@ export default function ItemTablePage({ type, titlePrefix }) {
             <th>Status</th>
             <th>Last Scanned By</th>
             <th>Total Scans</th>
+            {type === 'sidequest' && (
+              <>
+                <th>Set By</th>
+                <th>Team</th>
+              </>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -51,6 +57,12 @@ export default function ItemTablePage({ type, titlePrefix }) {
               <td>{it.status}</td>
               <td>{it.lastScannedBy || '-'}</td>
               <td>{it.totalScans}</td>
+              {type === 'sidequest' && (
+                <>
+                  <td>{it.setBy || '-'}</td>
+                  <td>{it.teamName || '-'}</td>
+                </>
+              )}
             </tr>
           ))}
         </tbody>

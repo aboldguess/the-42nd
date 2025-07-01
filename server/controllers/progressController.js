@@ -126,7 +126,12 @@ exports.getItemScanStats = async (req, res) => {
   const Model = type === 'clue' ? Clue : type === 'question' ? Question : SideQuest;
 
   try {
-    const items = await Model.find().sort({ createdAt: 1 });
+    // Include the team name when listing side quests
+    let query = Model.find().sort({ createdAt: 1 });
+    if (type === 'sidequest') {
+      query = query.populate('team', 'name');
+    }
+    const items = await query;
 
     const data = await Promise.all(
       items.map(async (item) => {
@@ -141,7 +146,20 @@ exports.getItemScanStats = async (req, res) => {
         );
 
         const scannedBy = teamEvents.length ? teamEvents[0].user.name : null;
-        const status = teamEvents.length ? teamEvents[teamEvents.length - 1].status : 'NOT FOUND';
+
+        // Determine progress state for the current player's team
+        let status;
+        if (type === 'sidequest') {
+          if (!teamEvents.length) {
+            status = 'NEW';
+          } else if (teamEvents.some((e) => e.status === 'SOLVED!')) {
+            status = 'DONE!';
+          } else {
+            status = 'INCOMPLETE';
+          }
+        } else {
+          status = teamEvents.length ? teamEvents[teamEvents.length - 1].status : 'NOT FOUND';
+        }
 
         const lastEvent = scans[scans.length - 1];
         const lastScannedBy = lastEvent ? lastEvent.user.name : null;
@@ -154,6 +172,9 @@ exports.getItemScanStats = async (req, res) => {
           status,
           lastScannedBy,
           totalScans,
+          // Display creator info when available
+          setBy: item.setBy || '',
+          teamName: item.team ? item.team.name : '',
           // Used by the client to know when to link to the item page
           scanned: !!scannedBy
         };
