@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchNotifications, markNotificationRead } from '../services/api';
+import {
+  fetchNotifications,
+  markNotificationRead,
+  markNotificationViewed
+} from '../services/api';
 import { ToastContext } from '../context/ToastContext';
 
 /**
@@ -64,10 +68,27 @@ export default function NotificationBell() {
     return () => clearInterval(pollIdRef.current);
   }, []);
 
+  // True when any notification hasn't been shown to the user yet
+  const hasNew = notes.some((n) => !n.viewed);
+  // True when any notification hasn't been clicked yet
   const unread = notes.some((n) => !n.read);
 
   // Toggle dropdown visibility
   const toggle = () => setOpen((v) => !v);
+
+  // When the dropdown opens mark any unseen notifications as viewed
+  useEffect(() => {
+    if (open) {
+      notes.forEach((n) => {
+        if (!n.viewed) {
+          markNotificationViewed(n._id).catch((err) =>
+            console.error('Failed to mark notification as viewed', err)
+          );
+        }
+      });
+      setNotes((prev) => prev.map((n) => ({ ...n, viewed: true })));
+    }
+  }, [open]);
 
   // Close dropdown when clicking outside or selecting an item
   useEffect(() => {
@@ -157,7 +178,7 @@ export default function NotificationBell() {
         style={{ background: 'none', border: 'none' }}
       >
         🔔
-        {unread && <span className="notification-dot" />}
+        {hasNew && <span className="notification-dot" />}
       </button>
       {open && (
         <ul className="notification-dropdown">
@@ -171,7 +192,18 @@ export default function NotificationBell() {
                 setOpen(false);
               }}
             >
-              {n.link ? <Link to={buildLink(n)}>{n.message}</Link> : n.message}
+              {n.link ? (
+                <Link
+                  to={buildLink(n)}
+                  style={{ fontWeight: n.read ? 'normal' : 'bold' }}
+                >
+                  {n.message}
+                </Link>
+              ) : (
+                <span style={{ fontWeight: n.read ? 'normal' : 'bold' }}>
+                  {n.message}
+                </span>
+              )}
             </li>
           ))}
         </ul>

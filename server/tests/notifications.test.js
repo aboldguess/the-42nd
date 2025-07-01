@@ -151,6 +151,16 @@ describe('/api/notifications endpoints', () => {
     expect(updated.read).toBe(true);
   });
 
+  test('PUT /api/notifications/:id/viewed marks as viewed', async () => {
+    const res = await request(app)
+      .put(`/api/notifications/${teamNote._id}/viewed`)
+      .set('Authorization', `Bearer ${token2}`);
+
+    expect(res.statusCode).toBe(200);
+    const updated = await Notification.findById(teamNote._id);
+    expect(updated.viewed).toBe(true);
+  });
+
   test('PUT /api/notifications/:id/read blocks other users', async () => {
     const res = await request(app)
       .put(`/api/notifications/${personalNote._id}/read`)

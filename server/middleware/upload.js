@@ -12,8 +12,9 @@ const uploadDir = path.join(__dirname, '..', 'uploads');
 // Without this check, multer would throw an ENOENT error the first time an
 // admin tries to upload a logo or favicon because the directory hasn't been
 // created yet on fresh installs.
+// Create the directory recursively to avoid EEXIST errors in tests
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 // Store uploads in the “uploads/” folder with a random UUID filename

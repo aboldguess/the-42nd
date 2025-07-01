@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const { getNotifications, markRead } = require('../controllers/notificationController');
+const { getNotifications, markRead, markViewed } = require('../controllers/notificationController');
 
 // All notification routes require player authentication
 router.use(auth);
@@ -17,5 +17,8 @@ router.get('/team', (req, res, next) => {
 
 // PUT /api/notifications/:id/read - mark a notification as read
 router.put('/:id/read', markRead);
+
+// PUT /api/notifications/:id/viewed - mark a notification as viewed
+router.put('/:id/viewed', markViewed);
 
 module.exports = router;
