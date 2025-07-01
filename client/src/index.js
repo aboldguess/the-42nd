@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './context/ToastContext';
 import './styles/index.css';
 
 // Register the service worker after the app mounts so the PWA can work offline
@@ -15,7 +16,10 @@ if ('serviceWorker' in navigator) {
 
 ReactDOM.render(
   <ThemeProvider>
-    <App />
+    {/* ToastProvider handles in-app ephemeral notifications */}
+    <ToastProvider>
+      <App />
+    </ToastProvider>
   </ThemeProvider>,
   document.getElementById('root')
 );

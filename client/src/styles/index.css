@@ -568,3 +568,23 @@ tbody tr:nth-child(even) {
   border-radius: var(--border-radius);
   font-size: 0.85rem;
 }
+
+/* ───────────────── TOASTS ───────────────── */
+.toast-container {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+}
+
+.toast {
+  background: var(--primary-color);
+  color: var(--text-color);
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: 4px 4px 8px var(--shadow-dark),
+    -4px -4px 8px var(--shadow-light);
+  cursor: pointer;
+}

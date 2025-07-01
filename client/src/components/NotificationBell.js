@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchNotifications, markNotificationRead } from '../services/api';
+import { ToastContext } from '../context/ToastContext';
 
 /**
  * Small bell icon used in the navbar.
@@ -8,6 +9,8 @@ import { fetchNotifications, markNotificationRead } from '../services/api';
  * A red dot indicates any unread items.
  */
 export default function NotificationBell() {
+  // addToast displays an in-app toast when system notifications fail
+  const { addToast } = useContext(ToastContext);
   const [notes, setNotes] = useState([]);
   const [open, setOpen] = useState(false);
   // Reference to the bell wrapper so we can detect outside clicks
@@ -30,12 +33,17 @@ export default function NotificationBell() {
         // the player has already opened elsewhere
         const newNotes = res.data.filter((n) => !n.read);
 
-        if (!initial && Notification.permission === 'granted') {
+        if (!initial) {
           const prevIds = new Set(prevNotesRef.current.map((n) => n._id));
           newNotes.forEach((note) => {
             if (!prevIds.has(note._id)) {
-              // Prefer system-level notifications via the service worker
-              showNotification(note);
+              if (Notification.permission === 'granted') {
+                // Prefer system-level notifications via the service worker
+                showNotification(note);
+              } else {
+                // Fallback when browser permission denied
+                addToast(note.message, note.link ? buildLink(note) : null);
+              }
             }
           });
         }
@@ -122,13 +130,18 @@ export default function NotificationBell() {
     }
 
     // Fallback for older browsers or if the service worker failed
-    const pop = new Notification(note.message);
-    if (note.link) {
-      const dest = buildLink(note);
-      pop.onclick = () => {
-        window.focus();
-        window.location.href = dest;
-      };
+    try {
+      const pop = new Notification(note.message);
+      if (note.link) {
+        const dest = buildLink(note);
+        pop.onclick = () => {
+          window.focus();
+          window.location.href = dest;
+        };
+      }
+    } catch {
+      // Ultimately fall back to an in-app toast
+      addToast(note.message, note.link ? buildLink(note) : null);
     }
   };
 
