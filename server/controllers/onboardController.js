@@ -6,6 +6,7 @@ const Team = require('../models/Team');
 const User = require('../models/User');
 // Model used to record all uploaded media files for the rogues gallery
 const Media = require('../models/Media');
+const { createThumbnail } = require('../utils/thumbnail');
 
 // 1) GET /api/onboard/teams
 //    Return an array of { _id, name } for each existing team. This endpoint
@@ -121,8 +122,10 @@ exports.onboard = async (req, res) => {
 
     // 2d) Record any uploaded media so it appears in the rogues gallery
     if (selfieUrl) {
+      const thumb = await createThumbnail(selfieUrl);
       await Media.create({
         url: selfieUrl,
+        thumbnailUrl: thumb,
         uploadedBy: user._id,
         uploadedByModel: 'User',
         team: team._id,
@@ -140,8 +143,10 @@ exports.onboard = async (req, res) => {
       await team.save();
 
       if (team.photoUrl) {
+        const teamThumb = await createThumbnail(team.photoUrl);
         await Media.create({
           url: team.photoUrl,
+          thumbnailUrl: teamThumb,
           uploadedBy: user._id,
           uploadedByModel: 'User',
           team: team._id,

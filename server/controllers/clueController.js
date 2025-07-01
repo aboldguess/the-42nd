@@ -3,6 +3,7 @@
 const Clue = require('../models/Clue');
 const Team = require('../models/Team');
 const Media = require('../models/Media');
+const { createThumbnail } = require('../utils/thumbnail');
 const mongoose = require('mongoose');
 const QRCode = require('qrcode');
 const { getQrBase } = require('../utils/qr');
@@ -61,8 +62,10 @@ exports.createClue = async (req, res) => {
   // If an image was uploaded via multipart form, record it
   if (req.files && req.files.questionImage && req.files.questionImage[0]) {
     imageUrl = '/uploads/' + req.files.questionImage[0].filename;
+    const thumb = await createThumbnail(imageUrl);
       await Media.create({
         url: imageUrl,
+        thumbnailUrl: thumb,
         // Record the uploader from either user or admin context
         uploadedBy: req.user?._id || req.admin?.id,
         uploadedByModel: req.user ? 'User' : 'Admin',
@@ -158,8 +161,10 @@ exports.updateClue = async (req, res) => {
     if (req.files && req.files.questionImage && req.files.questionImage[0]) {
       const imageUrl = '/uploads/' + req.files.questionImage[0].filename;
       updates.imageUrl = imageUrl;
+      const thumb = await createThumbnail(imageUrl);
       await Media.create({
         url: imageUrl,
+        thumbnailUrl: thumb,
         // Support uploads from either a player or an admin
         // AdminAuth sets req.admin.id while player auth sets req.user._id
         uploadedBy: req.user?._id || req.admin?.id,

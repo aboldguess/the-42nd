@@ -9,6 +9,7 @@ const EMOJIS = ['👍', '😂', '😮', '😢', '❤️'];
 function RogueItem({ media, showInfo = true }) {
   const {
     url,
+    thumbnailUrl,
     uploadedBy,
     team,
     sideQuest,
@@ -76,12 +77,12 @@ function RogueItem({ media, showInfo = true }) {
     <>
       <div className="gallery-tile" onClick={() => setShow(true)}>
         {isVideo ? (
-          <video className="gallery-image" muted>
+          <video className="gallery-image" muted preload="metadata" poster={thumbnailUrl || url}>
             <source src={url} />
             Your browser does not support the video tag.
           </video>
         ) : (
-          <img src={url} alt="Media" className="gallery-image" />
+          <img src={thumbnailUrl || url} alt="Media" className="gallery-image" />
         )}
         <div className="tile-icons">
           <button

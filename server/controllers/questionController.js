@@ -2,6 +2,7 @@
 const Question = require('../models/Question');
 // Used to store uploaded images
 const Media = require('../models/Media');
+const { createThumbnail } = require('../utils/thumbnail');
 const QRCode = require('qrcode');
 const Settings = require('../models/Settings');
 const Team = require('../models/Team');
@@ -44,8 +45,10 @@ exports.createQuestion = async (req, res) => {
   // If an image was uploaded include it in the record and log it to Media
   if (req.file) {
     imageUrl = '/uploads/' + req.file.filename;
+    const thumb = await createThumbnail(imageUrl);
     await Media.create({
       url: imageUrl,
+      thumbnailUrl: thumb,
       uploadedBy: req.admin.id,
       // Flag this document so the populate step knows to look in the Admin collection
       uploadedByModel: 'Admin',

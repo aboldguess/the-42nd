@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Media = require('../models/Media');
+const { createThumbnail } = require('../utils/thumbnail');
 const QRCode = require('qrcode');
 const { getQrBase } = require('../utils/qr');
 
@@ -70,8 +71,10 @@ exports.updateMe = async (req, res) => {
     if (req.files && req.files.selfie) {
       const avatarPath = '/uploads/' + req.files.selfie[0].filename;
       updates.photoUrl = avatarPath;
+      const thumb = await createThumbnail(avatarPath);
       await Media.create({
         url: avatarPath,
+        thumbnailUrl: thumb,
         uploadedBy: req.user._id,
         // Indicate the uploader's model so the gallery can populate correctly
         uploadedByModel: 'User',

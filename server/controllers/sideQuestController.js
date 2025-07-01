@@ -1,5 +1,6 @@
 const SideQuest = require('../models/SideQuest');
 const Media = require('../models/Media');
+const { createThumbnail } = require('../utils/thumbnail');
 const QRCode = require('qrcode');
 const Team = require('../models/Team');
 const { getQrBase } = require('../utils/qr');
@@ -40,8 +41,10 @@ exports.createSideQuest = async (req, res) => {
     // If an image was uploaded, store it and record in Media collection
     if (req.files && req.files.image && req.files.image[0]) {
       imageUrl = '/uploads/' + req.files.image[0].filename;
+      const thumb = await createThumbnail(imageUrl);
       await Media.create({
         url: imageUrl,
+        thumbnailUrl: thumb,
         uploadedBy: req.user?._id || req.admin?.id,
         // Dynamically indicate which model the uploader came from
         uploadedByModel: req.user ? 'User' : 'Admin',
@@ -83,8 +86,10 @@ exports.updateSideQuest = async (req, res) => {
     if (req.files && req.files.image && req.files.image[0]) {
       const imageUrl = '/uploads/' + req.files.image[0].filename;
       updates.imageUrl = imageUrl;
+      const thumb = await createThumbnail(imageUrl);
       await Media.create({
         url: imageUrl,
+        thumbnailUrl: thumb,
         uploadedBy: req.user?._id || req.admin?.id,
         uploadedByModel: req.user ? 'User' : 'Admin',
         type: 'sideQuest',
@@ -201,8 +206,10 @@ exports.submitSideQuestProof = async (req, res) => {
       req.files.sideQuestMedia[0]
     ) {
       mediaUrl = '/uploads/' + req.files.sideQuestMedia[0].filename;
+      const mediaThumb = await createThumbnail(mediaUrl);
       await Media.create({
         url: mediaUrl,
+        thumbnailUrl: mediaThumb,
         uploadedBy: req.user._id,
         uploadedByModel: 'User',
         team: team._id,
