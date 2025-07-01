@@ -81,6 +81,14 @@ export const submitSideQuest = (id, data) =>
   axios.post(`/api/sidequests/${id}/submit`, data, {
     headers: { 'Content-Type': 'multipart/form-data' }
   });
+export const fetchSideQuestSubmissions = (id) =>
+  axios.get(`/api/sidequests/${id}/submissions`);
+export const fetchMySideQuestSubmission = (id) =>
+  axios.get(`/api/sidequests/${id}/submission`);
+export const updateMySideQuestSubmission = (id, data) =>
+  axios.put(`/api/sidequests/${id}/submission`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
 // Retrieve rogues gallery items with optional sorting.
 // sort can be 'newest', 'hottest' or 'best'.
 export const fetchRoguesGallery = (sort = 'newest') =>

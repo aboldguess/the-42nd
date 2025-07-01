@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchProgress } from '../services/api';
+import { fetchProgress, fetchMe } from '../services/api';
 
 // Generic table listing progress for clues, questions or side quests
 export default function ItemTablePage({ type, titlePrefix }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [team, setTeam] = useState(null); // current player's team info
 
   useEffect(() => {
     const load = async () => {
       try {
-        const { data } = await fetchProgress(type);
-        setItems(data);
+        const [progRes, meRes] = await Promise.all([
+          fetchProgress(type),
+          type === 'sidequest' ? fetchMe() : Promise.resolve({ data: null })
+        ]);
+        setItems(progRes.data);
+        if (type === 'sidequest') setTeam(meRes.data.team);
       } catch (err) {
         console.error(err);
       } finally {
@@ -39,6 +44,7 @@ export default function ItemTablePage({ type, titlePrefix }) {
               <>
                 <th>Set By</th>
                 <th>Team</th>
+                <th>Actions</th>
               </>
             )}
           </tr>
@@ -61,6 +67,21 @@ export default function ItemTablePage({ type, titlePrefix }) {
                 <>
                   <td>{it.setBy || '-'}</td>
                   <td>{it.teamName || '-'}</td>
+                  <td>
+                    <Link to={`/sidequests/${it._id}/submissions`}>View submissions</Link>
+                    {it.status === 'DONE!' && (
+                      <>
+                        {' '}
+                        <Link to={`/sidequests/${it._id}/my-submission`}>Edit my submission</Link>
+                      </>
+                    )}
+                    {team && team._id === it.teamId && (
+                      <>
+                        {' '}
+                        <Link to={`/sidequests/${it._id}/edit`}>Edit sidequest</Link>
+                      </>
+                    )}
+                  </td>
                 </>
               )}
             </tr>

@@ -175,6 +175,7 @@ exports.getItemScanStats = async (req, res) => {
           // Display creator info when available
           setBy: item.setBy || '',
           teamName: item.team ? item.team.name : '',
+          teamId: item.team ? item.team._id : '',
           // Used by the client to know when to link to the item page
           scanned: !!scannedBy
         };

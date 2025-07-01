@@ -7,7 +7,10 @@ const {
   createSideQuest,
   submitSideQuestProof,
   updateSideQuest,
-  deleteSideQuest
+  deleteSideQuest,
+  getSideQuestSubmissions,
+  getMySideQuestSubmission,
+  updateMySideQuestSubmission
 } = require('../controllers/sideQuestController');
 
 // Authenticated player endpoint for active quests
@@ -23,6 +26,18 @@ router.post(
   auth,
   upload.fields([{ name: 'sideQuestMedia', maxCount: 1 }]),
   submitSideQuestProof
+);
+
+// List submissions for a quest
+router.get('/:id/submissions', auth, getSideQuestSubmissions);
+// Retrieve the current team's submission
+router.get('/:id/submission', auth, getMySideQuestSubmission);
+// Replace the current team's submission
+router.put(
+  '/:id/submission',
+  auth,
+  upload.fields([{ name: 'sideQuestMedia', maxCount: 1 }]),
+  updateMySideQuestSubmission
 );
 
 module.exports = router;
