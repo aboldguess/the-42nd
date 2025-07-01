@@ -1,5 +1,6 @@
 const Team = require('../models/Team');
 const Media = require('../models/Media');
+const { createThumbnail } = require('../utils/thumbnail');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 
@@ -45,8 +46,10 @@ exports.addMember = async (req, res) => {
     const member = { name: req.body.name, avatarUrl: '' };
     if (req.files && req.files.avatar) {
       member.avatarUrl = '/uploads/' + req.files.avatar[0].filename;
+      const thumb = await createThumbnail(member.avatarUrl);
       await Media.create({
         url: member.avatarUrl,
+        thumbnailUrl: thumb,
         uploadedBy: req.user._id,
         uploadedByModel: 'User',
         team: team._id,

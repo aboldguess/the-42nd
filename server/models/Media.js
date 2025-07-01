@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const mediaSchema = new mongoose.Schema(
   {
     url: String,
+    // Path to a resized version of the image for faster gallery loading
+    thumbnailUrl: String,
     // Reference to the uploader along with the model name so Mongoose knows
     // which collection to populate from.
     uploadedBy: {

@@ -1,5 +1,6 @@
 const Comment = require('../models/Comment');
 const Media = require('../models/Media');
+const { createThumbnail } = require('../utils/thumbnail');
 const User = require('../models/User');
 const Team = require('../models/Team');
 const { createNotification } = require('../utils/notifications');
@@ -41,8 +42,10 @@ exports.postComment = async (req, res) => {
     if (req.file) {
       imageUrl = '/uploads/' + req.file.filename;
       // Record uploaded photos in the Media collection for gallery use
+      const thumb = await createThumbnail(imageUrl);
       await Media.create({
         url: imageUrl,
+        thumbnailUrl: thumb,
         uploadedBy: req.user._id,
         uploadedByModel: 'User',
         team: model === 'Team' ? req.params.id : req.user.team,
