@@ -36,31 +36,41 @@ export default function CreateSideQuestPage() {
   return (
     <div className="card spaced-card">
       <h2>Create Side Quest</h2>
-      <div style={{ marginBottom: '1rem' }}>
-        <label style={{ display: 'block', marginBottom: '0.5rem' }}>
-          Name:
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            style={{ marginLeft: '0.5rem' }}
-          />
-        </label>
-        <label style={{ display: 'block' }}>
-          Type:
-          <select
-            value={questType}
-            onChange={(e) => setQuestType(e.target.value)}
-            style={{ marginLeft: '0.5rem' }}
-          >
-            {questTypeOptions.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-      <button onClick={handleCreate} disabled={!title}>Continue</button>
+      {/* Wrapping the fields in a form allows the Enter key to submit */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleCreate();
+        }}
+      >
+        <div style={{ marginBottom: '1rem' }}>
+          <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+            Name:
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              style={{ marginLeft: '0.5rem' }}
+            />
+          </label>
+          <label style={{ display: 'block' }}>
+            Type:
+            <select
+              value={questType}
+              onChange={(e) => setQuestType(e.target.value)}
+              style={{ marginLeft: '0.5rem' }}
+            >
+              {questTypeOptions.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <button type="submit" disabled={!title}>
+          Continue
+        </button>
+      </form>
     </div>
   );
 }

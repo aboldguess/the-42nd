@@ -15,15 +15,6 @@ export default function SideQuestEditPage() {
   const [loading, setLoading] = useState(true);
   const [scannedItems, setScannedItems] = useState([]); // used for bonus quests
 
-  // Load quest details and scanned items when the id changes
-  useEffect(() => {
-    if (id) {
-      loadQuest();
-      loadScanned();
-    }
-  }, [id, loadQuest, loadScanned]);
-
-  // Retrieve the quest from the API
   // Retrieve the quest from the API. Memoized so React Hook rules
   // can list it as a dependency without re-running unnecessarily.
   const loadQuest = useCallback(async () => {
@@ -53,6 +44,14 @@ export default function SideQuestEditPage() {
       console.error(err);
     }
   }, []);
+
+  // Load quest details and scanned items when the id changes
+  useEffect(() => {
+    if (id) {
+      loadQuest();
+      loadScanned();
+    }
+  }, [id, loadQuest, loadScanned]);
 
   // Save updated fields
   const handleSave = async () => {
