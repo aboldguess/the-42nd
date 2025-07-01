@@ -60,23 +60,50 @@ export default function Wall({ type, id, onNewComment }) {
           // who wrote the comment was deleted. Guard against null
           // so we don't crash when accessing name or photoUrl.
           const authorName = c.author?.name || 'Unknown';
+          const photoUrl = c.author?.photoUrl || '';
 
           return (
-            <div key={c._id} className="card" style={{ marginBottom: '0.5rem' }}>
-              <p>
-                <strong>{authorName}</strong>{' '}
-                <span style={{ fontSize: '0.8em' }}>
-                  {new Date(c.createdAt).toLocaleString()}
-                </span>
-              </p>
-              {c.content && <p>{c.content}</p>}
-              {c.imageUrl && (
+            // Display each comment in its own card. Use flexbox so the
+            // author's avatar can sit beside the text content.
+            <div
+              key={c._id}
+              className="card"
+              style={{
+                marginBottom: '0.5rem',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '0.5rem'
+              }}
+            >
+              {photoUrl && (
                 <img
-                  src={c.imageUrl}
-                  alt="wall"
-                  style={{ maxWidth: '100%', borderRadius: '4px' }}
+                  src={photoUrl}
+                  alt={`${authorName} avatar`}
+                  // Small circular avatar used for comment authors
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    objectFit: 'cover'
+                  }}
                 />
               )}
+              <div style={{ flex: 1 }}>
+                <p>
+                  <strong>{authorName}</strong>{' '}
+                  <span style={{ fontSize: '0.8em' }}>
+                    {new Date(c.createdAt).toLocaleString()}
+                  </span>
+                </p>
+                {c.content && <p>{c.content}</p>}
+                {c.imageUrl && (
+                  <img
+                    src={c.imageUrl}
+                    alt="wall"
+                    style={{ maxWidth: '100%', borderRadius: '4px' }}
+                  />
+                )}
+              </div>
             </div>
           );
         })}
