@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   fetchMySideQuests,
   createSideQuest,
@@ -9,6 +10,8 @@ import {
 
 // Player managed side quests with CRUD functionality
 export default function NewSideQuestPage() {
+  // navigation helper used to redirect after creating a quest
+  const navigate = useNavigate();
   const [quests, setQuests] = useState([]);
   const [scannedItems, setScannedItems] = useState([]); // items scanned by the team
   const [newQuest, setNewQuest] = useState({
@@ -60,9 +63,12 @@ export default function NewSideQuestPage() {
       formData.append('questType', newQuest.questType);
       if (newQuest.image) formData.append('image', newQuest.image);
       if (newQuest.targetId) formData.append('targetId', newQuest.targetId);
-      await createSideQuest(formData);
+      const res = await createSideQuest(formData);
       setNewQuest({ title: '', text: '', questType: 'photo', image: null, targetId: '' });
       load();
+      // After successfully creating the quest, take the user straight
+      // to its page so they can view or continue editing it
+      navigate(`/sidequest/${res.data._id}`);
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.message || 'Error creating side quest');
