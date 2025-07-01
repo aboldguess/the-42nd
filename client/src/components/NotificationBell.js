@@ -177,7 +177,12 @@ export default function NotificationBell() {
         aria-label="Notifications"
         style={{ background: 'none', border: 'none' }}
       >
-        🔔
+        {/* Use an SVG icon rather than the bell emoji so styling is consistent */}
+        <img
+          src="/icons/bell-line-icon.svg"
+          alt=""
+          style={{ width: '1.5rem', height: '1.5rem' }}
+        />
         {hasNew && <span className="notification-dot" />}
       </button>
       {open && (
