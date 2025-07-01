@@ -7,6 +7,8 @@ const mongoose = require('mongoose');
 const { recordScan } = require('../utils/scan');
 const { createNotification } = require('../utils/notifications');
 const User = require('../models/User');
+const fs = require('fs');
+const path = require('path');
 
 // Ensure a side quest has a QR code stored
 // Ensure the QR code for a side quest reflects the current base URL
@@ -250,6 +252,73 @@ exports.submitSideQuestProof = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error submitting side quest' });
+  }
+};
+
+// Return all media submissions for a given side quest
+exports.getSideQuestSubmissions = async (req, res) => {
+  try {
+    const media = await Media.find({
+      sideQuest: req.params.id,
+      hidden: false
+    })
+      .populate('uploadedBy', 'name username')
+      .populate('team', 'name')
+      .sort({ createdAt: -1 });
+    res.json(media);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching submissions' });
+  }
+};
+
+// Retrieve the current team's submission for a side quest
+exports.getMySideQuestSubmission = async (req, res) => {
+  try {
+    const media = await Media.findOne({
+      sideQuest: req.params.id,
+      team: req.user.team
+    });
+    if (!media) return res.status(404).json({ message: 'Submission not found' });
+    res.json(media);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching submission' });
+  }
+};
+
+// Update the current team's submission for a side quest
+exports.updateMySideQuestSubmission = async (req, res) => {
+  try {
+    const media = await Media.findOne({
+      sideQuest: req.params.id,
+      team: req.user.team
+    });
+    if (!media) return res.status(404).json({ message: 'Submission not found' });
+
+    if (req.files && req.files.sideQuestMedia && req.files.sideQuestMedia[0]) {
+      const file = req.files.sideQuestMedia[0];
+
+      // Remove previous file from disk when stored in uploads
+      if (media.url && media.url.startsWith('/uploads/')) {
+        const filePath = path.join(__dirname, '..', media.url);
+        if (fs.existsSync(filePath)) {
+          try {
+            fs.unlinkSync(filePath);
+          } catch (err) {
+            console.error('Error deleting old media file:', err);
+          }
+        }
+      }
+
+      media.url = '/uploads/' + file.filename;
+    }
+
+    await media.save();
+    res.json(media);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error updating submission' });
   }
 };
 

@@ -25,6 +25,8 @@ import SideQuestStatusPage from './pages/SideQuestStatusPage';
 import NewSideQuestPage from './pages/NewSideQuestPage';
 import CreateSideQuestPage from './pages/CreateSideQuestPage';
 import SideQuestEditPage from './pages/SideQuestEditPage';
+import SideQuestSubmissionsPage from './pages/SideQuestSubmissionsPage';
+import MySideQuestSubmissionPage from './pages/MySideQuestSubmissionPage';
 import AdminCluesPage from './pages/AdminCluesPage';
 import AdminQuestionsPage from './pages/AdminQuestionsPage';
 import AdminSideQuestsPage from './pages/AdminSideQuestsPage';
@@ -232,6 +234,22 @@ export default function App() {
                 element={
                   <AuthRoute>
                     <SideQuestEditPage />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/sidequests/:id/submissions"
+                element={
+                  <AuthRoute>
+                    <SideQuestSubmissionsPage />
+                  </AuthRoute>
+                }
+              />
+              <Route
+                path="/sidequests/:id/my-submission"
+                element={
+                  <AuthRoute>
+                    <MySideQuestSubmissionPage />
                   </AuthRoute>
                 }
               />
