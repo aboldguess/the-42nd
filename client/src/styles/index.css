@@ -427,7 +427,9 @@ tbody tr:nth-child(even) {
   bottom: calc(env(safe-area-inset-bottom, 0) + 1rem);
   right: calc(env(safe-area-inset-right, 0) + 1rem);
   z-index: 1100;
-  background-color: var(--primary-color);
+  /* Use the secondary colour so the floating button contrasts
+     with the primary-coloured navbar and sidebar */
+  background-color: var(--secondary-color);
   color: var(--text-color);
   border: none;
   border-radius: 50%;
