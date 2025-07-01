@@ -156,7 +156,8 @@ img {
 /* ───────────────── GENERIC UI ───────────────── */
 button {
   /* Buttons share the same soft shadow aesthetic */
-  background: var(--background-color);
+  /* Use the secondary colour so buttons stand out from the background */
+  background: var(--secondary-color);
   border: none;
   color: var(--text-color);
   padding: 0.5rem 1rem;
