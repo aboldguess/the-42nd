@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ImageSelector from '../components/ImageSelector';
+import ExpandableQr from '../components/ExpandableQr';
 import {
   fetchSideQuestsAdmin,
   createSideQuestAdmin,
@@ -146,7 +147,7 @@ export default function AdminSideQuestsPage() {
                   </td>
                   <td>
                     {q.qrCodeData ? (
-                      <img src={q.qrCodeData} alt="QR" width={50} />
+                      <ExpandableQr data={q.qrCodeData} size={50} />
                     ) : (
                       '-'
                     )}
@@ -171,7 +172,7 @@ export default function AdminSideQuestsPage() {
                   <td>{q.timeLimitSeconds || '-'}</td>
                   <td>
                     {q.qrCodeData ? (
-                      <img src={q.qrCodeData} alt="QR" width={50} />
+                      <ExpandableQr data={q.qrCodeData} size={50} />
                     ) : (
                       '-'
                     )}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchClue, submitAnswer, fetchProgressItem } from '../services/api';
+import ExpandableQr from '../components/ExpandableQr';
 
 // Question view for the single active game
 export default function QuestionPage() {
@@ -83,7 +84,7 @@ export default function QuestionPage() {
         {clue.qrCodeData && (
           <div style={{ marginTop: '1rem' }}>
             <p>Scan this QR code to proceed:</p>
-            <img src={clue.qrCodeData} alt="QR Code" />
+            <ExpandableQr data={clue.qrCodeData} size={100} max={500} />
           </div>
         )}
         <form onSubmit={handleSubmit} style={{ marginTop: '1rem' }}>
