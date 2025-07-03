@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ImageSelector from '../components/ImageSelector';
+import ExpandableQr from '../components/ExpandableQr';
 import {
   fetchQuestions,
   createQuestion,
@@ -144,7 +145,7 @@ export default function AdminQuestionsPage() {
                     {q.imageUrl ? <img src={q.imageUrl} alt={q.title} width={50} /> : '-'}
                   </td>
                   <td>
-                    {q.qrCodeData ? <img src={q.qrCodeData} alt="QR" width={50} /> : '-'}
+                    {q.qrCodeData ? <ExpandableQr data={q.qrCodeData} size={50} /> : '-'}
                   </td>
                   <td>
                     <button onClick={() => handleSave(q._id)}>Save</button>
@@ -159,7 +160,7 @@ export default function AdminQuestionsPage() {
                   <td>{q.correctAnswer || '-'}</td>
                   <td>{q.notes}</td>
                   <td>{q.imageUrl ? <img src={q.imageUrl} alt={q.title} width={50} /> : '-'}</td>
-                  <td>{q.qrCodeData ? <img src={q.qrCodeData} alt="QR" width={50} /> : '-'}</td>
+                  <td>{q.qrCodeData ? <ExpandableQr data={q.qrCodeData} size={50} /> : '-'}</td>
                   <td>
                     <button
                       onClick={() => {

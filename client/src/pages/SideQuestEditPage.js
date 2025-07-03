@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import ExpandableQr from '../components/ExpandableQr';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   fetchSideQuest,
@@ -203,7 +204,7 @@ export default function SideQuestEditPage() {
       </div>
       {quest.qrCodeData && (
         <div style={{ marginBottom: '1rem' }}>
-          <img src={quest.qrCodeData} alt="QR" width={120} />
+          <ExpandableQr data={quest.qrCodeData} size={120} />
         </div>
       )}
       <button onClick={handleSave}>Save</button>

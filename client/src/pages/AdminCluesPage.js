@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ImageSelector from '../components/ImageSelector';
+import ExpandableQr from '../components/ExpandableQr';
 import {
   fetchClues,
   createClueAdmin,
@@ -139,7 +140,7 @@ export default function AdminCluesPage() {
                   </td>
                   <td>
                     {c.qrCodeData ? (
-                      <img src={c.qrCodeData} alt="QR" width={50} />
+                      <ExpandableQr data={c.qrCodeData} size={50} />
                     ) : (
                       '-'
                     )}
@@ -163,7 +164,7 @@ export default function AdminCluesPage() {
                   <td>{c.correctAnswer}</td>
                   <td>
                     {c.qrCodeData ? (
-                      <img src={c.qrCodeData} alt="QR" width={50} />
+                      <ExpandableQr data={c.qrCodeData} size={50} />
                     ) : (
                       '-'
                     )}
