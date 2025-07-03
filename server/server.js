@@ -84,6 +84,8 @@ app.use('/api/settings', require('./routes/settings'));
 
 // Public scoreboard route
 app.use('/api/scoreboard', require('./routes/scoreboard'));
+// Kudos voting and categories
+app.use('/api/kudos', require('./routes/kudos'));
 
 // ——— NEW ADMIN AUTH ROUTE ———
 app.use('/api/admin/auth', require('./routes/adminAuth'));
@@ -98,6 +100,7 @@ app.use('/api/admin/players',  require('./routes/admin/players'));
 app.use('/api/admin/teams',  require('./routes/admin/teams'));
 app.use('/api/admin/scoreboard', require('./routes/admin/scoreboard'));
 app.use('/api/admin/settings', require('./routes/admin/settings'));
+app.use('/api/admin/kudos', require('./routes/admin/kudos'));
 // Broadcast system notifications to all players
 app.use('/api/admin/notifications', require('./routes/admin/notifications'));
 // Route allowing admins to download all uploaded media as a zip

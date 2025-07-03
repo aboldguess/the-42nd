@@ -30,6 +30,7 @@ export default function HelpPage() {
         <li><strong>Sidequests</strong> – optional tasks for extra points.</li>
         <li><strong>Players & Teams</strong> – browse all participants.</li>
         <li><strong>Scoreboard</strong> – see who&apos;s leading the hunt.</li>
+        <li><strong>Kudos</strong> – vote for players in fun categories.</li>
         <li>
           <strong>Rogues Gallery</strong> – view and react to uploaded photos
           from sidequest submissions.
