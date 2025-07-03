@@ -19,6 +19,7 @@ import RoguesGalleryPage from './pages/RoguesGalleryPage';
 import InfoPage from './pages/InfoPage';
 import HelpPage from './pages/HelpPage';
 import ScoreboardPage from './pages/ScoreboardPage';
+import KudosPage from './pages/KudosPage';
 import ClueStatusPage from './pages/ClueStatusPage';
 import QuestionStatusPage from './pages/QuestionStatusPage';
 import SideQuestStatusPage from './pages/SideQuestStatusPage';
@@ -35,6 +36,7 @@ import AdminTeamsPage from './pages/AdminTeamsPage';
 import AdminGalleryPage from './pages/AdminGalleryPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 import AdminInstructionsPage from './pages/AdminInstructionsPage';
+import AdminKudosPage from './pages/AdminKudosPage';
 
 import AdminLoginPage from './pages/AdminLoginPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
@@ -191,6 +193,14 @@ export default function App() {
                 }
               />
               <Route
+                path="/kudos"
+                element={
+                  <AuthRoute>
+                    <KudosPage />
+                  </AuthRoute>
+                }
+              />
+              <Route
                 path="/progress/clues"
                 element={
                   <AuthRoute>
@@ -321,6 +331,14 @@ export default function App() {
                 element={
                   <AdminRoute>
                     <AdminTeamsPage />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/kudos"
+                element={
+                  <AdminRoute>
+                    <AdminKudosPage />
                   </AdminRoute>
                 }
               />

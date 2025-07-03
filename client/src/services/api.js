@@ -126,6 +126,18 @@ export const fetchAdminSummary = () =>
 export const fetchScoreboard = () => axios.get('/api/scoreboard');
 export const fetchAdminScoreboard = () => axios.get('/api/admin/scoreboard');
 
+// Kudos endpoints
+export const fetchKudos = () => axios.get('/api/kudos');
+export const voteKudos = (id, recipient) =>
+  axios.post(`/api/kudos/${id}/vote`, { recipient });
+export const fetchKudosAdmin = () => axios.get('/api/admin/kudos');
+export const createKudosCategory = (data) =>
+  axios.post('/api/admin/kudos', data);
+export const updateKudosCategory = (id, data) =>
+  axios.put(`/api/admin/kudos/${id}`, data);
+export const deleteKudosCategory = (id) =>
+  axios.delete(`/api/admin/kudos/${id}`);
+
 // Player progress tables
 export const fetchProgress = (type) => axios.get(`/api/progress/${type}`);
 

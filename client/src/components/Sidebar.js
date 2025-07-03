@@ -41,6 +41,7 @@ export default function Sidebar() {
           {renderLink('/players', 'Players')}
           {renderLink('/teams', 'Teams')}
           {renderLink('/scoreboard', 'Scoreboard')}
+          {renderLink('/kudos', 'Kudos')}
           {renderLink('/roguery', 'Gallery')}
         </>
       )}
@@ -54,6 +55,7 @@ export default function Sidebar() {
           {renderLink('/admin/sidequests', 'Side Quests')}
           {renderLink('/admin/players', 'Players')}
           {renderLink('/admin/teams', 'Teams')}
+          {renderLink('/admin/kudos', 'Kudos')}
           {renderLink('/admin/gallery', 'Gallery')}
           {renderLink('/admin/settings', 'Settings')}
           {renderLink('/admin/instructions', 'Instructions')}

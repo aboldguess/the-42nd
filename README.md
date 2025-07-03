@@ -10,6 +10,7 @@ This project contains a React client and an Express/MongoDB server for running a
 - New "passcode" and "trivia" side quest types with in-app validation
 - Admin authentication and dashboard endpoints
 - Team colour schemes and profile management
+- Kudos voting for fun player awards
 - Installable Progressive Web App with offline support
 - Admin settings include a **master reset** to wipe all game data after typing
   `definitely` as confirmation
