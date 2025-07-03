@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchQuestion, submitQuestionAnswer } from "../services/api";
+import {
+  fetchQuestion,
+  submitQuestionAnswer,
+  fetchProgressItem
+} from "../services/api";
 
 // Display a single trivia question for players
 export default function QuestionPlayPage() {
@@ -12,6 +16,7 @@ export default function QuestionPlayPage() {
   const [lockedUntil, setLockedUntil] = useState(null);
   const [saving, setSaving] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0); // seconds remaining on cooldown
+  const [stats, setStats] = useState(null); // progress details
 
   useEffect(() => {
     const load = async () => {
@@ -28,7 +33,12 @@ export default function QuestionPlayPage() {
         setLoading(false);
       }
     };
-    if (id) load();
+    if (id) {
+      load();
+      fetchProgressItem("question", id)
+        .then((data) => setStats(data))
+        .catch((err) => console.error(err));
+    }
   }, [id]);
 
   // Update countdown timer whenever the lock expiry changes
@@ -111,6 +121,12 @@ export default function QuestionPlayPage() {
           </form>
         )}
       </div>
+      {stats && (
+        <div style={{ marginTop: "1rem", fontSize: "0.9rem" }}>
+          <p>Last scanned by: {stats.lastScannedBy || '-'}</p>
+          <p>Total scans: {stats.totalScans}</p>
+        </div>
+      )}
     </div>
   );
 }
