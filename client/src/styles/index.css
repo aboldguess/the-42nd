@@ -625,3 +625,17 @@ tbody tr:nth-child(even) {
     -4px -4px 8px var(--shadow-light);
   cursor: pointer;
 }
+
+/* Hide navigation and extra chrome when printing the crib sheet */
+@media print {
+  .navbar,
+  .sidebar,
+  .install-prompt,
+  .qr-scan-button {
+    display: none !important;
+  }
+  .spaced-card {
+    margin: 0;
+    box-shadow: none;
+  }
+}

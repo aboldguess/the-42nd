@@ -98,15 +98,31 @@ export default function Navbar() {
         </button>
 
         {theme.logoUrl ? (
-          <Link to="/">
-            <img
-              src={theme.logoUrl}
-              alt="Logo"
-              style={{ height: '40px' }}
-            />
+          <Link
+            /* Clicking the logo should take the user to their dashboard.
+               Admin users without a player token go to the admin dashboard. */
+            to={
+              adminToken && !token
+                ? '/admin/dashboard'
+                : token
+                ? '/dashboard'
+                : '/'
+            }
+          >
+            <img src={theme.logoUrl} alt="Logo" style={{ height: '40px' }} />
           </Link>
         ) : (
-          <Link to="/">Treasure Hunt</Link>
+          <Link
+            to={
+              adminToken && !token
+                ? '/admin/dashboard'
+                : token
+                ? '/dashboard'
+                : '/'
+            }
+          >
+            Treasure Hunt
+          </Link>
         )}
       </div>
 

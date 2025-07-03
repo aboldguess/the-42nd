@@ -6,7 +6,8 @@ import {
   fetchCluesPlayer,
   fetchProgress,
   fetchScoreboard,
-  fetchPlayersPublic
+  fetchPlayersPublic,
+  fetchSettings
 } from '../services/api';
 import TeamMemberForm from '../components/TeamMemberForm';
 
@@ -28,6 +29,7 @@ export default function Dashboard() {
 
   // List of player documents for linking member names to profiles
   const [players, setPlayers] = useState([]);
+  const [gameName, setGameName] = useState('Treasure Hunt');
 
   useEffect(() => {
     const load = async () => {
@@ -50,13 +52,15 @@ export default function Dashboard() {
         }
 
         // Fetch progress details
-        const [qProg, cProg, sqProg, board, playerRes] = await Promise.all([
-          fetchProgress('question'),
-          fetchProgress('clue'),
-          fetchProgress('sidequest'),
-          fetchScoreboard(),
-          fetchPlayersPublic()
-        ]);
+        const [qProg, cProg, sqProg, board, playerRes, settingsRes] =
+          await Promise.all([
+            fetchProgress('question'),
+            fetchProgress('clue'),
+            fetchProgress('sidequest'),
+            fetchScoreboard(),
+            fetchPlayersPublic(),
+            fetchSettings()
+          ]);
         setPlayers(playerRes.data);
         const teamStats = board.data.find((b) => b.teamId === teamRes.data._id);
         setProgress({
@@ -69,6 +73,7 @@ export default function Dashboard() {
           photosUploaded: teamRes.data.members.filter((m) => m.avatarUrl).length
         });
 
+        setGameName(settingsRes.data.gameName || 'Treasure Hunt');
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -92,6 +97,8 @@ export default function Dashboard() {
 
   return (
     <div>
+      {/* Greet the player with the current game name */}
+      <h1>Welcome to {gameName}!</h1>
       <h2>Dashboard</h2>
       <div className="card">
         {/* Show the team photo beside the name */}

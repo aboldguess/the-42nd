@@ -38,6 +38,7 @@ import AdminInstructionsPage from './pages/AdminInstructionsPage';
 
 import AdminLoginPage from './pages/AdminLoginPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+import AdminCribSheetPage from './pages/AdminCribSheetPage';
 import QrScanButton from './components/QrScanButton';
 import InstallPrompt from './components/InstallPrompt';
 import NotificationHandler from './components/NotificationHandler';
@@ -271,6 +272,14 @@ export default function App() {
                 element={
                   <AdminRoute>
                     <AdminDashboardPage />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/cribsheet"
+                element={
+                  <AdminRoute>
+                    <AdminCribSheetPage />
                   </AdminRoute>
                 }
               />

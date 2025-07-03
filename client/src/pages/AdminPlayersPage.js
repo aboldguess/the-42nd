@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { fetchPlayers, deletePlayer, createPlayer, updatePlayer } from '../services/api';
 import { fetchTeamsList } from '../services/api';
 
@@ -67,6 +68,9 @@ export default function AdminPlayersPage() {
   return (
     <div className="card spaced-card">
       <h2>Players</h2>
+      <p>
+        <Link to="/admin/cribsheet">Print Crib Sheet</Link>
+      </p>
       <table>
         <thead>
           <tr>
