@@ -91,6 +91,8 @@ img {
   border: none;
   cursor: pointer;
   font-size: 1rem;
+  /* Use admin-selected font for all navbar items */
+  font-family: var(--font-family);
 }
 
 /* Make the right-side list horizontal & reset bullets */
@@ -167,6 +169,8 @@ button {
   box-shadow: 4px 4px 8px var(--shadow-dark),
     -4px -4px 8px var(--shadow-light);
   transition: box-shadow 0.2s;
+  /* Inherit admin-selected font so buttons match the rest of the UI */
+  font-family: var(--font-family);
 }
 
 button:hover {

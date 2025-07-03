@@ -155,6 +155,7 @@ export default function Navbar() {
                   color: 'var(--text-color)',
                   padding: '0.5rem',
                   listStyle: 'none',
+                  // Inherit the admin-selected font for dropdown items
                   fontFamily: 'inherit',
                   whiteSpace: 'nowrap',
                   minWidth: '180px'
