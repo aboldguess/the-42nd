@@ -66,23 +66,19 @@ export default function WelcomePage() {
   return (
     <div className="card" style={{ maxWidth: 400, margin: '2rem auto' }}>
       <h2>Welcome</h2>
-      <div style={{ display: 'flex', marginBottom: '1rem' }}>
+      {/* Tab controls above the form; active tab is styled via CSS */}
+      <div className="tab-container">
         <button
           type="button"
-          className="btn-mr"
+          className={`tab ${tab === 'login' ? 'active' : ''}`}
           onClick={() => setTab('login')}
-          style={{
-            background: tab === 'login' ? 'var(--secondary-color)' : 'var(--primary-color)'
-          }}
         >
           Log In
         </button>
         <button
           type="button"
+          className={`tab ${tab === 'signup' ? 'active' : ''}`}
           onClick={() => setTab('signup')}
-          style={{
-            background: tab === 'signup' ? 'var(--secondary-color)' : 'var(--primary-color)'
-          }}
         >
           Sign Up
         </button>
