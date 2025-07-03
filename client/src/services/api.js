@@ -129,6 +129,12 @@ export const fetchAdminScoreboard = () => axios.get('/api/admin/scoreboard');
 // Player progress tables
 export const fetchProgress = (type) => axios.get(`/api/progress/${type}`);
 
+// Retrieve progress details for a single item by filtering the list
+export const fetchProgressItem = async (type, id) => {
+  const { data } = await fetchProgress(type);
+  return data.find((it) => it._id === id);
+};
+
 
 // Admin CRUD for clues
 export const fetchClues = () => axios.get('/api/admin/clues');

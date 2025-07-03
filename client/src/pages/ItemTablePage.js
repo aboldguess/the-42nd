@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchProgress, fetchMe } from '../services/api';
+import { fetchProgress } from '../services/api';
 
 // Generic table listing progress for clues, questions or side quests
 export default function ItemTablePage({ type, titlePrefix }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [team, setTeam] = useState(null); // current player's team info
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [progRes, meRes] = await Promise.all([
-          fetchProgress(type),
-          type === 'sidequest' ? fetchMe() : Promise.resolve({ data: null })
-        ]);
-        setItems(progRes.data);
-        if (type === 'sidequest') setTeam(meRes.data.team);
+        const { data } = await fetchProgress(type);
+        setItems(data);
       } catch (err) {
         console.error(err);
       } finally {
@@ -43,51 +38,19 @@ export default function ItemTablePage({ type, titlePrefix }) {
           <tr>
             <th>Title</th>
             <th>Status</th>
-            <th>Last Scanned By</th>
-            <th>Total Scans</th>
-            {type === 'sidequest' && (
-              <>
-                <th>Set By</th>
-                <th>Team</th>
-                <th>Actions</th>
-              </>
-            )}
           </tr>
         </thead>
         <tbody>
           {items.map((it) => (
             <tr key={it._id}>
-              <td>
+              <td data-label="Title">
                 {it.scanned ? (
                   <Link to={`/${type === 'sidequest' ? 'sidequest' : type}/${it._id}`}>{it.title}</Link>
                 ) : (
                   it.title
                 )}
               </td>
-              <td>{it.status}</td>
-              <td>{it.lastScannedBy || '-'}</td>
-              <td>{it.totalScans}</td>
-              {type === 'sidequest' && (
-                <>
-                  <td>{it.setBy || '-'}</td>
-                  <td>{it.teamName || '-'}</td>
-                  <td>
-                    <Link to={`/sidequests/${it._id}/submissions`}>View submissions</Link>
-                    {it.status === 'DONE!' && (
-                      <>
-                        {' '}
-                        <Link to={`/sidequests/${it._id}/my-submission`}>Edit my submission</Link>
-                      </>
-                    )}
-                    {team && team._id === it.teamId && (
-                      <>
-                        {' '}
-                        <Link to={`/sidequests/${it._id}/edit`}>Edit sidequest</Link>
-                      </>
-                    )}
-                  </td>
-                </>
-              )}
+              <td data-label="Status">{it.status}</td>
             </tr>
           ))}
         </tbody>

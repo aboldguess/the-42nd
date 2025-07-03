@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchClue, submitAnswer } from '../services/api';
+import { fetchClue, submitAnswer, fetchProgressItem } from '../services/api';
 
 // Question view for the single active game
 export default function QuestionPage() {
@@ -11,6 +11,7 @@ export default function QuestionPage() {
   const [loading, setLoading] = useState(true);
   const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState(null);
+  const [stats, setStats] = useState(null); // progress details
 
   useEffect(() => {
     const loadClue = async () => {
@@ -27,6 +28,10 @@ export default function QuestionPage() {
     };
     if (clueId) {
       loadClue();
+      // also fetch scan stats for this clue
+      fetchProgressItem('clue', clueId)
+        .then((data) => setStats(data))
+        .catch((err) => console.error(err));
     }
   }, [clueId]);
 
@@ -123,6 +128,12 @@ export default function QuestionPage() {
           >
             {feedback}
           </p>
+        )}
+        {stats && (
+          <div style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
+            <p>Last scanned by: {stats.lastScannedBy || '-'}</p>
+            <p>Total scans: {stats.totalScans}</p>
+          </div>
         )}
       </div>
     </div>

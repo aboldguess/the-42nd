@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchSideQuest, submitSideQuest, fetchSettings } from '../services/api';
+import {
+  fetchSideQuest,
+  submitSideQuest,
+  fetchSettings,
+  fetchProgressItem
+} from '../services/api';
 import PhotoUploader from '../components/PhotoUploader';
 
 // Detailed view for a single side quest with upload option
@@ -12,6 +17,7 @@ export default function SideQuestDetailPage() {
   const [answer, setAnswer] = useState(''); // selected answer for trivia quests
   const [defaults, setDefaults] = useState({}); // default instructions per type
   const [timeLeft, setTimeLeft] = useState(null); // countdown for timed quests
+  const [stats, setStats] = useState(null); // progress details
 
   useEffect(() => {
     const load = async () => {
@@ -32,6 +38,15 @@ export default function SideQuestDetailPage() {
       }
     };
     if (id) load();
+    const loadStats = async () => {
+      try {
+        const data = await fetchProgressItem('sidequest', id);
+        setStats(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    if (id) loadStats();
   }, [id]);
 
   const handleUpload = async (formData) => {
@@ -116,6 +131,14 @@ export default function SideQuestDetailPage() {
             onUpload={handleUpload}
           />
         </div>
+        {stats && (
+          <div style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
+            <p>Last scanned by: {stats.lastScannedBy || '-'}</p>
+            <p>Total scans: {stats.totalScans}</p>
+            {stats.setBy && <p>Set by: {stats.setBy}</p>}
+            {stats.teamName && <p>Team: {stats.teamName}</p>}
+          </div>
+        )}
       </div>
     </div>
   );
