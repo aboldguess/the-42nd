@@ -261,6 +261,36 @@ form label {
 }
 
 /*
+ * Tabs used on the welcome screen. Each tab button has no shadow so it
+ * blends with the container. The active tab is highlighted and connects
+ * visually with the card below.
+ */
+.tab-container {
+  display: flex;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--secondary-color);
+}
+
+.tab {
+  flex: 1;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  background: var(--primary-color);
+  border: none;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  color: var(--text-color);
+  cursor: pointer;
+  box-shadow: none;
+  border-bottom: 2px solid transparent;
+}
+
+.tab.active {
+  background: var(--background-color);
+  border-bottom-color: var(--background-color);
+  font-weight: 600;
+}
+
+/*
  * Generic vertical list layout used for player and team profiles.
  * Each row is flex-based so content stacks nicely on small screens.
  */
