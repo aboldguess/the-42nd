@@ -22,6 +22,13 @@ exports.getNotifications = async (req, res) => {
       if (req.user.team) conditions.push({ team: req.user.team });
     }
 
+    // If no conditions were built (e.g. user has no team and requested only
+    // team notifications) return an empty list rather than querying Mongo with
+    // an invalid $or expression.
+    if (conditions.length === 0) {
+      return res.json([]);
+    }
+
     const notifications = await Notification.find({ $or: conditions })
       .sort({ createdAt: -1 })
       .limit(limit)
