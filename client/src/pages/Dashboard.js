@@ -9,6 +9,8 @@ import {
   fetchPlayersPublic,
   fetchSettings
 } from '../services/api';
+// React Router Link component lets us navigate client-side without reloading
+import { Link } from 'react-router-dom';
 import TeamMemberForm from '../components/TeamMemberForm';
 
 export default function Dashboard() {
