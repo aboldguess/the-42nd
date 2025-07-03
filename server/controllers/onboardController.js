@@ -38,6 +38,9 @@ exports.onboard = async (req, res) => {
     const { firstName, lastName, isNewTeam, leaderLastName, teamName } = req.body;
     // Trim leader last name once so we can perform a case-insensitive exact match
     const trimmedLeaderLastName = leaderLastName ? leaderLastName.trim() : '';
+    // Escape regex metacharacters so special characters in the last name
+    // are treated literally when building a case-insensitive expression.
+    const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
     // Basic validation
     // Only the player's name is required. When joining a team we also need the
@@ -86,9 +89,10 @@ exports.onboard = async (req, res) => {
       // Look up the leader by last name and then retrieve their team.
       // The comparison uses a case-insensitive regular expression so players
       // can enter "Smith", "smith" or even "SMITH" and still match.
+      // Escape metacharacters to avoid treating characters like * or ? as regex
+      // operators. We then build a case-insensitive exact match.
       const leader = await User.findOne({
-        // Use ^ and $ anchors to require an exact match
-        lastName: new RegExp(`^${trimmedLeaderLastName}$`, 'i'),
+        lastName: new RegExp(`^${escapeRegex(trimmedLeaderLastName)}$`, 'i'),
         isAdmin: true
       });
       if (!leader) {

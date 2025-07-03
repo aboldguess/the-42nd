@@ -64,4 +64,36 @@ describe('/api/onboard', () => {
     expect(created).toBeTruthy();
     expect(created.team.toString()).toBe(team._id.toString());
   });
+
+  test('handles regex characters in leader last name', async () => {
+    const regexTeam = await Team.create({
+      name: 'Regex',
+      password: 'pass',
+      photoUrl: 'regex.jpg',
+      members: []
+    });
+    const regexLeader = await User.create({
+      name: "Ann O'Reilly?",
+      firstName: 'Ann',
+      lastName: "O'Reilly?",
+      photoUrl: 'ann.jpg',
+      team: regexTeam._id,
+      isAdmin: true
+    });
+    regexTeam.leader = regexLeader._id;
+    regexTeam.members.push({ name: regexLeader.name, avatarUrl: regexLeader.photoUrl });
+    await regexTeam.save();
+
+    const res = await request(app)
+      .post('/api/onboard')
+      .field('firstName', 'Joe')
+      .field('lastName', 'Bloggs')
+      .field('isNewTeam', 'false')
+      .field('leaderLastName', "O'Reilly?")
+      .attach('selfie', Buffer.from('fake'), 'selfie.jpg');
+
+    expect(res.statusCode).toBe(201);
+    const created = await User.findOne({ firstName: 'Joe', lastName: 'Bloggs' });
+    expect(created.team.toString()).toBe(regexTeam._id.toString());
+  });
 });
