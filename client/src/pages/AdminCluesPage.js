@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import ImageSelector from '../components/ImageSelector';
 import ExpandableQr from '../components/ExpandableQr';
 import {
@@ -94,6 +95,10 @@ export default function AdminCluesPage() {
   return (
     <div className="card spaced-card">
       <h2>Clues</h2>
+      {/* Link to printable overview for gamemasters */}
+      <p>
+        <Link to="/admin/cribsheet">Print Crib Sheet</Link>
+      </p>
       <table>
         <thead>
           <tr>

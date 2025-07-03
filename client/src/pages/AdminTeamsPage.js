@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   fetchTeamsAdmin,
   createTeamAdmin,
@@ -118,6 +119,9 @@ export default function AdminTeamsPage() {
   return (
     <div className="card spaced-card">
       <h2>Teams</h2>
+      <p>
+        <Link to="/admin/cribsheet">Print Crib Sheet</Link>
+      </p>
       <table>
         <thead>
           <tr>

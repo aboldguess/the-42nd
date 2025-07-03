@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import ImageSelector from '../components/ImageSelector';
 import ExpandableQr from '../components/ExpandableQr';
 import {
@@ -92,6 +93,10 @@ export default function AdminQuestionsPage() {
   return (
     <div className="card spaced-card">
       <h2>Questions</h2>
+      {/* Quick link to a printable crib sheet */}
+      <p>
+        <Link to="/admin/cribsheet">Print Crib Sheet</Link>
+      </p>
       <table>
         <thead>
           <tr>
