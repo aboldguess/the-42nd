@@ -8,6 +8,7 @@ export default function Wall({ type, id, onNewComment }) {
   const [comments, setComments] = useState([]);
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState('');
 
   // Load comments whenever type or id changes
   useEffect(() => {
@@ -35,6 +36,7 @@ export default function Wall({ type, id, onNewComment }) {
       if (onNewComment) onNewComment();
       setText('');
       setFile(null);
+      setPreview('');
     } catch (err) {
       alert(err.response?.data?.message || 'Error posting comment');
     }
@@ -51,7 +53,21 @@ export default function Wall({ type, id, onNewComment }) {
           rows={3}
           style={{ width: '100%', marginBottom: '0.5rem' }}
         />
-        <ImageSelector onSelect={(f) => setFile(f)} />
+        <ImageSelector
+          onSelect={(f) => {
+            setFile(f);
+            const reader = new FileReader();
+            reader.onloadend = () => setPreview(reader.result);
+            reader.readAsDataURL(f);
+          }}
+        />
+        {preview && (
+          <img
+            src={preview}
+            alt="preview"
+            style={{ width: 80, height: 80, objectFit: 'cover', marginBottom: '0.5rem' }}
+          />
+        )}
         <button type="submit">Post</button>
       </form>
       <div>

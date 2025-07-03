@@ -154,7 +154,10 @@ export default function Navbar() {
                   background: 'var(--primary-color)',
                   color: 'var(--text-color)',
                   padding: '0.5rem',
-                  listStyle: 'none'
+                  listStyle: 'none',
+                  fontFamily: 'inherit',
+                  whiteSpace: 'nowrap',
+                  minWidth: '180px'
                 }}
               >
                 <li>
