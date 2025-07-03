@@ -5,7 +5,8 @@ import {
   addTeamMember,
   fetchCluesPlayer,
   fetchProgress,
-  fetchScoreboard
+  fetchScoreboard,
+  fetchPlayersPublic
 } from '../services/api';
 import TeamMemberForm from '../components/TeamMemberForm';
 
@@ -20,8 +21,13 @@ export default function Dashboard() {
     correctAnswers: 0,
     sideQuestsFound: 0,
     sideQuestsCreated: 0,
-    photosUploaded: 0
+    photosUploaded: 0,
+    questionsTotal: 0,
+    questionsLeft: 0
   });
+
+  // List of player documents for linking member names to profiles
+  const [players, setPlayers] = useState([]);
 
   useEffect(() => {
     const load = async () => {
@@ -44,15 +50,19 @@ export default function Dashboard() {
         }
 
         // Fetch progress details
-        const [qProg, cProg, sqProg, board] = await Promise.all([
+        const [qProg, cProg, sqProg, board, playerRes] = await Promise.all([
           fetchProgress('question'),
           fetchProgress('clue'),
           fetchProgress('sidequest'),
-          fetchScoreboard()
+          fetchScoreboard(),
+          fetchPlayersPublic()
         ]);
+        setPlayers(playerRes.data);
         const teamStats = board.data.find((b) => b.teamId === teamRes.data._id);
         setProgress({
           questionsFound: qProg.data.filter((i) => i.scanned).length,
+          questionsTotal: qProg.data.length,
+          questionsLeft: qProg.data.length - qProg.data.filter((i) => i.scanned).length,
           correctAnswers: cProg.data.filter((i) => i.status === 'SOLVED!').length,
           sideQuestsFound: sqProg.data.filter((i) => i.scanned).length,
           sideQuestsCreated: teamStats?.sideQuestsCreated || 0,
@@ -84,34 +94,77 @@ export default function Dashboard() {
     <div>
       <h2>Dashboard</h2>
       <div className="card">
-        <h3>Team: {team.name}</h3>
+        {/* Show the team photo beside the name */}
+        <h3>
+          {team.photoUrl && (
+            <img
+              src={team.photoUrl}
+              alt={`${team.name} photo`}
+              width="40"
+              height="40"
+              style={{
+                borderRadius: '50%',
+                objectFit: 'cover',
+                marginRight: '0.5rem',
+                verticalAlign: 'middle'
+              }}
+            />
+          )}
+          Team: {team.name}
+        </h3>
         <p>
           <strong>Current Clue:</strong> {`Clue ${team.currentClue}`}
         </p>
         <p>
           <strong>Members:</strong>
         </p>
-        <ul>
-          {team.members.map((m, i) => (
-            <li key={i}>
-              {m.avatarUrl && (
-                <img
-                  src={m.avatarUrl}
-                  alt="avatar"
-                  width="30"
-                  height="30"
-                  style={{ borderRadius: '50%', marginRight: '0.5rem' }}
-                />
-              )}
-              {m.name}
-            </li>
-          ))}
-        </ul>
+        {/* Tabular layout showing avatars and linking to profiles */}
+        <table>
+          <thead>
+            <tr>
+              <th>Member</th>
+            </tr>
+          </thead>
+          <tbody>
+            {team.members.map((m, i) => {
+              // Attempt to match this member to a user document so we can link
+              const player = players.find(
+                (p) => p.name === m.name && p.team && p.team._id === team._id
+              );
+              const content = (
+                <>
+                  {m.avatarUrl && (
+                    <img
+                      src={m.avatarUrl}
+                      alt="avatar"
+                      width="30"
+                      height="30"
+                      style={{
+                        borderRadius: '50%',
+                        marginRight: '0.5rem',
+                        objectFit: 'cover'
+                      }}
+                    />
+                  )}
+                  {m.name}
+                </>
+              );
+              return (
+                <tr key={i}>
+                  <td data-label="Member">
+                    {player ? <Link to={`/player/${player._id}`}>{content}</Link> : content}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
         <p>
           <strong>Progress:</strong>
         </p>
         <ul>
           <li>Questions Found: {progress.questionsFound}</li>
+          <li>Questions Left: {progress.questionsLeft}</li>
           <li>Correct Answers: {progress.correctAnswers}</li>
           <li>Sidequests Found: {progress.sideQuestsFound}</li>
           <li>Sidequests Created: {progress.sideQuestsCreated}</li>
