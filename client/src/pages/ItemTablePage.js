@@ -28,15 +28,20 @@ export default function ItemTablePage({ type, titlePrefix }) {
 
   if (loading) return <p>Loading…</p>;
 
+  const remaining = items.filter((i) => !i.scanned).length;
+
   // List of all game items in a card
   return (
     <div className="card spaced-card">
       <h2>{titlePrefix}</h2>
+      <p>
+        Your team has found the following {titlePrefix.toLowerCase()} - {remaining}{' '}
+        {titlePrefix.toLowerCase()} remaining!
+      </p>
       <table>
         <thead>
           <tr>
             <th>Title</th>
-            <th>Scanned By</th>
             <th>Status</th>
             <th>Last Scanned By</th>
             <th>Total Scans</th>
@@ -59,7 +64,6 @@ export default function ItemTablePage({ type, titlePrefix }) {
                   it.title
                 )}
               </td>
-              <td>{it.scannedBy || '-'}</td>
               <td>{it.status}</td>
               <td>{it.lastScannedBy || '-'}</td>
               <td>{it.totalScans}</td>

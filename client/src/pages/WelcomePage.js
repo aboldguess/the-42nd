@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { login } from '../services/api';
+import ProfilePic from '../components/ProfilePic';
 
 // Landing page shown when a player is not authenticated.
 // Provides simple fields for their name and options to either
@@ -8,50 +9,116 @@ import { login } from '../services/api';
 export default function WelcomePage() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  // Switch between login and signup tabs
+  const [tab, setTab] = useState('login');
+  // Track selfie when the signup tab is active so we can pass it along
+  const [selfieFile, setSelfieFile] = useState(null);
+  const [selfiePreview, setSelfiePreview] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   // Destination after authentication defaults to the profile page
-  const next = params.get('next') || '/profile';
+  const next = params.get('next') || '/roguery';
+
+  // Basic validation shared by login and signup actions
+  const validateNames = () => {
+    if (!firstName.trim() || !lastName.trim()) {
+      alert('First and last name are required');
+      return false;
+    }
+    if (firstName.trim().toLowerCase() === lastName.trim().toLowerCase()) {
+      alert('First and last name cannot be the same');
+      return false;
+    }
+    return true;
+  };
 
   // Attempt to log the user in with the provided names
   const handleLogin = async () => {
+    if (!validateNames()) return;
     try {
       const { data } = await login({ firstName, lastName });
       localStorage.setItem('token', data.token);
-      navigate(next);
+      navigate(next || '/roguery');
     } catch (err) {
       alert(err.response?.data?.message || 'Login failed');
     }
   };
 
+  // When a selfie is chosen store both the file and preview URL
+  const handleSelfieSelect = (file) => {
+    setSelfieFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setSelfiePreview(reader.result);
+    reader.readAsDataURL(file);
+  };
+
   // Proceed to the signup flow carrying over the entered names
   const handleSignup = () => {
-    navigate('/signup', { state: { firstName, lastName, next } });
+    if (!validateNames()) return;
+    if (!selfieFile) {
+      alert('Please take or upload a photo first');
+      return;
+    }
+    navigate('/signup', { state: { firstName, lastName, next, selfiePreview } });
   };
 
   return (
     <div className="card" style={{ maxWidth: 400, margin: '2rem auto' }}>
       <h2>Welcome</h2>
-      <label>First Name:</label>
-      <input
-        type="text"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-      />
-      <label>Last Name:</label>
-      <input
-        type="text"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-      />
-      <div style={{ marginTop: '1rem' }}>
-        {/* Spaced buttons for the login/signup actions */}
-        <button className="btn-mr" onClick={handleLogin}>
+      <div style={{ display: 'flex', marginBottom: '1rem' }}>
+        <button
+          type="button"
+          className="btn-mr"
+          onClick={() => setTab('login')}
+          style={{
+            background: tab === 'login' ? 'var(--secondary-color)' : 'var(--primary-color)'
+          }}
+        >
           Log In
         </button>
-        <button onClick={handleSignup}>Sign Up</button>
+        <button
+          type="button"
+          onClick={() => setTab('signup')}
+          style={{
+            background: tab === 'signup' ? 'var(--secondary-color)' : 'var(--primary-color)'
+          }}
+        >
+          Sign Up
+        </button>
       </div>
+
+      <form onSubmit={(e) => e.preventDefault()}>
+        <label>First Name:</label>
+        <input
+          type="text"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          required
+        />
+        <label>Last Name:</label>
+        <input
+          type="text"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          required
+        />
+
+        {tab === 'signup' && (
+          <>
+            <label>Your Photo:</label>
+            <ProfilePic avatarUrl={selfiePreview} onFileSelect={handleSelfieSelect} />
+          </>
+        )}
+
+        <div style={{ marginTop: '1rem' }}>
+          {tab === 'login' ? (
+            <button onClick={handleLogin}>Log In</button>
+          ) : (
+            <button onClick={handleSignup}>Continue</button>
+          )}
+        </div>
+      </form>
     </div>
   );
 }

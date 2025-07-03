@@ -86,11 +86,6 @@ export default function Dashboard() {
       <div className="card">
         <h3>Team: {team.name}</h3>
         <p>
-          <strong>Colour Scheme:</strong>{' '}
-          <span style={{ color: team.colourScheme.primary }}>{team.colourScheme.primary}</span> /{' '}
-          <span style={{ color: team.colourScheme.secondary }}>{team.colourScheme.secondary}</span>
-        </p>
-        <p>
           <strong>Current Clue:</strong> {`Clue ${team.currentClue}`}
         </p>
         <p>
