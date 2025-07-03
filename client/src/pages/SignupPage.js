@@ -9,13 +9,17 @@ import ProfilePic from '../components/ProfilePic';
 export default function SignupPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
-  // Expect first and last names plus optional selfie preview
-  const { firstName, lastName, next, selfiePreview } = state || {};
+  // Expect first/last names plus optional selfie preview and file
+  // The file comes from the previous signup step so users don't
+  // need to reselect their photo here
+  const { firstName, lastName, next, selfiePreview, selfieFile: passedSelfie } =
+    state || {};
 
   const [teams, setTeams] = useState([]);
   const [leaderNames, setLeaderNames] = useState({});
   const [showJoinInput, setShowJoinInput] = useState({});
-  const [selfieFile, setSelfieFile] = useState(null);
+  // Initialize the selfie file and preview from the passed state if available
+  const [selfieFile, setSelfieFile] = useState(passedSelfie || null);
   const [selfieUrl, setSelfieUrl] = useState(selfiePreview || '');
   const [teamName, setTeamName] = useState('');
   const [teamPhotoFile, setTeamPhotoFile] = useState(null);

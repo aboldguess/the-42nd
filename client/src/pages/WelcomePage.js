@@ -60,7 +60,11 @@ export default function WelcomePage() {
       alert('Please take or upload a photo first');
       return;
     }
-    navigate('/signup', { state: { firstName, lastName, next, selfiePreview } });
+    // Pass both the preview URL and the actual File object so the next step
+    // can submit the selfie without requiring the user to reselect it
+    navigate('/signup', {
+      state: { firstName, lastName, next, selfiePreview, selfieFile }
+    });
   };
 
   return (
