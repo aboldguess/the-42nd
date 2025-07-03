@@ -87,19 +87,20 @@ export default function SignupPage() {
       <label>Your Selfie:</label>
       <ProfilePic avatarUrl={selfieUrl} onFileSelect={handleSelfieSelect} />
 
-      <div style={{ display: 'flex', margin: '1rem 0' }}>
+      {/* Tab controls replace the old buttons. The active tab is styled via CSS */}
+      {/* Container uses shared tab styles from index.css for consistency */}
+      <div className="tab-container" style={{ margin: '1rem 0' }}>
         <button
           type="button"
-          className="btn-mr"
+          className={`tab ${tab === 'existing' ? 'active' : ''}`}
           onClick={() => setTab('existing')}
-          style={{ background: tab === 'existing' ? 'var(--secondary-color)' : 'var(--primary-color)' }}
         >
-          Choose Existing Team
+          Join Existing Team
         </button>
         <button
           type="button"
+          className={`tab ${tab === 'new' ? 'active' : ''}`}
           onClick={() => setTab('new')}
-          style={{ background: tab === 'new' ? 'var(--secondary-color)' : 'var(--primary-color)' }}
         >
           Create New Team
         </button>
