@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { fetchKudos, fetchPlayersPublic, voteKudos } from '../services/api';
 
 export default function KudosPage() {
@@ -66,7 +67,9 @@ export default function KudosPage() {
               </td>
               <td data-label="Current Leader">
                 {c.leader ? (
-                  <>
+                  // Link to the current leader's profile
+                  <Link to={`/player/${c.leader._id}`}
+                    style={{ display: 'inline-flex', alignItems: 'center' }}>
                     {c.leader.photoUrl && (
                       <img
                         src={c.leader.photoUrl}
@@ -81,7 +84,7 @@ export default function KudosPage() {
                       />
                     )}
                     {c.leader.firstName}
-                  </>
+                  </Link>
                 ) : (
                   '—'
                 )}
