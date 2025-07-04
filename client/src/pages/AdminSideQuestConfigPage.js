@@ -4,7 +4,10 @@ import { fetchSettingsAdmin, updateSettingsAdmin } from '../services/api';
 // Admin page for editing the default instructions shown for each
 // side quest type. The values are stored on the Settings document
 // under `sideQuestInstructions`.
-export default function AdminInstructionsPage() {
+// Admin page for configuring side quest instructions and visibility. Instructions
+// control the helper text players see when completing a quest. Visibility
+// toggles determine which quest types regular players can create from the UI.
+export default function AdminSideQuestConfigPage() {
   // Default instruction text for each quest type. This is used both for
   // initializing state and as a fallback if no settings exist on the server.
   const initialInstr = {
@@ -17,6 +20,16 @@ export default function AdminInstructionsPage() {
   };
 
   const [instr, setInstr] = useState(initialInstr);
+  // Boolean flags indicating quest types that are restricted to admin users
+  const initialHide = {
+    bonus: false,
+    meetup: false,
+    photo: false,
+    race: false,
+    passcode: false,
+    trivia: false
+  };
+  const [adminOnly, setAdminOnly] = useState(initialHide);
 
   const [loading, setLoading] = useState(true);
 
@@ -24,8 +37,9 @@ export default function AdminInstructionsPage() {
     const load = async () => {
       try {
         const { data } = await fetchSettingsAdmin();
-        // Use the default values if the server hasn't stored any yet
+        // Populate instructions and visibility settings from server
         setInstr(data.sideQuestInstructions || initialInstr);
+        setAdminOnly(data.sideQuestAdminOnly || initialHide);
       } catch (err) {
         console.error(err);
       } finally {
@@ -35,13 +49,14 @@ export default function AdminInstructionsPage() {
     load();
   }, []); // run once on mount
 
-  // Save the updated instructions back to the server
+  // Save the updated instructions and visibility flags back to the server
   const handleSave = async () => {
     try {
       const payload = new FormData();
       payload.append('sideQuestInstructions', JSON.stringify(instr));
+      payload.append('sideQuestAdminOnly', JSON.stringify(adminOnly));
       await updateSettingsAdmin(payload);
-      alert('Instructions saved');
+      alert('Configuration saved');
     } catch (err) {
       alert(err.response?.data?.message || 'Error saving instructions');
     }
@@ -59,12 +74,24 @@ export default function AdminInstructionsPage() {
         onChange={(e) => setInstr({ ...instr, [type]: e.target.value })}
         style={{ width: '100%', height: '4rem', marginTop: '0.25rem' }}
       />
+      <div style={{ marginTop: '0.25rem' }}>
+        <label>
+          <input
+            type="checkbox"
+            checked={adminOnly[type] || false}
+            onChange={(e) =>
+              setAdminOnly({ ...adminOnly, [type]: e.target.checked })
+            }
+          />
+          Admin only
+        </label>
+      </div>
     </label>
   );
 
   return (
     <div className="card spaced-card" style={{ maxWidth: '600px' }}>
-      <h2>Side Quest Instructions</h2>
+      <h2>SideQuest Config</h2>
       {/* When the form is submitted, persist the instructions to the server */}
       <form
         onSubmit={(e) => {

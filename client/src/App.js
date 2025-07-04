@@ -35,7 +35,7 @@ import AdminPlayersPage from './pages/AdminPlayersPage';
 import AdminTeamsPage from './pages/AdminTeamsPage';
 import AdminGalleryPage from './pages/AdminGalleryPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
-import AdminInstructionsPage from './pages/AdminInstructionsPage';
+import AdminSideQuestConfigPage from './pages/AdminSideQuestConfigPage';
 import AdminKudosPage from './pages/AdminKudosPage';
 
 import AdminLoginPage from './pages/AdminLoginPage';
@@ -359,10 +359,10 @@ export default function App() {
                 }
               />
               <Route
-                path="/admin/instructions"
+                path="/admin/sidequest-config"
                 element={
                   <AdminRoute>
-                    <AdminInstructionsPage />
+                    <AdminSideQuestConfigPage />
                   </AdminRoute>
                 }
               />

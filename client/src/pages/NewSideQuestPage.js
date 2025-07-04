@@ -6,7 +6,8 @@ import {
   updateSideQuest,
   deleteSideQuest,
   fetchProgress,
-  fetchMe
+  fetchMe,
+  fetchSettings
 } from '../services/api';
 
 // Player managed side quests with CRUD functionality
@@ -16,6 +17,7 @@ export default function NewSideQuestPage() {
   const [quests, setQuests] = useState([]);
   const [scannedItems, setScannedItems] = useState([]); // items scanned by the team
   const [teamName, setTeamName] = useState('');
+  const [hideTypes, setHideTypes] = useState({});
   const [filter, setFilter] = useState('');
   const [newQuest, setNewQuest] = useState({
     title: '',
@@ -35,12 +37,22 @@ export default function NewSideQuestPage() {
       try {
         const { data } = await fetchMe();
         setTeamName(data.team?.name || '');
+        const settingsRes = await fetchSettings();
+        setHideTypes(settingsRes.data.sideQuestAdminOnly || {});
       } catch (err) {
         console.error(err);
       }
     };
     loadMe();
   }, []);
+
+  // Ensure the selected quest type is permitted once settings load
+  useEffect(() => {
+    if (hideTypes[newQuest.questType]) {
+      const first = questTypeOptions.find((o) => !hideTypes[o.value]);
+      if (first) setNewQuest((q) => ({ ...q, questType: first.value }));
+    }
+  }, [hideTypes]);
 
   useEffect(() => {
     if (newQuest.questType === 'bonus' && teamName) {
@@ -135,15 +147,15 @@ export default function NewSideQuestPage() {
     }
   };
 
-  const questTypeOptions = [
+  const allQuestTypeOptions = [
     { value: 'bonus', label: 'Bonus hunt!' },
     { value: 'meetup', label: 'Come and meet us!' },
     { value: 'photo', label: 'Take a photo!' },
     { value: 'race', label: 'Race!' },
-    // additional suggestions
     { value: 'passcode', label: 'Secret Passcode!' },
     { value: 'trivia', label: 'Trivia Challenge!' }
   ];
+  const questTypeOptions = allQuestTypeOptions.filter((o) => !hideTypes[o.value]);
 
   return (
     <div className="card spaced-card">

@@ -55,6 +55,16 @@ const settingsSchema = new mongoose.Schema({
       default:
         'Answer the trivia question correctly then upload your photo evidence.'
     }
+  },
+  // Flags to hide specific quest types from player creation/edit screens.
+  // When true, the type can only be created by admins via the dashboard.
+  sideQuestAdminOnly: {
+    bonus: { type: Boolean, default: false },
+    meetup: { type: Boolean, default: false },
+    photo: { type: Boolean, default: false },
+    race: { type: Boolean, default: false },
+    passcode: { type: Boolean, default: false },
+    trivia: { type: Boolean, default: false }
   }
 });
 
