@@ -97,7 +97,8 @@ export default function AdminQuestionsPage() {
       <p>
         <Link to="/admin/cribsheet">Print Crib Sheet</Link>
       </p>
-      <table>
+      {/* responsive table for managing questions */}
+      <table className="admin-table">
         <thead>
           <tr>
             <th>Title</th>
