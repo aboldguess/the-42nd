@@ -58,7 +58,11 @@ export default function SignupPage() {
       localStorage.setItem('token', data.token);
       navigate(next || '/roguery');
     } catch (err) {
-      alert(err.response?.data?.message || 'Unable to join team');
+      const msg = err.response?.data?.message;
+      const hint = msg
+        ? `Unable to join team because ${msg}. Try again.`
+        : 'Unable to join team due to a network error. Please try again.';
+      alert(hint);
     }
   };
 
@@ -80,7 +84,15 @@ export default function SignupPage() {
       localStorage.setItem('token', data.token);
       navigate(next || '/roguery');
     } catch (err) {
-      alert(err.response?.data?.message || 'Unable to create team');
+      const msg = err.response?.data?.message;
+      let advice = 'Please try again.';
+      if (msg === 'Team name already taken') advice = 'Choose a different team name.';
+      if (msg === 'Team photo is required') advice = 'Select a team photo.';
+      if (msg === 'Profile picture is required') advice = 'Upload a selfie.';
+      const hint = msg
+        ? `Unable to create team because ${msg}. ${advice}`
+        : 'Unable to create team due to a network error. Please try again.';
+      alert(hint);
     }
   };
 
