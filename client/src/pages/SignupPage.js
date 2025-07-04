@@ -103,8 +103,12 @@ export default function SignupPage() {
       <label>Your Selfie:</label>
       <ProfilePic avatarUrl={selfieUrl} onFileSelect={handleSelfieSelect} />
 
-      {/* Tab controls replace the old buttons. The active tab is styled via CSS */}
-      {/* Container uses shared tab styles from index.css for consistency */}
+      {/*
+        Tab controls replace the old buttons. Styling is shared with the
+        welcome screen so whichever option is active uses the primary
+        colour, making it obvious whether players are joining an
+        existing team or creating a new one.
+      */}
       <div className="tab-container" style={{ margin: '1rem 0' }}>
         <button
           type="button"
