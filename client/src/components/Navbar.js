@@ -127,19 +127,14 @@ export default function Navbar() {
       </div>
 
       <ul className="nav-right">
-        {/* Admin login link shown when no admin is authenticated */}
-        {!adminToken && (
-          <li className="hide-mobile">
-            <Link to="/admin/login">Admin</Link>
-          </li>
-        )}
-        {/* Show a login button for players who aren't authenticated */}
+        {/* Show "Log In" when the user has no player token */}
         {!token && (
           <li>
-            {/* Root path hosts the combined login/signup flow */}
+            {/* Clicking leads to the login/signup screen */}
             <Link to="/">Log In</Link>
           </li>
         )}
+        {/* When signed in display notifications, QR code and avatar */}
         {token && <li><NotificationBell /></li>}
         {token && qrData && (
           <li>
