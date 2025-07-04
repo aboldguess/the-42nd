@@ -6,6 +6,8 @@ import { fetchProgress } from '../services/api';
 export default function ItemTablePage({ type, titlePrefix }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Track which items to display based on completion state
+  const [filter, setFilter] = useState('all'); // all | complete | incomplete
 
   useEffect(() => {
     const load = async () => {
@@ -24,6 +26,12 @@ export default function ItemTablePage({ type, titlePrefix }) {
   if (loading) return <p>Loading…</p>;
 
   const remaining = items.filter((i) => !i.scanned).length;
+  // Apply completion filter to the list
+  const filteredItems = items.filter((it) => {
+    if (filter === 'complete') return it.status === 'DONE!';
+    if (filter === 'incomplete') return it.status !== 'DONE!';
+    return true;
+  });
 
   // List of all game items in a card
   return (
@@ -33,6 +41,23 @@ export default function ItemTablePage({ type, titlePrefix }) {
         Your team has found the following {titlePrefix.toLowerCase()} - {remaining}{' '}
         {titlePrefix.toLowerCase()} remaining!
       </p>
+      {/* Completion filter for side quests */}
+      {type === 'sidequest' && (
+        <div style={{ marginBottom: '0.5rem' }}>
+          <label>
+            Show:
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              style={{ marginLeft: '0.5rem' }}
+            >
+              <option value="all">All</option>
+              <option value="incomplete">Incomplete</option>
+              <option value="complete">Completed</option>
+            </select>
+          </label>
+        </div>
+      )}
       <table>
         <thead>
           <tr>
@@ -41,11 +66,14 @@ export default function ItemTablePage({ type, titlePrefix }) {
           </tr>
         </thead>
         <tbody>
-          {items.map((it) => (
+          {filteredItems.map((it) => (
             <tr key={it._id}>
               <td data-label="Title">
-                {it.scanned ? (
-                  <Link to={`/${type === 'sidequest' ? 'sidequest' : type}/${it._id}`}>{it.title}</Link>
+                {type === 'sidequest' ? (
+                  // Side quests are always clickable regardless of scan state
+                  <Link to={`/sidequest/${it._id}`}>{it.title}</Link>
+                ) : it.scanned ? (
+                  <Link to={`/${type}/${it._id}`}>{it.title}</Link>
                 ) : (
                   it.title
                 )}
