@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchProgress } from '../services/api';
 
-// Generic table listing progress for clues, questions or side quests
+// Generic list showing progress for clues, questions or side quests
 export default function ItemTablePage({ type, titlePrefix }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,31 +58,36 @@ export default function ItemTablePage({ type, titlePrefix }) {
           </label>
         </div>
       )}
-      <table>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredItems.map((it) => (
-            <tr key={it._id}>
-              <td data-label="Title">
-                {type === 'sidequest' ? (
-                  // Side quests are always clickable regardless of scan state
-                  <Link to={`/sidequest/${it._id}`}>{it.title}</Link>
-                ) : it.scanned ? (
-                  <Link to={`/${type}/${it._id}`}>{it.title}</Link>
-                ) : (
-                  it.title
-                )}
-              </td>
-              <td data-label="Status">{it.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/*
+        Display items using a simple flex-based list instead of a table. This
+        avoids repeated column headings on narrow screens and provides better
+        mobile layout. Each row shows the item title with its completion status
+        aligned to the right.
+      */}
+      <div className="list">
+        {filteredItems.map((it) => (
+          <div
+            key={it._id}
+            className="list-row"
+            style={{ justifyContent: 'space-between' }}
+          >
+            <div>
+              {type === 'sidequest' ? (
+                // Side quests are always clickable regardless of scan state
+                <Link to={`/sidequest/${it._id}`}>{it.title}</Link>
+              ) : it.scanned ? (
+                <Link to={`/${type}/${it._id}`}>{it.title}</Link>
+              ) : (
+                it.title
+              )}
+            </div>
+            {/* Status text styled with the existing .sub class */}
+            <span className="sub" style={{ marginLeft: '1rem' }}>
+              {it.status}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
