@@ -2,6 +2,10 @@ const Team = require('../models/Team');
 const Media = require('../models/Media');
 const { createThumbnail } = require('../utils/thumbnail');
 const User = require('../models/User');
+const Clue = require('../models/Clue');
+const Question = require('../models/Question');
+const SideQuest = require('../models/SideQuest');
+const Scan = require('../models/Scan');
 const bcrypt = require('bcryptjs');
 
 exports.getTeam = async (req, res) => {
@@ -163,5 +167,56 @@ exports.deleteTeam = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error deleting team' });
+  }
+};
+
+/**
+ * Return the most recent scan event for the specified team.
+ * Only members of the team may query this endpoint.
+ */
+exports.getLastScan = async (req, res) => {
+  try {
+    // Ensure the requesting player belongs to the team they are asking about
+    if (!req.user.team || req.user.team.toString() !== req.params.teamId) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    // Look up the newest Scan document for this team
+    const scan = await Scan.findOne({ team: req.params.teamId })
+      .sort({ createdAt: -1 })
+      // Only fetch the user's name to minimise data transfer
+      .populate('user', 'name');
+
+    if (!scan) return res.json(null);
+
+    // Determine the title of the scanned item depending on its type
+    let title = '';
+    // We'll also need the id of the scanned item so the client can link to it
+    const itemId = scan.itemId.toString();
+    if (scan.itemType === 'clue') {
+      const clue = await Clue.findById(scan.itemId).select('title');
+      title = clue ? clue.title : '';
+    } else if (scan.itemType === 'question') {
+      const q = await Question.findById(scan.itemId).select('title');
+      title = q ? q.title : '';
+    } else if (scan.itemType === 'sidequest') {
+      const sq = await SideQuest.findById(scan.itemId).select('title');
+      title = sq ? sq.title : '';
+    } else if (scan.itemType === 'player') {
+      const user = await User.findById(scan.itemId).select('name');
+      title = user ? user.name : '';
+    }
+
+    // Return metadata about the last scan so the dashboard can link to it
+    res.json({
+      title,
+      itemId,
+      itemType: scan.itemType,
+      scannedAt: scan.createdAt,
+      scannedBy: scan.user ? { id: scan.user._id, name: scan.user.name } : null
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching last scan' });
   }
 };
