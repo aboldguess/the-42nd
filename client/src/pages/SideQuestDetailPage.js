@@ -65,14 +65,9 @@ export default function SideQuestDetailPage() {
     }
   };
 
-  if (loading) return <p>Loading…</p>;
-  if (!quest) return <p>Side quest not found.</p>;
-
-  // Use quest specific instructions when provided, otherwise fall back to
-  // the defaults loaded from the settings document.
-  const instructionsText = quest.instructions || defaults[quest.questType];
-
-  // Start a simple countdown when timeLeft is set
+  // Start a simple countdown when timeLeft is set. This effect must run on
+  // every render to preserve hook ordering even if the component early returns
+  // during the loading state below.
   useEffect(() => {
     if (timeLeft === null) return;
     if (timeLeft <= 0) return;
@@ -81,6 +76,13 @@ export default function SideQuestDetailPage() {
     }, 1000);
     return () => clearInterval(timer);
   }, [timeLeft]);
+
+  if (loading) return <p>Loading…</p>;
+  if (!quest) return <p>Side quest not found.</p>;
+
+  // Use quest specific instructions when provided, otherwise fall back to
+  // the defaults loaded from the settings document.
+  const instructionsText = quest.instructions || defaults[quest.questType];
 
   return (
     <div>
