@@ -32,7 +32,9 @@ const teamSchema = new mongoose.Schema(
       type: [
         {
           sideQuest: { type: mongoose.Schema.Types.ObjectId, ref: 'SideQuest' },
-          completedAt: Date
+          completedAt: Date,
+          // Player who completed the side quest for the team
+          scannedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
         }
       ],
       default: []

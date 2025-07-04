@@ -36,6 +36,11 @@ const sideQuestSchema = new mongoose.Schema(
     active: { type: Boolean, default: true },
     // ID of the QR target when questType is 'bonus'
     targetId: mongoose.Schema.Types.ObjectId,
+    // Item type of the QR target so we know which collection it belongs to
+    targetType: {
+      type: String,
+      enum: ['clue', 'question', 'player']
+    },
     // Secret word for 'passcode' quests
     passcode: String,
     // Trivia details for 'trivia' quests

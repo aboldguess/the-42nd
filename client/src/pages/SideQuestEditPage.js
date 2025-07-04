@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import ExpandableQr from '../components/ExpandableQr';
+import ImageSelector from '../components/ImageSelector';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   fetchSideQuest,
@@ -15,6 +16,7 @@ export default function SideQuestEditPage() {
   const [quest, setQuest] = useState(null);
   const [loading, setLoading] = useState(true);
   const [scannedItems, setScannedItems] = useState([]); // used for bonus quests
+  const [filter, setFilter] = useState('');
 
   // Retrieve the quest from the API. Memoized so React Hook rules
   // can list it as a dependency without re-running unnecessarily.
@@ -34,12 +36,17 @@ export default function SideQuestEditPage() {
   // so it can be safely listed in useEffect dependencies.
   const loadScanned = useCallback(async () => {
     try {
-      const [clues, questions, sqs] = await Promise.all([
+      const [clues, questions, players] = await Promise.all([
         fetchProgress('clue'),
         fetchProgress('question'),
-        fetchProgress('sidequest')
+        fetchProgress('player')
       ]);
-      const scanned = [...clues, ...questions, ...sqs].filter((i) => i.scanned);
+      const typed = [
+        ...clues.map((c) => ({ ...c, type: 'clue' })),
+        ...questions.map((q) => ({ ...q, type: 'question' })),
+        ...players.map((p) => ({ ...p, type: 'player' }))
+      ];
+      const scanned = typed.filter((i) => i.scanned);
       setScannedItems(scanned);
     } catch (err) {
       console.error(err);
@@ -57,7 +64,18 @@ export default function SideQuestEditPage() {
   // Save updated fields
   const handleSave = async () => {
     try {
-      await updateSideQuest(id, quest);
+      let payload = quest;
+      if (quest.image) {
+        const formData = new FormData();
+        formData.append('title', quest.title);
+        formData.append('text', quest.text);
+        formData.append('questType', quest.questType);
+        formData.append('image', quest.image);
+        if (quest.targetId) formData.append('targetId', quest.targetId);
+        if (quest.targetType) formData.append('targetType', quest.targetType);
+        payload = formData;
+      }
+      await updateSideQuest(id, payload);
       alert('Saved');
       loadQuest();
     } catch (err) {
@@ -107,12 +125,16 @@ export default function SideQuestEditPage() {
           />
         </label>
         <label style={{ display: 'block', marginBottom: '0.5rem' }}>
-          Text:
+          Clue:
           <input
             value={quest.text || ''}
             onChange={(e) => setField('text', e.target.value)}
             style={{ marginLeft: '0.5rem' }}
           />
+        </label>
+        <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+          Photo:
+          <ImageSelector onSelect={(file) => setField('image', file)} />
         </label>
         <label style={{ display: 'block', marginBottom: '0.5rem' }}>
           Type:
@@ -133,17 +155,33 @@ export default function SideQuestEditPage() {
         {quest.questType === 'bonus' && (
           <label style={{ display: 'block', marginBottom: '0.5rem' }}>
             Target QR:
+            <input
+              type="text"
+              placeholder="Search..."
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              style={{ marginLeft: '0.5rem' }}
+            />
             <select
               value={quest.targetId || ''}
-              onChange={(e) => setField('targetId', e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                const it = scannedItems.find((s) => s._id === val);
+                setField('targetId', val);
+                setField('targetType', it ? it.type : '');
+              }}
               style={{ marginLeft: '0.5rem' }}
             >
               <option value="">Select scanned QR</option>
-              {scannedItems.map((it) => (
-                <option key={it._id} value={it._id}>
-                  {it.title}
-                </option>
-              ))}
+              {scannedItems
+                .filter((it) =>
+                  it.title.toLowerCase().includes(filter.toLowerCase())
+                )
+                .map((it) => (
+                  <option key={it._id} value={it._id}>
+                    {it.title}
+                  </option>
+                ))}
             </select>
           </label>
         )}

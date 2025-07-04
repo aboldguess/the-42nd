@@ -98,6 +98,11 @@ export default function SideQuestDetailPage() {
             style={{ width: '100%', borderRadius: '4px', marginTop: '1rem' }}
           />
         )}
+        {quest.questType === 'bonus' && quest.targetName && (
+          <p style={{ fontWeight: 'bold' }}>
+            Find and scan the QR code for {quest.targetName}!
+          </p>
+        )}
         {/* Extra fields for special quest types */}
         {quest.questType === 'passcode' && (
           <input
@@ -131,6 +136,20 @@ export default function SideQuestDetailPage() {
             onUpload={handleUpload}
           />
         </div>
+        {quest.questType === 'bonus' && (
+          <div style={{ marginTop: '1rem' }}>
+            <p>
+              STATUS:{' '}
+              {stats && stats.status === 'DONE!' ? 'COMPLETE' : 'INCOMPLETE'}!
+            </p>
+            {stats && stats.status === 'DONE!' && stats.completedBy && (
+              <p>
+                {quest.targetName} QR code scanned by {stats.completedBy} at{' '}
+                {new Date(stats.completedAt).toLocaleString()} - well done!
+              </p>
+            )}
+          </div>
+        )}
         {stats && (
           <div style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
             <p>Last scanned by: {stats.lastScannedBy || '-'}</p>

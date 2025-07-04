@@ -119,19 +119,32 @@ exports.getScoreboard = async (req, res) => {
  */
 exports.getItemScanStats = async (req, res) => {
   const { type } = req.params;
-  if (!['clue', 'question', 'sidequest'].includes(type)) {
+  if (!['clue', 'question', 'sidequest', 'player'].includes(type)) {
     return res.status(400).json({ message: 'Invalid item type' });
   }
 
-  const Model = type === 'clue' ? Clue : type === 'question' ? Question : SideQuest;
+  const Model =
+    type === 'clue'
+      ? Clue
+      : type === 'question'
+      ? Question
+      : type === 'player'
+      ? User
+      : SideQuest;
 
   try {
-    // Include the team name when listing side quests
+    // Include the team name when listing side quests or players
     let query = Model.find().sort({ createdAt: 1 });
-    if (type === 'sidequest') {
+    if (type === 'sidequest' || type === 'player') {
       query = query.populate('team', 'name');
     }
-    const items = await query;
+    const [items, team] = await Promise.all([
+      query,
+      Team.findById(req.user.team).populate(
+        'sideQuestProgress.scannedBy',
+        'name'
+      )
+    ]);
 
     const data = await Promise.all(
       items.map(async (item) => {
@@ -165,9 +178,22 @@ exports.getItemScanStats = async (req, res) => {
         const lastScannedBy = lastEvent ? lastEvent.user.name : null;
         const totalScans = new Set(scans.map((s) => s.user._id.toString())).size;
 
+        const title = item.title || item.name;
+        // Check team completion details for side quests
+        let completedAt = null;
+        let completedBy = null;
+        if (type === 'sidequest' && team) {
+          const entry = team.sideQuestProgress.find(
+            (p) => p.sideQuest.toString() === item._id.toString()
+          );
+          if (entry) {
+            completedAt = entry.completedAt;
+            completedBy = entry.scannedBy ? entry.scannedBy.name : null;
+          }
+        }
         return {
           _id: item._id,
-          title: item.title,
+          title,
           scannedBy,
           status,
           lastScannedBy,
@@ -177,7 +203,9 @@ exports.getItemScanStats = async (req, res) => {
           teamName: item.team ? item.team.name : '',
           teamId: item.team ? item.team._id : '',
           // Used by the client to know when to link to the item page
-          scanned: !!scannedBy
+          scanned: !!scannedBy,
+          completedAt,
+          completedBy
         };
       })
     );

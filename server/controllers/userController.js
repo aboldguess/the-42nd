@@ -3,6 +3,8 @@ const Media = require('../models/Media');
 const { createThumbnail } = require('../utils/thumbnail');
 const QRCode = require('qrcode');
 const { getQrBase } = require('../utils/qr');
+const { recordScan } = require('../utils/scan');
+const { checkBonusQuestCompletion } = require('../utils/bonusQuest');
 
 // Ensure a player has a QR code for their profile URL
 async function ensureQrCode(user) {
@@ -135,6 +137,9 @@ exports.getPlayerById = async (req, res) => {
       .populate('team', 'name');
     if (!player) return res.status(404).json({ message: 'Player not found' });
     await ensureQrCode(player);
+    // Record that this player's QR was scanned and check bonus quests
+    await recordScan('player', player._id, req.user, 'NEW', player.name);
+    await checkBonusQuestCompletion(player._id, req.user);
     res.json(player);
   } catch (err) {
     console.error(err);

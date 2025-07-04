@@ -8,6 +8,7 @@ const Settings = require('../models/Settings');
 const Team = require('../models/Team');
 const mongoose = require('mongoose');
 const { recordScan } = require('../utils/scan');
+const { checkBonusQuestCompletion } = require('../utils/bonusQuest');
 
 // Retrieve the base URL used for QR codes
 async function getQrBase() {
@@ -142,6 +143,8 @@ exports.getQuestion = async (req, res) => {
 
     // Record that this question was scanned if player is logged in
     await recordScan('question', question._id, req.user, 'NEW', question.title);
+    const { checkBonusQuestCompletion } = require('../utils/bonusQuest');
+    await checkBonusQuestCompletion(question._id, req.user);
 
     // Respond with the question plus answer state
     res.json({
