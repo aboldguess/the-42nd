@@ -86,8 +86,8 @@ export default function SideQuestDetailPage() {
 
   return (
     <div>
-      {/* Link back to all side quests */}
-      <Link to="/sidequests" className="btn-link">
+      {/* Link back to the progress list of all side quests */}
+      <Link to="/progress/sidequests" className="btn-link">
         &larr; Return to list
       </Link>
       <h2>{quest.title}</h2>
