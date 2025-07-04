@@ -45,7 +45,9 @@ export default function CreateSideQuestPage() {
       formData.append('title', title);
       formData.append('questType', questType);
       const res = await createSideQuest(formData);
-      navigate(`/sidequests/${res.data._id}/edit`);
+      // Pass ?new=1 so the edit page knows this is a freshly
+      // created quest and can redirect to the detail view on save
+      navigate(`/sidequests/${res.data._id}/edit?new=1`);
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.message || 'Error creating side quest');
