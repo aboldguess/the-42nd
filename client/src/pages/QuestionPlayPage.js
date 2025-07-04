@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   fetchQuestion,
   submitQuestionAnswer,
@@ -81,6 +81,10 @@ export default function QuestionPlayPage() {
 
   return (
     <div>
+      {/* Link back to the list of questions */}
+      <Link to="/progress/questions" className="btn-link">
+        &larr; Return to list
+      </Link>
       <h2>{question.title}</h2>
       <div className="card">
         <p>{question.text}</p>

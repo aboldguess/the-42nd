@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { fetchClue, fetchProgressItem } from '../services/api';
 
 // Question view for the single active game
@@ -37,6 +37,10 @@ export default function QuestionPage() {
 
   return (
     <div>
+      {/* Link back to the full list of clues */}
+      <Link to="/progress/clues" className="btn-link">
+        &larr; Return to list
+      </Link>
       <h2>{clue.title}</h2>
       <div className="card">
         <p>{clue.text}</p>
