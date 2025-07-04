@@ -55,8 +55,16 @@ export default function AdminCribSheetPage() {
             <tr key={c._id}>
               <td>
                 {c.qrCodeData && (
-                  /* Large QR so printed copies can be scanned */
-                  <img src={c.qrCodeData} alt={`QR for ${c.title}`} width={120} />
+                  /*
+                   * Display the QR with a caption underneath so a single
+                   * table cell can be printed and cut out as a label.
+                   */
+                  <div className="qr-wrapper">
+                    {/* Bigger QR to ensure easy scanning when printed */}
+                    <img src={c.qrCodeData} alt={`QR for ${c.title}`} width={180} />
+                    {/* Duplicate the title under the QR for standalone printouts */}
+                    <div className="qr-title">{c.title}</div>
+                  </div>
                 )}
               </td>
               <td>{c.title}</td>
@@ -82,8 +90,14 @@ export default function AdminCribSheetPage() {
             <tr key={q._id}>
               <td>
                 {q.qrCodeData && (
-                  /* Include QR for each question */
-                  <img src={q.qrCodeData} alt={`QR for ${q.title}`} width={120} />
+                  /*
+                   * Questions also need printable QR labels. The wrapper adds
+                   * the title beneath the code so each cell can be trimmed out.
+                   */
+                  <div className="qr-wrapper">
+                    <img src={q.qrCodeData} alt={`QR for ${q.title}`} width={180} />
+                    <div className="qr-title">{q.title}</div>
+                  </div>
                 )}
               </td>
               <td>{q.title}</td>
@@ -109,8 +123,15 @@ export default function AdminCribSheetPage() {
             <tr key={q._id}>
               <td>
                 {q.qrCodeData && (
-                  /* Display quest QR for quick scanning */
-                  <img src={q.qrCodeData} alt={`QR for ${q.title}`} width={120} />
+                  /*
+                   * Side quests also print their QR code with a caption so
+                   * individual squares can be cut out for hiding around the
+                   * venue.
+                   */
+                  <div className="qr-wrapper">
+                    <img src={q.qrCodeData} alt={`QR for ${q.title}`} width={180} />
+                    <div className="qr-title">{q.title}</div>
+                  </div>
                 )}
               </td>
               <td>{q.title}</td>

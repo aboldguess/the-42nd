@@ -467,9 +467,24 @@ tbody tr:nth-child(even) {
     padding-left: 0;  /* don't reserve space for pseudo-labels */
   }
   /* Hide the data-label pseudo elements for admin tables */
-  .admin-table td::before {
-    content: none;
-  }
+.admin-table td::before {
+  content: none;
+}
+}
+
+/*
+ * Small wrapper used on the printable crib sheet so QR codes are
+ * centered with their caption directly underneath. This makes it easy
+ * to cut out the QR plus title as a single piece of paper.
+ */
+.qr-wrapper {
+  text-align: center;
+}
+
+/* Title displayed below each QR code in the crib sheet */
+.qr-title {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
 }
 
 @media (max-width: 600px) {
