@@ -22,6 +22,25 @@ axios.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Redirect to the login page when the backend responds with 401 Unauthorized.
+// The current path is included via the "next" query parameter so the user
+// returns to the scanned QR page after authenticating.
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Remove any stale token that caused the failure
+      localStorage.removeItem('token');
+      const current = window.location.pathname + window.location.search;
+      // Avoid redirect loops if we're already on the login screen
+      if (!current.startsWith('/?')) {
+        window.location.href = `/?next=${encodeURIComponent(current)}`;
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Onboarding endpoints
 export const onboard = (formData) =>
   axios.post('/api/onboard', formData, {
