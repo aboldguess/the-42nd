@@ -177,6 +177,13 @@ exports.onboard = async (req, res) => {
     });
   } catch (err) {
     console.error('Onboard error:', err);
+    // Handle common validation failures to provide clearer feedback
+    if (err.code === 11000) {
+      return res.status(400).json({ message: 'Team name already taken' });
+    }
+    if (err.message && err.message.includes('secret')) {
+      return res.status(500).json({ message: 'Server configuration error' });
+    }
     return res.status(500).json({ message: 'Server error during onboarding' });
   }
 };
