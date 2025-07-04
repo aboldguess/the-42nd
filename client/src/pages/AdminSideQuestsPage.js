@@ -22,6 +22,33 @@ export default function AdminSideQuestsPage() {
   });
   const [editId, setEditId] = useState(null);
   const [editData, setEditData] = useState({});
+  // Preview thumbnails for selected images so admins know what was chosen
+  const [newPreview, setNewPreview] = useState('');
+  const [editPreview, setEditPreview] = useState('');
+
+  // When choosing an image for a new quest, store the file and preview
+  const handleNewImageSelect = (file) => {
+    setNewQuest((q) => ({ ...q, image: file }));
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setNewPreview(reader.result);
+      reader.readAsDataURL(file);
+    } else {
+      setNewPreview('');
+    }
+  };
+
+  // When replacing an image on an existing quest show a preview as well
+  const handleEditImageSelect = (file) => {
+    setEditData((d) => ({ ...d, image: file }));
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setEditPreview(reader.result);
+      reader.readAsDataURL(file);
+    } else {
+      setEditPreview('');
+    }
+  };
 
   useEffect(() => {
     load();
@@ -50,6 +77,7 @@ export default function AdminSideQuestsPage() {
       formData.append('useStopwatch', newQuest.useStopwatch ? 'true' : 'false');
       await createSideQuestAdmin(formData);
       setNewQuest({ title: '', text: '', timeLimitSeconds: '', useStopwatch: false, image: null });
+      setNewPreview('');
       load();
     } catch (err) {
       console.error(err);
@@ -75,6 +103,7 @@ export default function AdminSideQuestsPage() {
       await updateSideQuestAdmin(id, payload);
       setEditId(null);
       setEditData({});
+      setEditPreview('');
       load();
     } catch (err) {
       console.error(err);
@@ -135,10 +164,15 @@ export default function AdminSideQuestsPage() {
                     />
                   </td>
                   <td>
-                  {/* upload a new picture for the quest */}
-                  <ImageSelector onSelect={(file) =>
-                    setEditData({ ...editData, image: file })
-                  } />
+                    {/* show preview when replacing the quest image */}
+                    {editPreview ? (
+                      <img src={editPreview} alt={q.title} width={50} />
+                    ) : q.imageUrl ? (
+                      <img src={q.imageUrl} alt={q.title} width={50} />
+                    ) : (
+                      '-'
+                    )}
+                    <ImageSelector onSelect={handleEditImageSelect} />
                   </td>
                   <td>
                     <input
@@ -160,7 +194,15 @@ export default function AdminSideQuestsPage() {
                   </td>
                   <td>
                     <button onClick={() => handleSave(q._id)}>Save</button>
-                    <button onClick={() => setEditId(null)}>Cancel</button>
+                    <button
+                      onClick={() => {
+                        setEditId(null);
+                        setEditData({});
+                        setEditPreview('');
+                      }}
+                    >
+                      Cancel
+                    </button>
                   </td>
                 </>
               ) : (
@@ -211,10 +253,9 @@ export default function AdminSideQuestsPage() {
               />
             </td>
             <td>
-              {/* optional quest illustration */}
-              <ImageSelector onSelect={(file) =>
-                setNewQuest({ ...newQuest, image: file })
-              } />
+              {/* preview the chosen image for new quests */}
+              {newPreview && <img src={newPreview} alt="preview" width={50} />}
+              <ImageSelector onSelect={handleNewImageSelect} />
             </td>
             <td>
               <input
