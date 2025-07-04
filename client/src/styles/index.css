@@ -446,6 +446,8 @@ tbody tr:nth-child(even) {
     width: 50%;
     padding-left: 0.5rem;
     font-weight: bold;
+    /* Let clicks go through the pseudo label so inputs remain usable */
+    pointer-events: none;
   }
 }
 
