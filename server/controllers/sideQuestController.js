@@ -28,9 +28,13 @@ async function ensureQrCode(sq) {
 
 exports.getAllSideQuests = async (req, res) => {
   try {
-    const sideQuests = await SideQuest.find({ active: true })
+    // Fetch every quest in the collection. Using an empty query ensures
+    // newly created quests immediately appear for all players regardless of
+    // any "active" flag that may have been set.
+    const sideQuests = await SideQuest.find()
       // Sort newest to oldest so recent quests appear first
       .sort({ createdAt: -1 });
+    // Ensure each quest has a QR code generated using the current base URL.
     await Promise.all(sideQuests.map((sq) => ensureQrCode(sq)));
     res.json(sideQuests);
   } catch (err) {
