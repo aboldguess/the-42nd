@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import ExpandableQr from '../components/ExpandableQr';
 import ImageSelector from '../components/ImageSelector';
 import { useParams, useNavigate } from 'react-router-dom';
+
+// The QR code preview component was removed based on new requirements
+// so the edit page no longer imports or displays it.
 import {
   fetchSideQuest,
   updateSideQuest,
@@ -296,11 +298,7 @@ export default function SideQuestEditPage() {
           </label>
         )}
       </div>
-      {quest.qrCodeData && (
-        <div style={{ marginBottom: '1rem' }}>
-          <ExpandableQr data={quest.qrCodeData} size={120} />
-        </div>
-      )}
+      {/* QR codes are intentionally hidden on the new side quest pages */}
       <button onClick={handleSave}>Save</button>
       <button onClick={handleDelete} style={{ marginLeft: '0.5rem' }}>
         Delete
