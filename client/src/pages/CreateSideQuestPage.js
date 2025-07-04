@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createSideQuest } from '../services/api';
+import { createSideQuest, fetchMe } from '../services/api';
 
 // First step in the side quest wizard. The user chooses a name and type
 // then a new quest is created and the edit page opens for additional details.
 export default function CreateSideQuestPage() {
   const [title, setTitle] = useState('');
   const [questType, setQuestType] = useState('photo');
+  const [teamName, setTeamName] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const { data } = await fetchMe();
+        setTeamName(data.team?.name || '');
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    load();
+  }, []);
+
+  useEffect(() => {
+    if (questType === 'bonus' && teamName) {
+      setTitle(`${teamName}'s sidequest QR hunt`);
+    }
+  }, [questType, teamName]);
 
   // Available quest types presented in the dropdown
   const questTypeOptions = [

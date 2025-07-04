@@ -156,7 +156,33 @@ exports.getSideQuest = async (req, res) => {
     await ensureQrCode(sq);
     // Record that this side quest QR was scanned
     await recordScan('sidequest', sq._id, req.user, 'NEW', sq.title);
-    res.json(sq);
+    let targetName = '';
+    if (sq.questType === 'bonus' && sq.targetId) {
+      const Model =
+        sq.targetType === 'clue'
+          ? require('../models/Clue')
+          : sq.targetType === 'question'
+          ? require('../models/Question')
+          : require('../models/User');
+      const target = await Model.findById(sq.targetId);
+      if (target) targetName = target.title || target.name;
+    }
+    const team = await Team.findById(req.user.team).populate(
+      'sideQuestProgress.scannedBy',
+      'name'
+    );
+    let completedAt = null;
+    let completedBy = null;
+    if (team) {
+      const entry = team.sideQuestProgress.find(
+        (p) => p.sideQuest.toString() === id
+      );
+      if (entry) {
+        completedAt = entry.completedAt;
+        completedBy = entry.scannedBy ? entry.scannedBy.name : null;
+      }
+    }
+    res.json({ ...sq.toObject(), targetName, completedAt, completedBy });
   } catch (err) {
     console.error('Error fetching side quest:', err);
     res.status(500).json({ message: 'Error fetching side quest' });

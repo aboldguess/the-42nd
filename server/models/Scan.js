@@ -6,7 +6,7 @@ const scanSchema = new mongoose.Schema(
     itemId: { type: mongoose.Schema.Types.ObjectId, required: true },
     itemType: {
       type: String,
-      enum: ['clue', 'question', 'sidequest'],
+      enum: ['clue', 'question', 'sidequest', 'player'],
       required: true
     },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },

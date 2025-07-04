@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const QRCode = require('qrcode');
 const { getQrBase } = require('../utils/qr');
 const { recordScan } = require('../utils/scan');
+const { checkBonusQuestCompletion } = require('../utils/bonusQuest');
 
 
 // Ensure the given clue has an up-to-date QR code based on current settings.
@@ -37,6 +38,8 @@ exports.getClue = async (req, res) => {
     await ensureQrCode(clue);
     // Log that this player viewed/scanned the clue
     await recordScan('clue', clue._id, req.user, 'NEW', clue.title);
+    // Check whether this scan completes any bonus side quests
+    await checkBonusQuestCompletion(clue._id, req.user);
     res.json(clue);
   } catch (err) {
     console.error('Error fetching clue:', err);

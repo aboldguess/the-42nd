@@ -5,7 +5,8 @@ import {
   createSideQuest,
   updateSideQuest,
   deleteSideQuest,
-  fetchProgress
+  fetchProgress,
+  fetchMe
 } from '../services/api';
 
 // Player managed side quests with CRUD functionality
@@ -14,12 +15,15 @@ export default function NewSideQuestPage() {
   const navigate = useNavigate();
   const [quests, setQuests] = useState([]);
   const [scannedItems, setScannedItems] = useState([]); // items scanned by the team
+  const [teamName, setTeamName] = useState('');
+  const [filter, setFilter] = useState('');
   const [newQuest, setNewQuest] = useState({
     title: '',
     text: '',
     questType: 'photo',
     image: null,
-    targetId: ''
+    targetId: '',
+    targetType: ''
   });
   const [editId, setEditId] = useState(null);
   const [editData, setEditData] = useState({});
@@ -27,7 +31,22 @@ export default function NewSideQuestPage() {
   useEffect(() => {
     load();
     loadScanned();
+    const loadMe = async () => {
+      try {
+        const { data } = await fetchMe();
+        setTeamName(data.team?.name || '');
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    loadMe();
   }, []);
+
+  useEffect(() => {
+    if (newQuest.questType === 'bonus' && teamName) {
+      setNewQuest((q) => ({ ...q, title: `${teamName}'s sidequest QR hunt` }));
+    }
+  }, [newQuest.questType, teamName]);
 
   const load = async () => {
     try {
@@ -42,13 +61,18 @@ export default function NewSideQuestPage() {
   // Load list of scanned items for "Bonus hunt" quests
   const loadScanned = async () => {
     try {
-      const [clues, questions, sqs] = await Promise.all([
+      const [clues, questions, players] = await Promise.all([
         fetchProgress('clue'),
         fetchProgress('question'),
-        fetchProgress('sidequest')
+        fetchProgress('player')
       ]);
+      const typed = [
+        ...clues.map((c) => ({ ...c, type: 'clue' })),
+        ...questions.map((q) => ({ ...q, type: 'question' })),
+        ...players.map((p) => ({ ...p, type: 'player' }))
+      ];
       // only include items the team has scanned
-      const scanned = [...clues, ...questions, ...sqs].filter((i) => i.scanned);
+      const scanned = typed.filter((i) => i.scanned);
       setScannedItems(scanned);
     } catch (err) {
       console.error(err);
@@ -63,8 +87,9 @@ export default function NewSideQuestPage() {
       formData.append('questType', newQuest.questType);
       if (newQuest.image) formData.append('image', newQuest.image);
       if (newQuest.targetId) formData.append('targetId', newQuest.targetId);
+      if (newQuest.targetType) formData.append('targetType', newQuest.targetType);
       const res = await createSideQuest(formData);
-      setNewQuest({ title: '', text: '', questType: 'photo', image: null, targetId: '' });
+      setNewQuest({ title: '', text: '', questType: 'photo', image: null, targetId: '', targetType: '' });
       load();
       // After successfully creating the quest, take the user straight
       // to its page so they can view or continue editing it
@@ -85,7 +110,10 @@ export default function NewSideQuestPage() {
         formData.append('questType', editData.questType);
         formData.append('image', editData.image);
         if (editData.targetId) formData.append('targetId', editData.targetId);
+        if (editData.targetType) formData.append('targetType', editData.targetType);
         payload = formData;
+      } else if (editData.targetType) {
+        payload = { ...editData };
       }
       await updateSideQuest(id, payload);
       setEditId(null);
@@ -151,17 +179,37 @@ export default function NewSideQuestPage() {
                       ))}
                     </select>
                     {editData.questType === 'bonus' && (
-                      <select
-                        value={editData.targetId}
-                        onChange={(e) => setEditData({ ...editData, targetId: e.target.value })}
-                      >
-                        <option value="">Select scanned QR</option>
-                        {scannedItems.map((it) => (
-                          <option key={it._id} value={it._id}>
-                            {it.title}
-                          </option>
-                        ))}
-                      </select>
+                      <>
+                        <input
+                          type="text"
+                          placeholder="Search..."
+                          value={filter}
+                          onChange={(e) => setFilter(e.target.value)}
+                        />
+                        <select
+                          value={editData.targetId}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const it = scannedItems.find((s) => s._id === val);
+                            setEditData({
+                              ...editData,
+                              targetId: val,
+                              targetType: it ? it.type : ''
+                            });
+                          }}
+                        >
+                          <option value="">Select scanned QR</option>
+                          {scannedItems
+                            .filter((it) =>
+                              it.title.toLowerCase().includes(filter.toLowerCase())
+                            )
+                            .map((it) => (
+                              <option key={it._id} value={it._id}>
+                                {it.title}
+                              </option>
+                            ))}
+                        </select>
+                      </>
                     )}
                   </td>
                   <td>
@@ -180,7 +228,8 @@ export default function NewSideQuestPage() {
                         setEditData({
                           title: q.title,
                           questType: q.questType,
-                          targetId: q.targetId || ''
+                          targetId: q.targetId || '',
+                          targetType: q.targetType || ''
                         });
                       }}
                     >
@@ -212,17 +261,37 @@ export default function NewSideQuestPage() {
                 ))}
               </select>
               {newQuest.questType === 'bonus' && (
-                <select
-                  value={newQuest.targetId}
-                  onChange={(e) => setNewQuest({ ...newQuest, targetId: e.target.value })}
-                >
-                  <option value="">Select scanned QR</option>
-                  {scannedItems.map((it) => (
-                    <option key={it._id} value={it._id}>
-                      {it.title}
-                    </option>
-                  ))}
-                </select>
+                <>
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value)}
+                  />
+                  <select
+                    value={newQuest.targetId}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const it = scannedItems.find((s) => s._id === val);
+                      setNewQuest({
+                        ...newQuest,
+                        targetId: val,
+                        targetType: it ? it.type : ''
+                      });
+                    }}
+                  >
+                    <option value="">Select scanned QR</option>
+                    {scannedItems
+                      .filter((it) =>
+                        it.title.toLowerCase().includes(filter.toLowerCase())
+                      )
+                      .map((it) => (
+                        <option key={it._id} value={it._id}>
+                          {it.title}
+                        </option>
+                      ))}
+                  </select>
+                </>
               )}
             </td>
             <td>

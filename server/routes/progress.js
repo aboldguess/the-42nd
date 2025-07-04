@@ -3,7 +3,8 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const { getItemScanStats } = require('../controllers/progressController');
 
-// Return scan progress for a given item type ('clue', 'question', 'sidequest')
+// Return scan progress for a given item type
+// ('clue', 'question', 'sidequest' or 'player')
 router.get('/:type', auth, getItemScanStats);
 
 module.exports = router;
