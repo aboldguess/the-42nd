@@ -6,8 +6,10 @@ import {
   fetchSettings,
   fetchProgressItem,
   fetchMe,
-  deleteSideQuest
+  deleteSideQuest,
+  fetchSideQuestSubmissions
 } from '../services/api';
+import RogueItem from '../components/RogueItem';
 import PhotoUploader from '../components/PhotoUploader';
 
 // Detailed view for a single side quest with upload option
@@ -22,6 +24,7 @@ export default function SideQuestDetailPage() {
   const [timeLeft, setTimeLeft] = useState(null); // countdown for timed quests
   const [stats, setStats] = useState(null); // progress details
   const [me, setMe] = useState(null); // current user info
+  const [submissions, setSubmissions] = useState([]); // other teams' proof
 
   useEffect(() => {
     const load = async () => {
@@ -54,6 +57,17 @@ export default function SideQuestDetailPage() {
       }
     };
     if (id) loadStats();
+    // Fetch all uploaded proof for this side quest so we can
+    // display a mini gallery of submissions below.
+    const loadSubs = async () => {
+      try {
+        const { data } = await fetchSideQuestSubmissions(id);
+        setSubmissions(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    if (id) loadSubs();
   }, [id]);
 
   const handleUpload = async (formData) => {
@@ -67,6 +81,13 @@ export default function SideQuestDetailPage() {
       }
       await submitSideQuest(id, formData);
       alert('Submission received!');
+      // Refresh submissions so the new upload immediately appears
+      try {
+        const { data } = await fetchSideQuestSubmissions(id);
+        setSubmissions(data);
+      } catch (err) {
+        console.error(err);
+      }
     } catch (err) {
       alert(err.response?.data?.message || 'Upload failed');
     }
@@ -192,6 +213,24 @@ export default function SideQuestDetailPage() {
             Delete
           </button>
         </div>
+      )}
+
+      {/*
+        Thumbnails for every proof submission. Clicking a tile opens the
+        same modal used in the rogues gallery so comments and reactions are
+        shared between routes.
+      */}
+      {submissions.length > 0 ? (
+        <>
+          <h3 style={{ marginTop: '1rem' }}>Submissions</h3>
+          <div className="rogue-grid">
+            {submissions.map((m) => (
+              <RogueItem key={m._id} media={m} showInfo={false} />
+            ))}
+          </div>
+        </>
+      ) : (
+        <p style={{ marginTop: '1rem' }}>No submissions yet.</p>
       )}
     </div>
   );
