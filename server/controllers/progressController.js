@@ -161,12 +161,15 @@ exports.getItemScanStats = async (req, res) => {
           .populate('team', 'name')
           .sort({ createdAt: 1 });
 
-        // Events from the player's own team
+        // Filter events to only those from the player's team.
+        // Some scan records may lack a populated team, so check for it first.
         const teamEvents = scans.filter(
-          (s) => s.team._id.toString() === req.user.team.toString()
+          (s) => s.team && s.team._id.toString() === req.user.team.toString()
         );
 
-        const scannedBy = teamEvents.length ? teamEvents[0].user.name : null;
+        // First scan by the team indicates who found it. Guard against missing user.
+        const scannedBy =
+          teamEvents.length && teamEvents[0].user ? teamEvents[0].user.name : null;
 
         // Determine progress state for the current player's team
         let status;
@@ -183,8 +186,13 @@ exports.getItemScanStats = async (req, res) => {
         }
 
         const lastEvent = scans[scans.length - 1];
-        const lastScannedBy = lastEvent ? lastEvent.user.name : null;
-        const totalScans = new Set(scans.map((s) => s.user._id.toString())).size;
+        // Last scan may not have a populated user if the user was removed.
+        const lastScannedBy =
+          lastEvent && lastEvent.user ? lastEvent.user.name : null;
+        // Count unique players who scanned, ignoring any scans missing a user.
+        const totalScans = new Set(
+          scans.filter((s) => s.user).map((s) => s.user._id.toString())
+        ).size;
 
         const title = item.title || item.name;
         // Check team completion details for side quests
