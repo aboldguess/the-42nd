@@ -61,6 +61,8 @@ export default function Sidebar() {
           {renderLink('/admin/sidequest-config', 'SideQuest Config')}
         </>
       )}
+      {/* Provide a link for admins to sign in */}
+      {renderLink('/admin/login', 'Admin Login')}
     </aside>
   );
 }
