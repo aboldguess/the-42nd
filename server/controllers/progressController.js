@@ -133,10 +133,18 @@ exports.getItemScanStats = async (req, res) => {
       : SideQuest;
 
   try {
-    // Include the team name when listing side quests or players
-    let query = Model.find().sort({ createdAt: 1 });
-    if (type === 'sidequest' || type === 'player') {
-      query = query.populate('team', 'name');
+    // Build the base query for the requested item type
+    let query = Model.find();
+    if (type === 'sidequest') {
+      // Side quests should be ordered newest first
+      query = query.sort({ createdAt: -1 }).populate('team', 'name');
+    } else {
+      // Other items keep the original ascending order
+      query = query.sort({ createdAt: 1 });
+      if (type === 'player') {
+        // Players also show their team name
+        query = query.populate('team', 'name');
+      }
     }
     const [items, team] = await Promise.all([
       query,

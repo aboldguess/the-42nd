@@ -28,7 +28,9 @@ async function ensureQrCode(sq) {
 
 exports.getAllSideQuests = async (req, res) => {
   try {
-    const sideQuests = await SideQuest.find({ active: true }).sort({ createdAt: 1 });
+    const sideQuests = await SideQuest.find({ active: true })
+      // Sort newest to oldest so recent quests appear first
+      .sort({ createdAt: -1 });
     await Promise.all(sideQuests.map((sq) => ensureQrCode(sq)));
     res.json(sideQuests);
   } catch (err) {
