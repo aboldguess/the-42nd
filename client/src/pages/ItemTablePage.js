@@ -26,6 +26,7 @@ export default function ItemTablePage({ type, titlePrefix }) {
   if (loading) return <p>Loading…</p>;
 
   const remaining = items.filter((i) => !i.scanned).length;
+  const completed = items.length - remaining;
   // Apply completion filter to the list
   const filteredItems = items.filter((it) => {
     if (filter === 'complete') return it.status === 'DONE!';
@@ -38,8 +39,16 @@ export default function ItemTablePage({ type, titlePrefix }) {
     <div className="card spaced-card">
       <h2>{titlePrefix}</h2>
       <p>
-        Your team has found the following {titlePrefix.toLowerCase()} - {remaining}{' '}
-        {titlePrefix.toLowerCase()} remaining!
+        {type === 'sidequest'
+          ? (
+              <>
+                Your team has completed {completed} of {items.length} side quests!{' '}
+                <Link to="/sidequests/create">make a new task</Link> for others to do?
+              </>
+            )
+          : (
+              <>Your team has found the following {titlePrefix.toLowerCase()} - {remaining} {titlePrefix.toLowerCase()} remaining!</>
+            )}
       </p>
       {/* Completion filter for side quests */}
       {type === 'sidequest' && (
