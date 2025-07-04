@@ -211,10 +211,12 @@ export const fetchQuestions = () => axios.get('/api/admin/questions');
 // Image uploads require multipart/form-data
 export const createQuestion = (data) =>
   axios.post('/api/admin/questions', data, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
   });
 export const updateQuestion = (id, data) =>
-  axios.put(`/api/admin/questions/${id}`, data);
+  axios.put(`/api/admin/questions/${id}`, data, {
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+  });
 export const deleteQuestion = (id) =>
   axios.delete(`/api/admin/questions/${id}`);
 

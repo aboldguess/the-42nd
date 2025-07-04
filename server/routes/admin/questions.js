@@ -17,7 +17,7 @@ router.get('/', getAllQuestions);
 // Create a new question (accepts optional image upload)
 router.post('/', upload.single('image'), createQuestion);
 // Update an existing question
-router.put('/:id', updateQuestion);
+router.put('/:id', upload.single('image'), updateQuestion);
 // Delete a question
 router.delete('/:id', deleteQuestion);
 

@@ -23,7 +23,10 @@ export default function AdminQuestionsPage() {
   const [editId, setEditId] = useState(null);
   const [editData, setEditData] = useState({});
   const [newImage, setNewImage] = useState(null); // file selected for new question
-  const [editImage, setEditImage] = useState(null); // unused placeholder for future updates
+  const [editImage, setEditImage] = useState(null); // replacement image while editing
+  // Preview thumbnails for chosen images so admins know they've been selected
+  const [newPreview, setNewPreview] = useState('');
+  const [editPreview, setEditPreview] = useState('');
 
   useEffect(() => {
     load();
@@ -40,6 +43,30 @@ export default function AdminQuestionsPage() {
     }
   };
 
+  // When choosing a new image, store the file and generate a preview
+  const handleNewImageSelect = (file) => {
+    setNewImage(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setNewPreview(reader.result);
+      reader.readAsDataURL(file);
+    } else {
+      setNewPreview('');
+    }
+  };
+
+  // When editing, allow replacement of the existing question image
+  const handleEditImageSelect = (file) => {
+    setEditImage(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setEditPreview(reader.result);
+      reader.readAsDataURL(file);
+    } else {
+      setEditPreview('');
+    }
+  };
+
   // Create a new trivia question
   const handleCreate = async () => {
     try {
@@ -53,6 +80,7 @@ export default function AdminQuestionsPage() {
       await createQuestion(formData);
       setNewQ({ title: '', text: '', options: '', correctAnswer: '', notes: '' });
       setNewImage(null);
+      setNewPreview('');
       load();
     } catch (err) {
       console.error(err);
@@ -63,14 +91,21 @@ export default function AdminQuestionsPage() {
   // Persist edits to an existing question
   const handleSave = async (id) => {
     try {
-      const payload = { ...editData };
-      await updateQuestion(id, payload);
+      let payload;
       if (editImage) {
-        // image update not supported in API yet
+        // Build multipart form data when a new image is selected
+        const form = new FormData();
+        Object.entries(editData).forEach(([k, v]) => form.append(k, v));
+        form.append('image', editImage);
+        payload = form;
+      } else {
+        payload = { ...editData };
       }
+      await updateQuestion(id, payload);
       setEditId(null);
       setEditData({});
       setEditImage(null);
+      setEditPreview('');
       load();
     } catch (err) {
       console.error(err);
@@ -147,15 +182,31 @@ export default function AdminQuestionsPage() {
                     />
                   </td>
                   <td>
-                    {/* small preview of the attached image */}
-                    {q.imageUrl ? <img src={q.imageUrl} alt={q.title} width={50} /> : '-'}
+                    {/* show preview when a replacement image is chosen */}
+                    {editPreview ? (
+                      <img src={editPreview} alt={q.title} width={50} />
+                    ) : q.imageUrl ? (
+                      <img src={q.imageUrl} alt={q.title} width={50} />
+                    ) : (
+                      '-'
+                    )}
+                    <ImageSelector onSelect={handleEditImageSelect} />
                   </td>
                   <td>
                     {q.qrCodeData ? <ExpandableQr data={q.qrCodeData} size={50} /> : '-'}
                   </td>
                   <td>
                     <button onClick={() => handleSave(q._id)}>Save</button>
-                    <button onClick={() => setEditId(null)}>Cancel</button>
+                    <button
+                      onClick={() => {
+                        setEditId(null);
+                        setEditData({});
+                        setEditImage(null);
+                        setEditPreview('');
+                      }}
+                    >
+                      Cancel
+                    </button>
                   </td>
                 </>
               ) : (
@@ -225,8 +276,9 @@ export default function AdminQuestionsPage() {
               />
             </td>
             <td>
-              {/* optional question image */}
-              <ImageSelector onSelect={(file) => setNewImage(file)} />
+              {/* optional question image with preview */}
+              {newPreview && <img src={newPreview} alt="preview" width={50} />}
+              <ImageSelector onSelect={handleNewImageSelect} />
             </td>
             <td>-</td>
             <td>
