@@ -305,7 +305,13 @@ export default function SideQuestEditPage() {
           </label>
         )}
       </div>
-      {quest.qrCodeData && (
+      {/*
+        Display the quest's QR code only when editing an existing quest.
+        When a new quest is first created (isNew === true) the QR should
+        remain hidden so the user can finish configuring details before
+        sharing it.
+      */}
+      {quest.qrCodeData && !isNew && (
         <div style={{ marginBottom: '1rem' }}>
           <ExpandableQr data={quest.qrCodeData} size={120} />
         </div>
