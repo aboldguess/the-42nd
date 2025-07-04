@@ -70,7 +70,11 @@ export default function WelcomePage() {
   return (
     <div className="card" style={{ maxWidth: 400, margin: '2rem auto' }}>
       <h2>Welcome</h2>
-      {/* Tab controls above the form; active tab is styled via CSS */}
+      {/*
+        Tab controls toggle between logging in and signing up.
+        The active tab is now highlighted via CSS so the current
+        mode is visually obvious to the player.
+      */}
       <div className="tab-container">
         <button
           type="button"
