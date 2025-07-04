@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import ExpandableQr from '../components/ExpandableQr';
 import ImageSelector from '../components/ImageSelector';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
   fetchSideQuest,
   updateSideQuest,
@@ -13,6 +13,9 @@ import {
 export default function SideQuestEditPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  // Detect if the edit page was opened immediately after creating a new quest
+  const isNew = new URLSearchParams(location.search).get('new') === '1';
   const [quest, setQuest] = useState(null);
   const [loading, setLoading] = useState(true);
   // Lists of potential targets for bonus quests
@@ -86,8 +89,14 @@ export default function SideQuestEditPage() {
         payload = formData;
       }
       await updateSideQuest(id, payload);
-      alert('Saved');
-      loadQuest();
+      if (isNew) {
+        // After saving a newly created quest, send the player to the
+        // quest's detail page to start interacting with it
+        navigate(`/sidequest/${id}`);
+      } else {
+        alert('Saved');
+        loadQuest();
+      }
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.message || 'Error saving side quest');
