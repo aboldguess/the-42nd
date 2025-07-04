@@ -722,4 +722,21 @@ tbody tr:nth-child(even) {
     margin: 0;
     box-shadow: none;
   }
+  /* Allow content to expand so the full crib sheet prints */
+  html,
+  body,
+  #root {
+    height: auto;
+  }
+  .content {
+    overflow: visible;
+  }
+  /* Keep table rows intact across printed pages */
+  table {
+    page-break-inside: auto;
+  }
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
 }
