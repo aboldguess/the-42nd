@@ -83,6 +83,19 @@ exports.updateQuestion = async (req, res) => {
     if (typeof updates.options === 'string') {
       updates.options = updates.options.split(',').map((o) => o.trim());
     }
+    // Handle an uploaded replacement image if provided
+    if (req.file) {
+      updates.imageUrl = '/uploads/' + req.file.filename;
+      const thumb = await createThumbnail(updates.imageUrl);
+      await Media.create({
+        url: updates.imageUrl,
+        thumbnailUrl: thumb,
+        uploadedBy: req.admin.id,
+        uploadedByModel: 'Admin',
+        type: 'question',
+        tag: 'question_image'
+      });
+    }
     const q = await Question.findByIdAndUpdate(req.params.id, updates, { new: true });
     if (!q) return res.status(404).json({ message: 'Question not found' });
     await ensureQrCode(q);
