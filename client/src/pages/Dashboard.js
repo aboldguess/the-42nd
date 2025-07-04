@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   fetchMe,
   fetchTeam,
+  fetchLastScan,
   addTeamMember,
   fetchCluesPlayer,
   fetchProgress,
@@ -31,7 +32,26 @@ export default function Dashboard() {
 
   // List of player documents for linking member names to profiles
   const [players, setPlayers] = useState([]);
+  // Metadata about the most recently scanned QR code for the team
+  const [lastScan, setLastScan] = useState(null);
   const [gameName, setGameName] = useState('Treasure Hunt');
+
+  // Build a path to the scanned item based on its type
+  const linkForScan = (scan) => {
+    if (!scan) return '#';
+    switch (scan.itemType) {
+      case 'clue':
+        return `/clue/${scan.itemId}`;
+      case 'question':
+        return `/question/${scan.itemId}`;
+      case 'sidequest':
+        return `/sidequest/${scan.itemId}`;
+      case 'player':
+        return `/player/${scan.itemId}`;
+      default:
+        return '#';
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -40,6 +60,10 @@ export default function Dashboard() {
         setUser(meRes.data);
         const teamRes = await fetchTeam(meRes.data.team._id);
         setTeam(teamRes.data);
+
+        // Retrieve the most recent scan recorded for this team
+        const scanRes = await fetchLastScan(teamRes.data._id);
+        setLastScan(scanRes.data);
 
         if (teamRes.data.currentClue) {
           setCurrentClue(teamRes.data.currentClue);
@@ -122,7 +146,25 @@ export default function Dashboard() {
           Team: {team.name}
         </h3>
         <p>
-          <strong>Current Clue:</strong> {`Clue ${team.currentClue}`}
+          <strong>Last scanned code:</strong>{' '}
+          {lastScan ? (
+            <>
+              {/* Link to the scanned item */}
+              <Link to={linkForScan(lastScan)}>{lastScan.title}</Link>, scanned
+              by{' '}
+              {lastScan.scannedBy ? (
+                // Link to the profile of the scanning player
+                <Link to={`/player/${lastScan.scannedBy.id}`}>{
+                  lastScan.scannedBy.name
+                }</Link>
+              ) : (
+                'Unknown'
+              )}{' '}
+              at {new Date(lastScan.scannedAt).toLocaleString()}
+            </>
+          ) : (
+            'None yet'
+          )}
         </p>
         <p>
           <strong>Members:</strong>
