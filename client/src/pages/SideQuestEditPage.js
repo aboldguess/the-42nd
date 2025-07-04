@@ -142,7 +142,14 @@ export default function SideQuestEditPage() {
   if (!quest) return <p>Side quest not found.</p>;
 
   // Helper to update a property on the quest object
-  const setField = (key, value) => setQuest({ ...quest, [key]: value });
+  // Generic helper for updating quest fields. Using the functional
+  // form of setQuest ensures multiple updates in the same event
+  // (e.g. setting both targetId and targetType) are merged correctly.
+  const setField = (key, value) =>
+    setQuest((q) => ({
+      ...q,
+      [key]: value
+    }));
 
   // Options for quest types shown when editing. Admin-only types are filtered
   // out based on the settings loaded earlier.
@@ -226,6 +233,7 @@ export default function SideQuestEditPage() {
                             name="target"
                             value={players[idx]._id}
                             checked={quest.targetId === players[idx]._id}
+                            /* Selecting a target sets both ID and type */
                             onChange={() => {
                               setField('targetId', players[idx]._id);
                               setField('targetType', 'player');
@@ -243,6 +251,7 @@ export default function SideQuestEditPage() {
                             name="target"
                             value={scannedQuestions[idx]._id}
                             checked={quest.targetId === scannedQuestions[idx]._id}
+                            /* Selecting a target sets both ID and type */
                             onChange={() => {
                               setField('targetId', scannedQuestions[idx]._id);
                               setField('targetType', 'question');
@@ -260,6 +269,7 @@ export default function SideQuestEditPage() {
                             name="target"
                             value={scannedClues[idx]._id}
                             checked={quest.targetId === scannedClues[idx]._id}
+                            /* Selecting a target sets both ID and type */
                             onChange={() => {
                               setField('targetId', scannedClues[idx]._id);
                               setField('targetType', 'clue');
