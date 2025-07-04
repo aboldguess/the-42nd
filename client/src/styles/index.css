@@ -422,6 +422,50 @@ tbody tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
+/*
+ * Admin tables have a simpler responsive style that hides column headers and
+ * stacks each row vertically on phones. Other tables still use the data-label
+ * approach above.
+ */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.admin-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+@media (max-width: 600px) {
+  .admin-table,
+  .admin-table thead,
+  .admin-table tbody,
+  .admin-table th,
+  .admin-table td,
+  .admin-table tr {
+    display: block;
+  }
+  .admin-table thead {
+    display: none;
+  }
+  .admin-table tr {
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #ddd;
+    padding: 0.5rem 0;
+  }
+  .admin-table td {
+    padding: 0.25rem 0;
+    border: none;
+  }
+}
+
 @media (max-width: 600px) {
   /* Stack table rows vertically on very narrow screens */
   table,

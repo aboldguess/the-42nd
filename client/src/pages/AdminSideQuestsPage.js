@@ -101,7 +101,8 @@ export default function AdminSideQuestsPage() {
       <p>
         <Link to="/admin/cribsheet">Print Crib Sheet</Link>
       </p>
-      <table>
+      {/* responsive table for side quests */}
+      <table className="admin-table">
         <thead>
           <tr>
             <th>Title</th>

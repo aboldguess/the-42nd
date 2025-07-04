@@ -99,7 +99,8 @@ export default function AdminCluesPage() {
       <p>
         <Link to="/admin/cribsheet">Print Crib Sheet</Link>
       </p>
-      <table>
+      {/* responsive table for clues */}
+      <table className="admin-table">
         <thead>
           <tr>
             <th>Title</th>
