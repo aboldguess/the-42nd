@@ -127,10 +127,17 @@ export default function Navbar() {
       </div>
 
       <ul className="nav-right">
-        {/* Admin links */}
+        {/* Admin login link shown when no admin is authenticated */}
         {!adminToken && (
           <li className="hide-mobile">
             <Link to="/admin/login">Admin</Link>
+          </li>
+        )}
+        {/* Show a login button for players who aren't authenticated */}
+        {!token && (
+          <li>
+            {/* Root path hosts the combined login/signup flow */}
+            <Link to="/">Log In</Link>
           </li>
         )}
         {token && <li><NotificationBell /></li>}
