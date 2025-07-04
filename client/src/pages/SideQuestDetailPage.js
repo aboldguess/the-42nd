@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import {
   fetchSideQuest,
   submitSideQuest,
@@ -86,6 +86,10 @@ export default function SideQuestDetailPage() {
 
   return (
     <div>
+      {/* Link back to all side quests */}
+      <Link to="/sidequests" className="btn-link">
+        &larr; Return to list
+      </Link>
       <h2>{quest.title}</h2>
       <div className="card">
         <p>{quest.text}</p>
