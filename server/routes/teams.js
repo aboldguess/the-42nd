@@ -10,7 +10,8 @@ const {
   createTeam,
   updateTeam,
   deleteTeam,
-  getTeamsPublic
+  getTeamsPublic,
+  getLastScan
 } = require('../controllers/teamController');
 const Team = require('../models/Team');
 
@@ -18,6 +19,8 @@ const Team = require('../models/Team');
 router.get('/', getTeamsPublic);
 
 router.get('/:teamId', auth, getTeam);
+// Retrieve details about the most recent scan for this team
+router.get('/:teamId/lastscan', auth, getLastScan);
 // Only global admins may modify a team's colour scheme
 router.put('/:teamId/colour', adminAuth, updateColourScheme);
 router.post('/:teamId/members', auth, upload.fields([{ name: 'avatar', maxCount: 1 }]), addMember);
