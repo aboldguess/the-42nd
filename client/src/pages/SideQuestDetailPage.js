@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   fetchSideQuest,
   submitSideQuest,
   fetchSettings,
-  fetchProgressItem
+  fetchProgressItem,
+  fetchMe,
+  deleteSideQuest
 } from '../services/api';
 import PhotoUploader from '../components/PhotoUploader';
 
 // Detailed view for a single side quest with upload option
 export default function SideQuestDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [quest, setQuest] = useState(null);
   const [loading, setLoading] = useState(true);
   const [passcode, setPasscode] = useState(''); // passcode input for secret quests
@@ -18,6 +21,7 @@ export default function SideQuestDetailPage() {
   const [defaults, setDefaults] = useState({}); // default instructions per type
   const [timeLeft, setTimeLeft] = useState(null); // countdown for timed quests
   const [stats, setStats] = useState(null); // progress details
+  const [me, setMe] = useState(null); // current user info
 
   useEffect(() => {
     const load = async () => {
@@ -31,6 +35,9 @@ export default function SideQuestDetailPage() {
         if (sqRes.data.timeLimitSeconds) {
           setTimeLeft(sqRes.data.timeLimitSeconds);
         }
+        // Fetch the current user info at the same time
+        const meRes = await fetchMe();
+        setMe(meRes.data);
       } catch (err) {
         console.error(err);
       } finally {
@@ -65,6 +72,17 @@ export default function SideQuestDetailPage() {
     }
   };
 
+  // Remove this quest when the creator chooses to delete it
+  const handleDelete = async () => {
+    if (!window.confirm('Delete this side quest?')) return;
+    try {
+      await deleteSideQuest(id);
+      navigate('/progress/sidequests');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Error deleting side quest');
+    }
+  };
+
   // Start a simple countdown when timeLeft is set. This effect must run on
   // every render to preserve hook ordering even if the component early returns
   // during the loading state below.
@@ -83,6 +101,8 @@ export default function SideQuestDetailPage() {
   // Use quest specific instructions when provided, otherwise fall back to
   // the defaults loaded from the settings document.
   const instructionsText = quest.instructions || defaults[quest.questType];
+  // Determine if the logged in user created this quest
+  const canEdit = me && quest.createdByType === 'User' && me._id === quest.createdBy;
 
   return (
     <div>
@@ -165,6 +185,14 @@ export default function SideQuestDetailPage() {
           </div>
         )}
       </div>
+      {canEdit && (
+        <div style={{ marginTop: '1rem' }}>
+          <button onClick={() => navigate(`/sidequests/${id}/edit`)}>Edit</button>
+          <button onClick={handleDelete} style={{ marginLeft: '0.5rem' }}>
+            Delete
+          </button>
+        </div>
+      )}
     </div>
   );
 }

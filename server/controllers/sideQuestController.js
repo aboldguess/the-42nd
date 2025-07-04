@@ -43,6 +43,21 @@ exports.getAllSideQuests = async (req, res) => {
   }
 };
 
+// Return only the quests created by the authenticated player
+exports.getMySideQuests = async (req, res) => {
+  try {
+    const sideQuests = await SideQuest.find({
+      createdByType: 'User',
+      createdBy: req.user._id
+    }).sort({ createdAt: -1 });
+    await Promise.all(sideQuests.map((sq) => ensureQrCode(sq)));
+    res.json(sideQuests);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching side quests' });
+  }
+};
+
 exports.createSideQuest = async (req, res) => {
   try {
     let imageUrl = '';

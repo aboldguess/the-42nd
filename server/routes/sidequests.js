@@ -4,6 +4,7 @@ const auth = require('../middleware/auth');
 const upload = require('../middleware/upload');
 const {
   getAllSideQuests,
+  getMySideQuests,
   createSideQuest,
   submitSideQuestProof,
   updateSideQuest,
@@ -14,6 +15,7 @@ const {
 } = require('../controllers/sideQuestController');
 
 // Authenticated player endpoint for all quests
+router.get('/mine', auth, getMySideQuests);
 router.get('/', auth, getAllSideQuests);
 // Public listing of quests (no auth required)
 router.get('/public', getAllSideQuests);
