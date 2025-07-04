@@ -15,8 +15,10 @@ export default function SideQuestEditPage() {
   const navigate = useNavigate();
   const [quest, setQuest] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [scannedItems, setScannedItems] = useState([]); // used for bonus quests
-  const [filter, setFilter] = useState('');
+  // Lists of potential targets for bonus quests
+  const [players, setPlayers] = useState([]); // all players are valid targets
+  const [scannedQuestions, setScannedQuestions] = useState([]); // team-scanned questions
+  const [scannedClues, setScannedClues] = useState([]); // team-scanned clues
 
   // Retrieve the quest from the API. Memoized so React Hook rules
   // can list it as a dependency without re-running unnecessarily.
@@ -36,18 +38,26 @@ export default function SideQuestEditPage() {
   // so it can be safely listed in useEffect dependencies.
   const loadScanned = useCallback(async () => {
     try {
-      const [clues, questions, players] = await Promise.all([
+      const [cluesRes, questionsRes, playersRes] = await Promise.all([
         fetchProgress('clue'),
         fetchProgress('question'),
         fetchProgress('player')
       ]);
-      const typed = [
-        ...clues.map((c) => ({ ...c, type: 'clue' })),
-        ...questions.map((q) => ({ ...q, type: 'question' })),
-        ...players.map((p) => ({ ...p, type: 'player' }))
-      ];
-      const scanned = typed.filter((i) => i.scanned);
-      setScannedItems(scanned);
+
+      // Store all players as potential targets
+      setPlayers(playersRes.data.map((p) => ({ ...p, type: 'player' })));
+
+      // Only include questions and clues our team has scanned
+      setScannedQuestions(
+        questionsRes.data
+          .filter((q) => q.scanned)
+          .map((q) => ({ ...q, type: 'question' }))
+      );
+      setScannedClues(
+        cluesRes.data
+          .filter((c) => c.scanned)
+          .map((c) => ({ ...c, type: 'clue' }))
+      );
     } catch (err) {
       console.error(err);
     }
@@ -153,37 +163,83 @@ export default function SideQuestEditPage() {
 
         {/* Additional fields depending on the quest type */}
         {quest.questType === 'bonus' && (
-          <label style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Target QR:
-            <input
-              type="text"
-              placeholder="Search..."
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              style={{ marginLeft: '0.5rem' }}
-            />
-            <select
-              value={quest.targetId || ''}
-              onChange={(e) => {
-                const val = e.target.value;
-                const it = scannedItems.find((s) => s._id === val);
-                setField('targetId', val);
-                setField('targetType', it ? it.type : '');
-              }}
-              style={{ marginLeft: '0.5rem' }}
-            >
-              <option value="">Select scanned QR</option>
-              {scannedItems
-                .filter((it) =>
-                  it.title.toLowerCase().includes(filter.toLowerCase())
-                )
-                .map((it) => (
-                  <option key={it._id} value={it._id}>
-                    {it.title}
-                  </option>
+          <div style={{ marginBottom: '0.5rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+              Target QR:
+            </label>
+            <table>
+              <thead>
+                <tr>
+                  <th>Players</th>
+                  <th>Questions</th>
+                  <th>Clues</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({
+                  length: Math.max(
+                    players.length,
+                    scannedQuestions.length,
+                    scannedClues.length
+                  )
+                }).map((_, idx) => (
+                  <tr key={idx}>
+                    <td data-label="Players">
+                      {players[idx] && (
+                        <label>
+                          <input
+                            type="radio"
+                            name="target"
+                            value={players[idx]._id}
+                            checked={quest.targetId === players[idx]._id}
+                            onChange={() => {
+                              setField('targetId', players[idx]._id);
+                              setField('targetType', 'player');
+                            }}
+                          />{' '}
+                          {players[idx].title}
+                        </label>
+                      )}
+                    </td>
+                    <td data-label="Questions">
+                      {scannedQuestions[idx] && (
+                        <label>
+                          <input
+                            type="radio"
+                            name="target"
+                            value={scannedQuestions[idx]._id}
+                            checked={quest.targetId === scannedQuestions[idx]._id}
+                            onChange={() => {
+                              setField('targetId', scannedQuestions[idx]._id);
+                              setField('targetType', 'question');
+                            }}
+                          />{' '}
+                          {scannedQuestions[idx].title}
+                        </label>
+                      )}
+                    </td>
+                    <td data-label="Clues">
+                      {scannedClues[idx] && (
+                        <label>
+                          <input
+                            type="radio"
+                            name="target"
+                            value={scannedClues[idx]._id}
+                            checked={quest.targetId === scannedClues[idx]._id}
+                            onChange={() => {
+                              setField('targetId', scannedClues[idx]._id);
+                              setField('targetType', 'clue');
+                            }}
+                          />{' '}
+                          {scannedClues[idx].title}
+                        </label>
+                      )}
+                    </td>
+                  </tr>
                 ))}
-            </select>
-          </label>
+              </tbody>
+            </table>
+          </div>
         )}
         {quest.questType === 'passcode' && (
           <label style={{ display: 'block', marginBottom: '0.5rem' }}>
