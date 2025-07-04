@@ -463,6 +463,12 @@ tbody tr:nth-child(even) {
   .admin-table td {
     padding: 0.25rem 0;
     border: none;
+    position: static; /* override global rule used for other tables */
+    padding-left: 0;  /* don't reserve space for pseudo-labels */
+  }
+  /* Hide the data-label pseudo elements for admin tables */
+  .admin-table td::before {
+    content: none;
   }
 }
 
