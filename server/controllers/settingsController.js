@@ -47,6 +47,16 @@ exports.updateSettings = async (req, res) => {
       }
     }
 
+    // sideQuestAdminOnly may also arrive as JSON from the client
+    if (typeof updates.sideQuestAdminOnly === 'string') {
+      try {
+        updates.sideQuestAdminOnly = JSON.parse(updates.sideQuestAdminOnly);
+      } catch (e) {
+        console.error('Invalid sideQuestAdminOnly JSON');
+        delete updates.sideQuestAdminOnly;
+      }
+    }
+
     // Attach uploaded files if present
     if (req.files && req.files.logo && req.files.logo[0]) {
       updates.logoUrl = '/uploads/' + req.files.logo[0].filename;

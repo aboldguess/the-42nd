@@ -6,7 +6,8 @@ import {
   fetchSideQuest,
   updateSideQuest,
   deleteSideQuest,
-  fetchProgress
+  fetchProgress,
+  fetchSettings
 } from '../services/api';
 
 // Page for editing a single side quest. Fields change depending on the quest type.
@@ -22,6 +23,7 @@ export default function SideQuestEditPage() {
   const [players, setPlayers] = useState([]); // all players are valid targets
   const [scannedQuestions, setScannedQuestions] = useState([]); // team-scanned questions
   const [scannedClues, setScannedClues] = useState([]); // team-scanned clues
+  const [hideTypes, setHideTypes] = useState({});
 
   // Retrieve the quest from the API. Memoized so React Hook rules
   // can list it as a dependency without re-running unnecessarily.
@@ -35,6 +37,19 @@ export default function SideQuestEditPage() {
       setLoading(false);
     }
   }, [id]);
+
+  // Load visibility settings so disallowed quest types can be hidden
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settingsRes = await fetchSettings();
+        setHideTypes(settingsRes.data.sideQuestAdminOnly || {});
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    loadSettings();
+  }, []);
 
   // Fetch scanned items so a bonus quest can target one
   // Fetch scanned items so a bonus quest can target one. Wrapped in useCallback
@@ -65,6 +80,14 @@ export default function SideQuestEditPage() {
       console.error(err);
     }
   }, []);
+
+  // When visibility settings load ensure the quest type is allowed
+  useEffect(() => {
+    if (quest && hideTypes[quest.questType]) {
+      const first = questTypeOptions.find((o) => !hideTypes[o.value]);
+      if (first) setQuest({ ...quest, questType: first.value });
+    }
+  }, [hideTypes]);
 
   // Load quest details and scanned items when the id changes
   useEffect(() => {
@@ -121,8 +144,9 @@ export default function SideQuestEditPage() {
   // Helper to update a property on the quest object
   const setField = (key, value) => setQuest({ ...quest, [key]: value });
 
-  // Options for quest types shown when editing
-  const questTypeOptions = [
+  // Options for quest types shown when editing. Admin-only types are filtered
+  // out based on the settings loaded earlier.
+  const allQuestTypeOptions = [
     { value: 'bonus', label: 'Bonus hunt!' },
     { value: 'meetup', label: 'Come and meet us!' },
     { value: 'photo', label: 'Take a photo!' },
@@ -130,6 +154,7 @@ export default function SideQuestEditPage() {
     { value: 'passcode', label: 'Secret Passcode!' },
     { value: 'trivia', label: 'Trivia Challenge!' }
   ];
+  const questTypeOptions = allQuestTypeOptions.filter((o) => !hideTypes[o.value]);
 
   return (
     <div className="card spaced-card">

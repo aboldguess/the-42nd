@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createSideQuest, fetchMe } from '../services/api';
+import { createSideQuest, fetchMe, fetchSettings } from '../services/api';
 
 // First step in the side quest wizard. The user chooses a name and type
 // then a new quest is created and the edit page opens for additional details.
@@ -8,6 +8,7 @@ export default function CreateSideQuestPage() {
   const [title, setTitle] = useState('');
   const [questType, setQuestType] = useState('photo');
   const [teamName, setTeamName] = useState('');
+  const [hideTypes, setHideTypes] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,6 +16,8 @@ export default function CreateSideQuestPage() {
       try {
         const { data } = await fetchMe();
         setTeamName(data.team?.name || '');
+        const settingsRes = await fetchSettings();
+        setHideTypes(settingsRes.data.sideQuestAdminOnly || {});
       } catch (err) {
         console.error(err);
       }
@@ -22,14 +25,23 @@ export default function CreateSideQuestPage() {
     load();
   }, []);
 
+  // When visibility settings load, ensure the selected quest type is allowed
+  useEffect(() => {
+    if (hideTypes[questType]) {
+      const first = allQuestTypeOptions.find((o) => !hideTypes[o.value]);
+      if (first) setQuestType(first.value);
+    }
+  }, [hideTypes]);
+
   useEffect(() => {
     if (questType === 'bonus' && teamName) {
       setTitle(`${teamName}'s sidequest QR hunt`);
     }
   }, [questType, teamName]);
 
-  // Available quest types presented in the dropdown
-  const questTypeOptions = [
+  // All possible quest types. Hidden ones will be filtered out based on
+  // settings loaded from the server.
+  const allQuestTypeOptions = [
     { value: 'bonus', label: 'Bonus hunt!' },
     { value: 'meetup', label: 'Come and meet us!' },
     { value: 'photo', label: 'Take a photo!' },
@@ -37,6 +49,7 @@ export default function CreateSideQuestPage() {
     { value: 'passcode', label: 'Secret Passcode!' },
     { value: 'trivia', label: 'Trivia Challenge!' }
   ];
+  const questTypeOptions = allQuestTypeOptions.filter((o) => !hideTypes[o.value]);
 
   // Create the quest and redirect to the edit page
   const handleCreate = async () => {

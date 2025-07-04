@@ -58,7 +58,7 @@ export default function Sidebar() {
           {renderLink('/admin/kudos', 'Kudos')}
           {renderLink('/admin/gallery', 'Gallery')}
           {renderLink('/admin/settings', 'Settings')}
-          {renderLink('/admin/instructions', 'Instructions')}
+          {renderLink('/admin/sidequest-config', 'SideQuest Config')}
         </>
       )}
     </aside>
