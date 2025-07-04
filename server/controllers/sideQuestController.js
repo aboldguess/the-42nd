@@ -132,7 +132,9 @@ exports.deleteSideQuest = async (req, res) => {
     ) {
       return res.status(403).json({ message: 'Not authorized' });
     }
-    await sq.remove();
+    // Mongoose v7 removed the `remove()` helper on documents.
+    // Use `deleteOne()` instead to properly delete the record.
+    await sq.deleteOne();
     res.json({ message: 'Side quest deleted' });
   } catch (err) {
     console.error(err);
