@@ -40,6 +40,7 @@ export default function AdminSettingsPage() {
     neumorphicShadows: true,
     roundedCorners: true,
     questionAnswerCooldown: 0,
+    helpText: '',
     scorePerCorrect: 10,
     scorePerSideQuest: 5,
     scorePerCreatedQuest: 20
@@ -79,6 +80,7 @@ export default function AdminSettingsPage() {
       formData.append('fontFamily', settings.fontFamily);
       formData.append('theme', JSON.stringify(settings.theme));
       formData.append('questionAnswerCooldown', settings.questionAnswerCooldown);
+      formData.append('helpText', settings.helpText);
       formData.append('scorePerCorrect', settings.scorePerCorrect);
       formData.append('scorePerSideQuest', settings.scorePerSideQuest);
       formData.append('scorePerCreatedQuest', settings.scorePerCreatedQuest);
@@ -260,6 +262,15 @@ export default function AdminSettingsPage() {
           />
           Rounded Corners
         </label>
+
+        <label>Help Page Text:</label>
+        <textarea
+          value={settings.helpText}
+          onChange={(e) =>
+            setSettings({ ...settings, helpText: e.target.value })
+          }
+          style={{ width: '100%', height: '6rem' }}
+        />
 
         <h3>Alert All Players</h3>
         <input
