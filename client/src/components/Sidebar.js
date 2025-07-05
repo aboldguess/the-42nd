@@ -26,11 +26,6 @@ export default function Sidebar() {
   return (
     // "mobile-hide" class is hidden under 600 px (see index.css note below)
     <aside className="sidebar mobile-hide">
-      {/* Always‑visible links */}
-      {renderLink('/', 'Home')}
-      {/* Link to the in-app documentation */}
-      {renderLink('/help', 'Help')}
-
       {/* Player‑only links */}
       {token && (
         <>
@@ -43,6 +38,7 @@ export default function Sidebar() {
           {renderLink('/scoreboard', 'Scoreboard')}
           {renderLink('/kudos', 'Kudos')}
           {renderLink('/roguery', 'Gallery')}
+          {renderLink('/help', 'Help')}
         </>
       )}
 
