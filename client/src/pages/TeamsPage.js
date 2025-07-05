@@ -6,7 +6,7 @@ import {
   fetchScoreboard
 } from '../services/api';
 
-// Display all teams with players listed under each
+// Display all teams with their leader and members shown in a simple list
 export default function TeamsPage() {
   const [teams, setTeams] = useState([]); // teams from API
   const [players, setPlayers] = useState([]); // used to map players to teams
@@ -50,48 +50,72 @@ export default function TeamsPage() {
       <div className="list">
         {teams.map((team) => {
           const stats = statsForTeam(team._id);
+          // Determine which players belong to this team
+          const teamPlayers = playersForTeam(team._id);
+          // The player who created the team is marked as isAdmin
+          const leader = teamPlayers.find((p) => p.isAdmin);
+          // Remaining players are regular members
+          const members = teamPlayers.filter((p) => !p.isAdmin);
           return (
             <div key={team._id} className="list-row">
-              {team.photoUrl && <img src={team.photoUrl} alt={team.name} />}
+              {/* Team photo */}
+              {team.photoUrl && (
+                <img
+                  src={team.photoUrl}
+                  alt={team.name}
+                  style={{ width: '32px', height: '32px', borderRadius: '50%' }}
+                />
+              )}
               <div>
+                {/* Team name links to the profile page */}
                 <Link to={`/team/${team._id}`}>{team.name}</Link>
                 {stats && (
                   <p className="sub" style={{ marginBottom: '0.5rem' }}>
                     Score: {stats.score} | Questions Found: {stats.questionsFound} | Correct Answers: {stats.correctAnswers}
                   </p>
                 )}
-                {/* Table of team members */}
-                <table className="sub" style={{ margin: 0 }}>
-                  <thead>
-                    <tr>
-                      <th>Member</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {playersForTeam(team._id).map((p) => (
-                      <tr key={p._id}>
-                        <td data-label="Member">
-                          <Link to={`/player/${p._id}`}>
-                            {p.photoUrl && (
-                              <img
-                                src={p.photoUrl}
-                                alt={p.name}
-                                width="30"
-                                height="30"
-                                style={{
-                                  borderRadius: '50%',
-                                  marginRight: '0.5rem',
-                                  objectFit: 'cover'
-                                }}
-                              />
-                            )}
-                            {p.name}
-                          </Link>
-                        </td>
-                      </tr>
+                {/* Display leader with avatar and bold name */}
+                {leader && (
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.25rem' }}>
+                    {leader.photoUrl && (
+                      <img
+                        src={leader.photoUrl}
+                        alt={leader.name}
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                          marginRight: '0.5rem'
+                        }}
+                      />
+                    )}
+                    <strong>{leader.name}</strong>
+                  </div>
+                )}
+                {/* List of member avatars with first names */}
+                {members.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    {members.map((m) => (
+                      <span key={m._id} style={{ display: 'flex', alignItems: 'center' }}>
+                        {m.photoUrl && (
+                          <img
+                            src={m.photoUrl}
+                            alt={m.name}
+                            style={{
+                              width: '32px',
+                              height: '32px',
+                              borderRadius: '50%',
+                              objectFit: 'cover',
+                              marginRight: '0.25rem'
+                            }}
+                          />
+                        )}
+                        {m.firstName || m.name.split(' ')[0]}
+                      </span>
                     ))}
-                  </tbody>
-                </table>
+                  </div>
+                )}
               </div>
             </div>
           );
