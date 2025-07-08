@@ -66,7 +66,15 @@ exports.onboard = async (req, res) => {
       if (!req.files.teamPhoto || req.files.teamPhoto.length === 0) {
         return res.status(400).json({ message: 'Team photo is required' });
       }
-      if (await Team.findOne({ name: teamName })) {
+
+      // Normalise the team name by trimming whitespace
+      const trimmedTeamName = teamName.trim();
+
+      // Case-insensitive check so "alpha" won't allow "Alpha" to be created
+      const existing = await Team.findOne({
+        name: new RegExp(`^${escapeRegex(trimmedTeamName)}$`, 'i')
+      });
+      if (existing) {
         return res.status(400).json({ message: 'Team name already taken' });
       }
 
@@ -76,9 +84,9 @@ exports.onboard = async (req, res) => {
       // Save the uploaded team photo file
       const teamPhotoUrl = '/uploads/' + req.files.teamPhoto[0].filename;
 
-      // Create the Team document with the provided unique name
+      // Create the Team document with the normalised unique name
       team = await Team.create({
-        name: teamName,
+        name: trimmedTeamName,
         password: hashed,
         photoUrl: teamPhotoUrl,
         members: [] // creator added below

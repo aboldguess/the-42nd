@@ -90,13 +90,22 @@ exports.createTeam = async (req, res) => {
     if (!name || !password) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
-    if (await Team.findOne({ name })) {
+
+    // Normalise the requested team name to avoid duplicate names
+    const trimmedName = name.trim();
+
+    // Perform a case-insensitive search so variations like "alpha" and "Alpha"
+    // count as the same team
+    const existing = await Team.findOne({
+      name: new RegExp(`^${trimmedName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i')
+    });
+    if (existing) {
       return res.status(400).json({ message: 'Team name already taken' });
     }
 
     const hashed = await bcrypt.hash(password, 10);
     const team = await Team.create({
-      name,
+      name: trimmedName,
       password: hashed,
       photoUrl: photoUrl || '',
       leader: req.user?._id || req.body.leader,
